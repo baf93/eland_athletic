@@ -1,2 +1,2 @@
-# eland_athletic
-Stay tuned
+# Eland Athletic 
+Stay tuned for more!

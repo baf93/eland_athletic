@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="User App" type="FlutterRunConfigurationType" factoryName="Flutter">
+    <option name="buildFlavor" value="userApp" />
+    <option name="filePath" value="$PROJECT_DIR$/lib/main_user.dart" />
+    <method v="2" />
+  </configuration>
+</component>
