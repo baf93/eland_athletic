@@ -1,31 +1,49 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'common/theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'user_pages/focus_page.dart';
 import 'user_pages/nutri_page.dart';
 import 'user_pages/pt_page.dart';
 import 'common/strings.dart';
+import 'user_providers/settings_provider.dart';
 
-void main() {
-  final String deviceLanguage = PlatformDispatcher.instance.locale.languageCode;
-  ElandStrings.initLocale(deviceLanguage);
-  runApp(const ElandUserApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+
+  final String savedLanguage = sharedPrefs.getString('language') ?? PlatformDispatcher.instance.locale.languageCode;
+  ElandStrings.initLocale(savedLanguage);
+  runApp(
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(sharedPrefs),
+      ],
+      child: const ElandUserApp(),
+    ),
+  );
 }
 
-class ElandUserApp extends StatelessWidget {
+class ElandUserApp extends ConsumerWidget {
   const ElandUserApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    
+    final settings = ref.watch(settingsProvider);
+
+    ElandStrings.initLocale(settings.language);
+    
     return MaterialApp(
       title: ElandStrings.of('app_name_user'),
 
       // Theme Injection
       theme: ElandTheme.lightTheme,
       darkTheme: ElandTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
 
-      home: const UserDashboard(),
+      home: UserDashboard(key: ValueKey(settings.language)),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../common/strings.dart';
 import '../common/widgets/eland_card.dart';
 import 'timer_list_page.dart';
+import 'settings_page.dart';
 
 class FocusPage extends ConsumerWidget {
   const FocusPage({super.key});
@@ -17,17 +18,23 @@ class FocusPage extends ConsumerWidget {
           children: [
 
             // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.settings, size: 26),
-                  onPressed: () {
-                    // TODO: Aggiungere link a pagina impostazioni
-                  },
-                ),
-              ],
-            ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.settings, size: 26),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsPage(),
+                        ),
+                      );
+                      // TODO: Aggiungere link a pagina impostazioni
+                    },
+                  ),
+                ],
+              ),
 
             const SizedBox(height: 8),
 
@@ -156,7 +163,7 @@ class FocusPage extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(153),
                     ),
                   ),
                 ],

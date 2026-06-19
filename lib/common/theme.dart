@@ -94,8 +94,8 @@ class ElandTheme {
       extensions: <ThemeExtension<dynamic>>[
         const ElandCustomColors(
           timerBg: orangeAccent,
-          cardBorder: Color(0xFFE2E8F0),
-          unselectedItems: Colors.grey,
+          cardBorder: Colors.black26,
+          unselectedItems: Colors.black54,
         ),
       ],
     );
