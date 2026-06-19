@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'common/theme.dart';
-import 'user_pages/home_page.dart';
+import 'user_pages/focus_page.dart';
 import 'user_pages/nutri_page.dart';
 import 'user_pages/pt_page.dart';
 import 'common/strings.dart';
@@ -41,7 +41,7 @@ class _UserDashboardState extends State<UserDashboard> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [
-    HomePage(),
+    FocusPage(),
     NutriPage(),
     PtPage(),
   ];

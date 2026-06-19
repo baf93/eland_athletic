@@ -10,7 +10,11 @@ class ElandStrings {
       'app_motto': 'Stay Focused. Stay Fast. Stay ELAND.',
       'tab_focus': 'Focus',
       'tab_nutri': 'Nutrition',
-      'tab_pt': 'Workout'
+      'tab_pt': 'Workout',
+      'card_focus_title': 'Today Focus',
+      'card_timer_title': 'Quick timers',
+      'card_nutrition_title': 'Next Meal',
+      'wip_function': 'Coming soon!'
     },
 
     AppLanguage.it: {
@@ -19,7 +23,11 @@ class ElandStrings {
       'app_motto': 'Stay Focused. Stay Fast. Stay ELAND.',
       'tab_focus': 'Focus',
       'tab_nutri': 'Nutrizione',
-      'tab_pt': 'Allenamento'
+      'tab_pt': 'Allenamento',
+      'card_focus_title': 'Focus di Oggi',
+      'card_timer_title': 'Timer rapidi',
+      'card_nutrition_title': 'Prossimo Pasto',
+      'wip_function': 'Funzionalità in arrivo!'
     },
   };
 

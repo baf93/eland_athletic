@@ -45,6 +45,7 @@ class ElandTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: const Color(0xFF121212),
+      cardColor: const Color(0xFF121212),
 
       colorScheme: const ColorScheme.dark(
         primary: orangeAccent,
@@ -55,14 +56,14 @@ class ElandTheme {
       textTheme: const TextTheme(
         headlineLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         bodyLarge: TextStyle(color: Color(0xFFE0E0E0)),
-        bodyMedium: TextStyle(color: Colors.grey),
+        bodyMedium: TextStyle(color: Colors.white70),
       ),
 
       // Definition of custom colors for dark mode
       extensions: <ThemeExtension<dynamic>>[
         const ElandCustomColors(
           timerBg: orangeAccent,
-          cardBorder: Colors.white10,
+          cardBorder: Colors.white24,
           unselectedItems: Colors.grey,
         ),
       ],
@@ -75,6 +76,7 @@ class ElandTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+      cardColor: const Color(0xFFF8F9FA),
 
       colorScheme: const ColorScheme.light(
         primary: orangeAccent,
