@@ -24,7 +24,7 @@ class ElandCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 14.0),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: elandColors.cardBorder!, width: 2),
       ),
       child: Column(
@@ -71,13 +71,13 @@ class ElandCard extends StatelessWidget {
     if (onTap != null) {
       return Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(16),
             child: cardContent,
           ),
         ),

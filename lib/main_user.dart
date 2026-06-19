@@ -11,10 +11,12 @@ import 'user_providers/settings_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
+  //Load Shared Prefs
+  final SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
   final String savedLanguage = sharedPrefs.getString('language') ?? PlatformDispatcher.instance.locale.languageCode;
   ElandStrings.initLocale(savedLanguage);
+
   runApp(
     ProviderScope(
       overrides: [
@@ -48,6 +50,8 @@ class ElandUserApp extends ConsumerWidget {
   }
 }
 
+
+// Create the bottom bar with the 3 pages
 class UserDashboard extends StatefulWidget {
   const UserDashboard({super.key});
 

@@ -30,7 +30,6 @@ class FocusPage extends ConsumerWidget {
                           builder: (context) => const SettingsPage(),
                         ),
                       );
-                      // TODO: Aggiungere link a pagina impostazioni
                     },
                   ),
                 ],
@@ -75,7 +74,7 @@ class FocusPage extends ConsumerWidget {
 
             const SizedBox(height: 32),
 
-            // --- CARD: Focus Workout ---
+            // --- CARD: Focus Workout --- TODO: Implementare la card
             ElandCard(
               title: ElandStrings.of('card_focus_title'),
               onTap: () {
@@ -97,7 +96,7 @@ class FocusPage extends ConsumerWidget {
 
             // --- CARD: Quick Timers ---
             ElandCard(
-              title: ElandStrings.of('card_timer_title'), // Recupera "TIMER RAPIDI" localizzato
+              title: ElandStrings.of('card_timer_title'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -123,7 +122,7 @@ class FocusPage extends ConsumerWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withAlpha(50),
+                      color: Theme.of(context).colorScheme.primary.withAlpha(65),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -138,7 +137,7 @@ class FocusPage extends ConsumerWidget {
 
             const SizedBox(height: 12),
 
-            // --- CARD: NUTRITION (Next Meal) ---
+            // --- CARD: NUTRITION (Next Meal) --- TODO: Implementare la card
             ElandCard(
               title: ElandStrings.of('card_nutrition_title'),
               subtitle: 'PRANZO - 13:00',

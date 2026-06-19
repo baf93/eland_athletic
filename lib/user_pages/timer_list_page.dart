@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import '../common/strings.dart';
 
 class TimerListPage extends StatelessWidget {
   const TimerListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Rimosso il PopScope problematico: lo Scaffold standard gestisce già nativamente
-    // e in totale sicurezza il tasto indietro di sistema (Android Gesture/Back button).
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
@@ -16,12 +15,11 @@ class TimerListPage extends StatelessWidget {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          // Usiamo l'icona classica per Android o iOS coerente con il sistema
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.maybePop(context), // Chiude in sicurezza solo se possibile
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () => Navigator.maybePop(context),
         ),
-        title: const Text(
-          'TIMER RAPIDI',
+        title: Text(
+          ElandStrings.of('card_timer_title').toUpperCase(),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w900,
@@ -31,10 +29,10 @@ class TimerListPage extends StatelessWidget {
         centerTitle: true,
       ),
 
-      // --- CORPO DEL MOCKUP ---
+      // --- Body ---
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -42,10 +40,10 @@ class TimerListPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Text(
-                  'Scegli il tuo protocollo, imposta il tempo e sfida i tuoi limiti. Tabata, EMOM, AMRAP o For Time: l\'essenziale per spingere al massimo!',
+                  ElandStrings.of('timer_list_desc'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     height: 1.4,
                     color: Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(153) ?? const Color(0xFF9E9E9E),
@@ -58,28 +56,28 @@ class TimerListPage extends StatelessWidget {
               _buildTimerRowItem(
                 context: context,
                 icon: Icons.fitness_center_rounded,
-                title: 'TABATA',
+                title: ElandStrings.of('timer_tabata').toUpperCase(),
                 onTap: () {},
               ),
               const SizedBox(height: 12),
               _buildTimerRowItem(
                 context: context,
                 icon: Icons.loop_rounded,
-                title: 'EMOM',
+                title: ElandStrings.of('timer_emom').toUpperCase(),
                 onTap: () {},
               ),
               const SizedBox(height: 12),
               _buildTimerRowItem(
                 context: context,
                 icon: Icons.all_inclusive_rounded,
-                title: 'AMRAP',
+                title: ElandStrings.of('timer_amrap').toUpperCase(),
                 onTap: () {},
               ),
               const SizedBox(height: 12),
               _buildTimerRowItem(
                 context: context,
                 icon: Icons.timer_10_outlined,
-                title: 'FOR TIME',
+                title: ElandStrings.of('timer_fortime').toUpperCase(),
                 onTap: () {},
               ),
 
@@ -88,14 +86,14 @@ class TimerListPage extends StatelessWidget {
               _buildTimerRowItem(
                 context: context,
                 icon: Icons.hourglass_bottom_rounded,
-                title: 'COUNTDOWN',
+                title: ElandStrings.of('timer_countdown').toUpperCase(),
                 onTap: () {},
               ),
               const SizedBox(height: 12),
               _buildTimerRowItem(
                 context: context,
                 icon: Icons.shutter_speed_rounded,
-                title: 'CRONOMETRO',
+                title: ElandStrings.of('timer_stopwatch').toUpperCase(),
                 onTap: () {},
               ),
 
@@ -105,7 +103,7 @@ class TimerListPage extends StatelessWidget {
       ),
     );
   }
-
+  //TODO: Move this widget as a common widget
   Widget _buildTimerRowItem({
     required BuildContext context,
     required IconData icon,
