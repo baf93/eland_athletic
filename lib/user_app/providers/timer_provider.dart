@@ -59,6 +59,13 @@ class TimerNotifier extends Notifier<TimerState> {
       'direction': direction == CountingDirection.down ? 'down' : 'up',
       'title': title,
       'notes': notes,
+      'audioHapticConfig': {
+        'start': {'audio': 'beep_long', 'haptic': 'double'},
+        'half': {'audio': 'beep_short', 'haptic': 'single'},
+        'tenSec': {'audio': 'beep_short', 'haptic': 'single'},
+        'countdown': {'audio': 'beep_short', 'haptic': 'single'},
+        'end': {'audio': 'beep_long', 'haptic': 'double'},
+      }
     });
   }
 
