@@ -66,7 +66,12 @@ class ElandStrings {
       'timer_countdown': 'Countdown',
       'timer_stopwatch': 'Stopwatch',
 
+      //Timer Settings
+      'total_min': 'Total Minutes',
+
       //Utils
+      'start_btn': 'Start',
+      'save_btn': 'Save',
       'wip_function': 'Coming soon!'
     },
 
@@ -132,7 +137,12 @@ class ElandStrings {
       'timer_countdown': 'Conto alla rovescia',
       'timer_stopwatch': 'Cronometro',
 
+      //Timer Settings
+      'total_min': 'Minuti Totali',
+
       //Utils
+      'start_btn': 'Inizia',
+      'save_btn': 'Salva',
       'wip_function': 'Funzionalità in arrivo!'
     },
   };

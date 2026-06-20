@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../common/strings.dart';
 import '../common/widgets/timer_row_item.dart';
+import 'timer_core/ui/emom_settings_page.dart';
 
 class TimerListPage extends StatelessWidget {
   const TimerListPage({super.key});
@@ -66,7 +67,13 @@ class TimerListPage extends StatelessWidget {
               TimerRowItem(
                 icon: Icons.loop_rounded,
                 title: ElandStrings.of('timer_emom').toUpperCase(),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const EMOMSettingsPage(),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 12),
               TimerRowItem(

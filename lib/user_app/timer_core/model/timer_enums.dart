@@ -29,3 +29,14 @@ enum AudioTriggerType {
   countdown321,
   tenSeconds,
 }
+
+enum TimerType {
+  preparation,
+  emom,
+  tabata,
+  amrap,
+  fortime,
+  countdown,
+  stopwatch,
+  rest
+}
