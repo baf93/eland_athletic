@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'common/theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,6 +35,8 @@ class ElandUserApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     
     final settings = ref.watch(settingsProvider);
+
+    WakelockPlus.toggle(enable: settings.keepScreenOn);
 
     ElandStrings.initLocale(settings.language);
     

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SettingsState {
   final String language;
@@ -123,9 +124,32 @@ class SettingsNotifier extends Notifier<SettingsState> {
     state = state.copyWith(hapticFeedback: value);
   }
 
-  void toggleNotifications(bool value) {
-    _prefs.setBool('notifications', value);
-    state = state.copyWith(notifications: value);
+// Just In Time Permissions Handling for Notifications Toggle
+  Future<void> toggleNotifications(bool value) async {
+    if (!value) {
+      await _prefs.setBool('notifications', false);
+      state = state.copyWith(notifications: false);
+      return;
+    }
+
+    final status = await Permission.notification.status;
+
+    if (status.isGranted) {
+      await _prefs.setBool('notifications', true);
+      state = state.copyWith(notifications: true);
+    } else if (status.isPermanentlyDenied) {
+      await openAppSettings();
+    } else {
+      final result = await Permission.notification.request();
+
+      if (result.isGranted) {
+        await _prefs.setBool('notifications', true);
+        state = state.copyWith(notifications: true);
+      } else {
+        await _prefs.setBool('notifications', false);
+        state = state.copyWith(notifications: false);
+      }
+    }
   }
 
   void toggleKeepScreenOn(bool value) {

@@ -108,8 +108,10 @@ class SettingsPage extends ConsumerWidget {
                 icon: Icons.notifications_off_rounded,
                 title: ElandStrings.of('setting_notifications_title'),
                 subtitle: ElandStrings.of('setting_notifications_subtitle'),
-                value: settings.notifications, // Variabile allineata al provider
-                onChanged: settingsNotifier.toggleNotifications,
+                value: settings.notifications,
+                onChanged: (bool value) {
+                  settingsNotifier.toggleNotifications(value);
+                }
               ),
 
               SettingsSwitchTile(
