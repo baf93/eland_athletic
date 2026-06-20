@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../common/strings.dart';
-import '../user_providers/settings_provider.dart';
 import '../common/widgets/timer_row_item.dart';
 
-class TimerListPage extends ConsumerWidget {
+class TimerListPage extends StatelessWidget {
   const TimerListPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
 
-    ref.watch(settingsProvider);
     final theme = Theme.of(context);
 
     return Scaffold(

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-// Modello dati per raggruppare le impostazioni
 class SettingsState {
   final String language;
   final int preparationTime;
@@ -9,8 +9,9 @@ class SettingsState {
   final bool useMetricUnits;
   final bool soundEnabled;
   final bool hapticFeedback;
-  final bool silentNotifications;
+  final bool notifications;
   final bool keepScreenOn;
+  final String appVersion;
 
   SettingsState({
     required this.language,
@@ -19,8 +20,9 @@ class SettingsState {
     required this.useMetricUnits,
     required this.soundEnabled,
     required this.hapticFeedback,
-    required this.silentNotifications,
+    required this.notifications,
     required this.keepScreenOn,
+    required this.appVersion,
   });
 
   SettingsState copyWith({
@@ -30,8 +32,9 @@ class SettingsState {
     bool? useMetricUnits,
     bool? soundEnabled,
     bool? hapticFeedback,
-    bool? silentNotifications,
+    bool? notifications,
     bool? keepScreenOn,
+    String? appVersion,
   }) {
     return SettingsState(
       language: language ?? this.language,
@@ -40,38 +43,56 @@ class SettingsState {
       useMetricUnits: useMetricUnits ?? this.useMetricUnits,
       soundEnabled: soundEnabled ?? this.soundEnabled,
       hapticFeedback: hapticFeedback ?? this.hapticFeedback,
-      silentNotifications: silentNotifications ?? this.silentNotifications,
+      notifications: notifications ?? this.notifications,
       keepScreenOn: keepScreenOn ?? this.keepScreenOn,
+      appVersion: appVersion ?? this.appVersion,
     );
   }
 }
 
-// 1. IL tassello mancante: Dichiarazione del provider per SharedPreferences
+
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
-  throw UnimplementedError('Questo provider deve essere sovrascritto nel main');
+  throw UnimplementedError('Shared Preferences Provider shall be overwritten in Main()');
 });
 
-// 2. Notifier moderno per Riverpod 2.x legato al provider
+// Notifier for Riverpod
 class SettingsNotifier extends Notifier<SettingsState> {
   late SharedPreferences _prefs;
 
   @override
   SettingsState build() {
-    // Recupera in modo sicuro l'istanza iniettata nel main
+    // Get Main injected instances of sharedPreferences
     _prefs = ref.watch(sharedPreferencesProvider);
 
+
+    _loadAppVersion();
+
     return SettingsState(
-      language: _prefs.getString('language') ?? 'IT',
+      language: _prefs.getString('language') ?? 'en',
       preparationTime: _prefs.getInt('preparationTime') ?? 10,
       isDarkMode: _prefs.getBool('isDarkMode') ?? true,
       useMetricUnits: _prefs.getBool('useMetricUnits') ?? true,
       soundEnabled: _prefs.getBool('soundEnabled') ?? true,
-      hapticFeedback: _prefs.getBool('hapticFeedback') ?? false,
-      silentNotifications: _prefs.getBool('silentNotifications') ?? false,
+      hapticFeedback: _prefs.getBool('hapticFeedback') ?? true,
+      notifications: _prefs.getBool('notifications') ?? false,
       keepScreenOn: _prefs.getBool('keepScreenOn') ?? true,
+      appVersion: '...'
     );
   }
 
+  //Dynamic loading of app version from pubspec
+  Future<void> _loadAppVersion() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final versionString = "${packageInfo.version}+${packageInfo.buildNumber}";
+
+      state = state.copyWith(appVersion: versionString);
+    } catch (_) {
+      state = state.copyWith(appVersion: 'N/A');
+    }
+  }
+
+  // Methods for updating the settings
   void updateLanguage(String value) {
     _prefs.setString('language', value);
     state = state.copyWith(language: value);
@@ -102,9 +123,9 @@ class SettingsNotifier extends Notifier<SettingsState> {
     state = state.copyWith(hapticFeedback: value);
   }
 
-  void toggleSilentNotifications(bool value) {
-    _prefs.setBool('silentNotifications', value);
-    state = state.copyWith(silentNotifications: value);
+  void toggleNotifications(bool value) {
+    _prefs.setBool('notifications', value);
+    state = state.copyWith(notifications: value);
   }
 
   void toggleKeepScreenOn(bool value) {
@@ -113,7 +134,7 @@ class SettingsNotifier extends Notifier<SettingsState> {
   }
 }
 
-// 3. Definizione del Provider Globale delle impostazioni
+// Global settings provider
 final settingsProvider = NotifierProvider<SettingsNotifier, SettingsState>(() {
   return SettingsNotifier();
 });
