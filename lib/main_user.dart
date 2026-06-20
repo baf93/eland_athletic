@@ -8,7 +8,8 @@ import 'user_app/focus_page.dart';
 import 'user_app/nutri_page.dart';
 import 'user_app/pt_page.dart';
 import 'common/strings.dart';
-import 'user_providers/settings_provider.dart';
+import 'user_app/providers/settings_provider.dart';
+import 'user_app/timer_core/service/timer_background_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,8 @@ void main() async {
   final SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
   final String savedLanguage = sharedPrefs.getString('language') ?? PlatformDispatcher.instance.locale.languageCode;
   ElandStrings.initLocale(savedLanguage);
+
+  await TimerBackgroundService.initialize();
 
   runApp(
     ProviderScope(

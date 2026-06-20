@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../common/strings.dart';
-import '../user_providers/settings_provider.dart';
+import 'providers/settings_provider.dart';
 import '../common/widgets/settings_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
