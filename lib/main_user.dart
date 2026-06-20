@@ -4,9 +4,9 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'common/theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'user_pages/focus_page.dart';
-import 'user_pages/nutri_page.dart';
-import 'user_pages/pt_page.dart';
+import 'user_app/focus_page.dart';
+import 'user_app/nutri_page.dart';
+import 'user_app/pt_page.dart';
 import 'common/strings.dart';
 import 'user_providers/settings_provider.dart';
 

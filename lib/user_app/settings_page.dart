@@ -178,7 +178,7 @@ class SettingsPage extends ConsumerWidget {
 
               // --- CARD: PERCHÉ ELAND ---
               SettingsInfoCard(
-                title: ElandStrings.of('info_card_title').toUpperCase(), // Es: "ⓘ PERCHÉ ELAND?"
+                title: ElandStrings.of('info_card_title').toUpperCase(),
                 content: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -243,7 +243,7 @@ class SettingsPage extends ConsumerWidget {
               SettingsActionTile(
                 icon: Icons.code_rounded,
                 title: ElandStrings.of('action_source_code'),
-                subtitle: ElandStrings.of('action_source_code_sub'), //https://github.com/baf93/eland_athletic
+                subtitle: ElandStrings.of('action_source_code_sub'),
                 onTap: () async {
                   final Uri url = Uri.parse('https://github.com/baf93/eland_athletic');
 
