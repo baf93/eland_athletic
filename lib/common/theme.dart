@@ -20,7 +20,7 @@ class ElandCustomColors extends ThemeExtension<ElandCustomColors> {
     return ElandCustomColors(
       timerBg: timerBg ?? this.timerBg,
       cardBorder: cardBorder ?? this.cardBorder,
-      unselectedItems: unselectedItems ?? this.unselectedItems
+      unselectedItems: unselectedItems ?? unselectedItems
     );
   }
 
@@ -46,6 +46,7 @@ class ElandTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: const Color(0xFF121212),
       cardColor: const Color(0xFF121212),
+      dividerColor: Colors.white24,
 
       colorScheme: const ColorScheme.dark(
         primary: orangeAccent,
@@ -77,6 +78,7 @@ class ElandTheme {
       brightness: Brightness.light,
       scaffoldBackgroundColor: const Color(0xFFF8F9FA),
       cardColor: const Color(0xFFF8F9FA),
+      dividerColor: Colors.black26,
 
       colorScheme: const ColorScheme.light(
         primary: orangeAccent,

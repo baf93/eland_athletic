@@ -18,7 +18,7 @@ class ElandStrings {
       'card_nutrition_title': 'Next Meal',
 
       //Timer List
-      'timer_list_desc': 'Pick your protocol, set the clock, and push your limits. Tabata, EMOM, AMRAP, or For Time: everything you need to dominate!',
+      'timer_list_desc': 'Pick your protocol, set the clock, and push your limits. Tabata, EMOM, AMRAP or For Time: everything you need to dominate!',
 
       //Timer Name
       'timer_tabata': 'Tabata',

@@ -52,7 +52,7 @@ class ElandCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5),
+                color: Theme.of(context).textTheme.bodySmall?.color,
                 letterSpacing: 1.1,
               ),
             ),
