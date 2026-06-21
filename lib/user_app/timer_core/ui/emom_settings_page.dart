@@ -18,18 +18,15 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
 
   /// Utilities functions
   void _startWorkout() {
-// 1. Definisci la lista delle configurazioni (puoi metterne una o più)
+
     final List<WorkoutConfig> configs = [
-      EMOMConfig(totalMinutes: _totalMinutes),
-      // Puoi aggiungere altre fasi qui, es: RestConfig(durationSeconds: 60), TabataConfig(...)
+      EMOMConfig(totalMinutes: _totalMinutes, phaseTitle: ElandStrings.of('timer_emom').toUpperCase(), phaseSetting: '${_totalMinutes} min' ),
     ];
 
-    // 2. Il generatore ora è un'istanza generica, non specifica
     final generator = WorkoutGenerator();
-    final queue = generator.generate(configs);
+    final workout = generator.generate(configs);
 
-    // 3. Lancia il workout
-    WorkoutController.instance.launchWorkout(queue);
+    WorkoutController.instance.launchWorkout(workout);
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => const WorkoutPage()));
   }
 

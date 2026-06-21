@@ -1,5 +1,7 @@
 import 'timer_enums.dart';
 
+/// TODO: Capire se serve veramente la classe o le configurazioni dell'audio e del feedback aptico le mettiamo nella workout_config.dart
+
 /// Audio Triggers
 class IntervalAudioConfig {
   final AudioTriggerType onStart;
@@ -15,6 +17,14 @@ class IntervalAudioConfig {
     this.onCountdownSeconds = AudioTriggerType.countdown321,
     this.onEnd = AudioTriggerType.nextStage,
   });
+
+  Map<String, dynamic> toJson() => {
+    'onStart': onStart.name,
+    'onHalfway': onHalfway.name,
+    'onTenSecondsLeft': onTenSecondsLeft.name,
+    'onCountdownSeconds': onCountdownSeconds.name,
+    'onEnd': onEnd.name,
+  };
 }
 
 /// Haptic Triggers
@@ -32,4 +42,12 @@ class IntervalHapticConfig {
     this.onCountdownSeconds = HapticPattern.light,
     this.onEnd = HapticPattern.doubleTap,
   });
+
+  Map<String, dynamic> toJson() => {
+    'onStart': onStart.name,
+    'onHalfway': onHalfway.name,
+    'onTenSecondsLeft': onTenSecondsLeft.name,
+    'onCountdownSeconds': onCountdownSeconds.name,
+    'onEnd': onEnd.name,
+  };
 }

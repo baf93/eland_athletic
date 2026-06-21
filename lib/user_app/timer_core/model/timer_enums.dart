@@ -5,24 +5,18 @@ enum IntervalType {
   cooldown,
 }
 
-enum CountingDirection {
-  up,   // StopWatch
-  down, // Tabata, Emom, AMRAP, For Time, Countdown
-}
-
 enum HapticPattern {
   none,
   light,
   medium,
   heavy,
   doubleTap,
-  countdownBeep,
 }
 
 enum AudioTriggerType {
-  none,
   prepare,
   go,
+  rest,
   nextStage,
   workoutComplete,
   half,
@@ -37,6 +31,12 @@ enum TimerType {
   amrap,
   fortime,
   countdown,
-  stopwatch,
   rest
+}
+
+enum TimerStatus {
+  idle,
+  running,
+  paused,
+  completed
 }

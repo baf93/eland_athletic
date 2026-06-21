@@ -3,10 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:vibration/vibration.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+@pragma('vm:entry-point')
 class TimerBackgroundService {
   static const String channelId = 'eland_timer_channel';
   static const int notificationId = 101;
@@ -14,12 +12,12 @@ class TimerBackgroundService {
   static Future<void> initialize() async {
     final service = FlutterBackgroundService();
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      channelId,
-      'ELAND Athletic Timer',
-      description: 'Timer Notifications',
-      importance: Importance.max,
-      playSound: false,
-    );
+        channelId,
+        'ELAND Athletic Timer',
+        description: 'Timer Notifications',
+        importance: Importance.defaultImportance,
+        playSound: false,
+        enableVibration: false);
 
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     await flutterLocalNotificationsPlugin
@@ -32,151 +30,112 @@ class TimerBackgroundService {
           autoStart: false,
           isForegroundMode: true,
           notificationChannelId: channelId,
-          foregroundServiceNotificationId: notificationId
-      ),
+          foregroundServiceNotificationId: notificationId),
       iosConfiguration: IosConfiguration(
           autoStart: false,
           onForeground: onStart,
-          onBackground: (service) => Future.value(true)
-      ),
+          onBackground: (service) => Future.value(true)),
     );
   }
 
   @pragma('vm:entry-point')
   static void onStart(ServiceInstance service) async {
-    debugPrint(" *** QUI SERVICE");
     DartPluginRegistrant.ensureInitialized();
-    final FlutterLocalNotificationsPlugin localNotifications = FlutterLocalNotificationsPlugin();
-    final AudioPlayer audioPlayer = AudioPlayer();
-    await audioPlayer.setReleaseMode(ReleaseMode.stop);
 
-    final AudioContext audioContext = AudioContext(
-      android: AudioContextAndroid(isSpeakerphoneOn: true, stayAwake: true, contentType: AndroidContentType.sonification, usageType: AndroidUsageType.assistanceSonification, audioFocus: AndroidAudioFocus.gainTransientMayDuck),
-      iOS: AudioContextIOS(category: AVAudioSessionCategory.ambient, options: {AVAudioSessionOptions.duckOthers, AVAudioSessionOptions.mixWithOthers}),
-    );
-    await AudioPlayer.global.setAudioContext(audioContext);
-
-    // --- Stato Interno ---
+    // --- Stati Interni ---
     Timer? ticker;
+    bool isStopwatchMode = false;
+
+    // Stato Workout
     List<dynamic> fullWorkoutQueue = [];
     int currentIntervalIndex = 0;
-    int remainingSeconds = 0;
-    bool isPaused = false;
-    bool soundEnabled = true;
-    bool hapticEnabled = true;
-    Map<String, dynamic> currentAudioHapticConfig = {};
+    DateTime? intervalStartTime;
+    int? currentIntervalDuration;
 
-    // --- Funzioni di Feedback ---
-    void triggerHardwareFeedback(String phase) {
-      final phaseConfig = currentAudioHapticConfig[phase] as Map<String, dynamic>?;
-      if (phaseConfig == null) return;
-      final String audioFile = phaseConfig['audio'] as String? ?? 'none';
-      final String hapticType = phaseConfig['haptic'] as String? ?? 'none';
+    // Stato Stopwatch
+    DateTime? stopwatchStartTime;
+    List<int> lapTimes = [];
 
-      if (soundEnabled && audioFile != 'none') {
-        try { audioPlayer.play(AssetSource('audio/$audioFile.m4a')); } catch (e) { debugPrint('Audio error: $e'); }
-      }
-      if (hapticEnabled && hapticType != 'none') {
-        Vibration.hasVibrator().then((hasV) { if (hasV) {
-          switch (hapticType) {
-            case 'single': Vibration.vibrate(duration: 150); break;
-            case 'double': Vibration.vibrate(pattern: [0, 300, 150, 300]); break;
-            case 'triple': Vibration.vibrate(pattern: [0, 200, 100, 200, 100, 200]); break;
-            case 'long': Vibration.vibrate(duration: 600); break;
-          }
-        }});
+    // --- Logica di Sincronizzazione (Full Update) ---
+    void sendFullStatus() {
+      if (isStopwatchMode) {
+        service.invoke('stopwatchUpdate', {
+          'elapsedMilliseconds': stopwatchStartTime != null
+              ? DateTime.now().difference(stopwatchStartTime!).inMilliseconds
+              : 0,
+          'laps': lapTimes,
+          'status': 'running'
+        });
+      } else if (currentIntervalIndex < fullWorkoutQueue.length) {
+        final interval = fullWorkoutQueue[currentIntervalIndex] as Map<String, dynamic>;
+        final elapsed = DateTime.now().difference(intervalStartTime!).inSeconds;
+        final remaining = (interval['duration'] as int) - elapsed;
+
+        service.invoke('update', {
+          'remainingSeconds': remaining > 0 ? remaining : 0,
+          'intervalProgress': (interval['duration'] as int > 0) ? elapsed / (interval['duration'] as int) : 1.0,
+          'title': interval['title'],
+          'status': 'running'
+        });
       }
     }
 
-    // --- Motore Timer ---
+    // --- Motori di Calcolo ---
     void runInterval() {
       if (currentIntervalIndex >= fullWorkoutQueue.length) {
         service.invoke('update', {'status': 'completed'});
-        service.stopSelf();
         return;
       }
 
       final interval = fullWorkoutQueue[currentIntervalIndex] as Map<String, dynamic>;
-      final int totalDuration = interval['duration'] as int;
-      remainingSeconds = totalDuration;
-      currentAudioHapticConfig = interval['audioHapticConfig'] as Map<String, dynamic>;
-
-      final bool isLastInterval = (currentIntervalIndex == fullWorkoutQueue.length - 1);
-      final String title = interval['title'] as String;
-      final String? notes = interval['notes'] as String?;
-
-      triggerHardwareFeedback('start');
+      currentIntervalDuration = interval['duration'] as int;
+      intervalStartTime = DateTime.now();
 
       ticker?.cancel();
-      ticker = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (isPaused) return;
+      ticker = Timer.periodic(const Duration(seconds: 1), (t) {
+        sendFullStatus(); // Invio stato aggiornato
+      });
+    }
 
-        remainingSeconds--;
-        final double progress = (totalDuration > 0) ? (totalDuration - remainingSeconds) / totalDuration : 1.0;
-
-        if (remainingSeconds <= 0) {
-          timer.cancel();
-          triggerHardwareFeedback('end');
-          currentIntervalIndex++;
-          runInterval();
-          return;
-        }
-
-        service.invoke('update', {
-          'remainingSeconds': remainingSeconds,
-          'intervalProgress': progress,
-          'isLastInterval': isLastInterval,
-          'currentIntervalIndex': currentIntervalIndex,
-          'title': title,
-          'notes': notes,
-          'status': 'running'
-        });
-
-        _updateNotification(localNotifications, title, _formatTime(remainingSeconds), notes);
+    void runStopwatch() {
+      stopwatchStartTime = DateTime.now();
+      ticker?.cancel();
+      ticker = Timer.periodic(const Duration(milliseconds: 50), (t) {
+        sendFullStatus(); // Invio stato alta frequenza
       });
     }
 
     // --- Listeners Comandi ---
-    service.on('startFullWorkout').listen((event) async {
-      if (event == null) return;
-      final prefs = await SharedPreferences.getInstance();
-      soundEnabled = prefs.getBool('soundEnabled') ?? true;
-      hapticEnabled = prefs.getBool('hapticFeedback') ?? true;
-      fullWorkoutQueue = event['queue'] as List<dynamic>? ?? [];
+    service.on('startFullWorkout').listen((event) {
+      isStopwatchMode = false;
+      fullWorkoutQueue = event?['queue'] as List<dynamic>? ?? [];
       currentIntervalIndex = 0;
-      isPaused = false;
       runInterval();
     });
 
-    service.on('pause').listen((_) => isPaused = true);
-    service.on('resume').listen((_) => isPaused = false);
+    service.on('startStopwatch').listen((_) {
+      isStopwatchMode = true;
+      lapTimes = [];
+      runStopwatch();
+    });
+
+    service.on('lapStopwatch').listen((_) {
+      if (stopwatchStartTime != null) {
+        final lap = DateTime.now().difference(stopwatchStartTime!).inMilliseconds;
+        lapTimes.add(lap);
+      }
+    });
+
+    service.on('requestStatus').listen((_) {
+      sendFullStatus();
+    });
+
     service.on('stop').listen((_) {
       ticker?.cancel();
-      audioPlayer.dispose();
       service.stopSelf();
     });
-  }
 
-  // --- Funzioni Utility ---
-  static void _updateNotification(FlutterLocalNotificationsPlugin notifications, String title, String content, String? notes) {
-    notifications.show(
-      id: notificationId,
-      title: title.toUpperCase(),
-      body: (notes != null && notes.isNotEmpty) ? '$content\n📌 $notes' : content,
-      notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails(
-            channelId, 'ELAND Athletic Timer',
-            channelDescription: 'Timer Notifications',
-            ongoing: true, importance: Importance.max, priority: Priority.high,
-            icon: '@mipmap/launcher_icon'
-        ),
-        iOS: DarwinNotificationDetails(presentAlert: true, presentSound: false),
-      ),
-    );
-  }
-
-  static String _formatTime(int totalSeconds) {
-    final s = totalSeconds.abs();
-    return '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';
+    print('[BS] Service Ready');
+    service.invoke('serviceReady', {});
   }
 }

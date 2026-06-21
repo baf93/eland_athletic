@@ -8,16 +8,27 @@ class WorkoutGenerator {
     final List<WorkoutInterval> finalQueue = sessionConfigs
         .asMap()
         .entries
-        .expand((entry) => entry.value.toIntervals(entry.key + 1, totalPhases))
-        .toList();
+        .expand((entry) {
+      final int currentIndex = entry.key;
+      final int nextIndex = currentIndex + 1;
 
-    return _linkNextIntervals(finalQueue);
-  }
+      final bool hasNext = nextIndex < sessionConfigs.length;
 
-  List<WorkoutInterval> _linkNextIntervals(List<WorkoutInterval> queue) {
-    for (int i = 0; i < queue.length - 1; i++) {
-      queue[i] = queue[i].copyWith(nextIntervalTitle: queue[i + 1].title);
-    }
-    return queue;
+      final String nextTitle = hasNext
+          ? sessionConfigs[nextIndex].phaseTitle
+          : "";
+      final String nextSetting = hasNext
+          ? sessionConfigs[nextIndex].phaseSetting
+          : "";
+
+      return entry.value.toIntervals(
+          currentIndex + 1,
+          totalPhases,
+          nextTitle,
+          nextSetting
+      );
+    }).toList();
+
+    return finalQueue;
   }
 }

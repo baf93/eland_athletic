@@ -10,13 +10,10 @@ class TimerNotifier extends Notifier<TimerState> {
 
   @override
   TimerState build() {
-
-    ref.onDispose(() {
-      _serviceSubscription?.cancel();
-    });
-
+    ref.onDispose(() => _serviceSubscription?.cancel());
     _listenToBackgroundService();
-
+    // Richiediamo lo stato iniziale appena il provider viene creato
+    _backgroundService.invoke('requestStatus');
     return TimerState.initial();
   }
 
@@ -24,62 +21,19 @@ class TimerNotifier extends Notifier<TimerState> {
     _serviceSubscription = _backgroundService.on('update').listen((event) {
       if (event == null) return;
 
-      TimerStatus status;
-      switch (event['status'] as String? ?? 'idle') {
-        case 'running': status = TimerStatus.running; break;
-        case 'paused': status = TimerStatus.paused; break;
-        case 'completed': status = TimerStatus.completed; break;
-        default: status = TimerStatus.idle;
-      }
+      final statusString = event['status'] as String? ?? 'idle';
+      final status = TimerStatus.values.firstWhere(
+            (e) => e.name == statusString,
+        orElse: () => TimerStatus.idle,
+      );
 
       state = state.copyWith(
-        remainingSeconds: event['remainingSeconds'] as int? ?? 0,
-        elapsedSeconds: event['elapsedSeconds'] as int? ?? 0,
+        remainingSeconds: event['remainingSeconds'] as int? ?? state.remainingSeconds,
+        intervalProgress: event['intervalProgress'] as double? ?? state.intervalProgress,
+        currentIntervalTitle: event['title'] as String? ?? state.currentIntervalTitle,
         status: status,
-        currentIntervalTitle: event['title'] as String? ?? '',
-        currentIntervalNotes: event['notes'] as String?,
       );
     });
-  }
-
-  Future<void> startWorkout({
-    required int durationSeconds,
-    required CountingDirection direction,
-    required String title,
-    String? notes,
-  }) async {
-    final isRunning = await _backgroundService.isRunning();
-    if (!isRunning) {
-      await _backgroundService.startService();
-    }
-
-    _backgroundService.invoke('start', {
-      'remainingSeconds': durationSeconds,
-      'elapsedSeconds': 0,
-      'direction': direction == CountingDirection.down ? 'down' : 'up',
-      'title': title,
-      'notes': notes,
-      'audioHapticConfig': {
-        'start': {'audio': 'beep_long', 'haptic': 'double'},
-        'half': {'audio': 'beep_short', 'haptic': 'single'},
-        'tenSec': {'audio': 'beep_short', 'haptic': 'single'},
-        'countdown': {'audio': 'beep_short', 'haptic': 'single'},
-        'end': {'audio': 'beep_long', 'haptic': 'double'},
-      }
-    });
-  }
-
-  void pause() {
-    _backgroundService.invoke('pause');
-  }
-
-  void resume() {
-    _backgroundService.invoke('resume');
-  }
-
-  void stop() {
-    _backgroundService.invoke('stop');
-    state = TimerState.initial();
   }
 }
 

@@ -1,37 +1,50 @@
+import 'package:eland_athletic/common/strings.dart';
+
 import 'workout_interval.dart';
 import 'timer_enums.dart';
 
-// --- DEFINIZIONE DELL'ENUM (Ora presente e visibile) ---
 
-
+/// --- Abstract Workout Config class
 abstract class WorkoutConfig {
   final TimerType phaseType;
-  const WorkoutConfig({required this.phaseType});
+  final String phaseTitle;
+  final String phaseSetting;
+  const WorkoutConfig({
+    required this.phaseType,
+    required this.phaseTitle,
+    required this.phaseSetting,
+  });
 
-  /// Trasforma la configurazione in una lista di intervalli.
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases);
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings);
 }
 
+/// --- Implementation of real classes
+/// TODO: Gestire le configurazioni dell'audio e del feedback aptico
+/// +++ EMOM
 class EMOMConfig extends WorkoutConfig {
   final int totalMinutes;
-  EMOMConfig({required this.totalMinutes}) : super(phaseType: TimerType.emom);
+  EMOMConfig({required this.totalMinutes, required String phaseTitle, required String phaseSetting})
+      : super(phaseType: TimerType.emom, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
     return List.generate(totalMinutes, (i) => WorkoutInterval(
       id: "emom_${DateTime.now().microsecondsSinceEpoch}_$i",
-      title: "EMOM",
+      title: ElandStrings.of('timer_emom').toUpperCase(),
       durationSeconds: 60,
       type: IntervalType.work,
       sourcePhase: phaseType,
-      currentPhase: currentPhase,
-      totalPhases: totalPhases,
       currentRound: i + 1,
       totalRounds: totalMinutes,
+      currentPhase: currentPhase,
+      totalPhases: totalPhases,
+      nextPhaseTitle: nextPhaseTitle,
+      nextPhaseSettings: nextPhaseSettings,
     ));
   }
 }
-
+// TODO: from here
+/// +++ TABATA
 class TabataConfig extends WorkoutConfig {
   final int workSeconds, restSeconds, roundsPerSet, totalSets, restBetweenSetsSeconds;
   TabataConfig({
@@ -39,11 +52,13 @@ class TabataConfig extends WorkoutConfig {
     required this.restSeconds,
     required this.roundsPerSet,
     required this.totalSets,
-    required this.restBetweenSetsSeconds
-  }) : super(phaseType: TimerType.tabata);
+    required this.restBetweenSetsSeconds,
+    required String phaseTitle,
+    required String phaseSetting
+  }) : super(phaseType: TimerType.tabata, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
     List<WorkoutInterval> intervals = [];
     for (int set = 1; set <= totalSets; set++) {
       for (int round = 1; round <= roundsPerSet; round++) {
@@ -57,6 +72,8 @@ class TabataConfig extends WorkoutConfig {
           totalPhases: totalPhases,
           currentRound: round,
           totalRounds: roundsPerSet,
+          nextPhaseTitle: nextPhaseTitle,
+          nextPhaseSettings: nextPhaseSettings,
         ));
         intervals.add(WorkoutInterval(
           id: "tabata_rest_${set}_$round",
@@ -68,6 +85,8 @@ class TabataConfig extends WorkoutConfig {
           totalPhases: totalPhases,
           currentRound: round,
           totalRounds: roundsPerSet,
+          nextPhaseTitle: nextPhaseTitle,
+          nextPhaseSettings: nextPhaseSettings,
         ));
       }
     }
@@ -77,10 +96,14 @@ class TabataConfig extends WorkoutConfig {
 
 class AMRAPConfig extends WorkoutConfig {
   final int totalMinutes;
-  AMRAPConfig({required this.totalMinutes}) : super(phaseType: TimerType.amrap);
+  AMRAPConfig({
+    required this.totalMinutes,
+    required String phaseTitle,
+    required String phaseSetting
+  }) : super(phaseType: TimerType.amrap, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
     return [WorkoutInterval(
       id: "amrap_${DateTime.now().microsecondsSinceEpoch}",
       title: "AMRAP",
@@ -91,16 +114,19 @@ class AMRAPConfig extends WorkoutConfig {
       totalPhases: totalPhases,
       currentRound: 1,
       totalRounds: 1,
+      nextPhaseTitle: nextPhaseTitle,
+      nextPhaseSettings: nextPhaseSettings,
     )];
   }
 }
 
 class ForTimeConfig extends WorkoutConfig {
   final int totalMinutes;
-  ForTimeConfig({required this.totalMinutes}) : super(phaseType: TimerType.fortime);
+  ForTimeConfig({required this.totalMinutes, required String phaseTitle, required String phaseSetting})
+      : super(phaseType: TimerType.fortime, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
     return [WorkoutInterval(
       id: "fortime_${DateTime.now().microsecondsSinceEpoch}",
       title: "FOR TIME",
@@ -111,16 +137,19 @@ class ForTimeConfig extends WorkoutConfig {
       totalPhases: totalPhases,
       currentRound: 1,
       totalRounds: 1,
+      nextPhaseTitle: nextPhaseTitle,
+      nextPhaseSettings: nextPhaseSettings,
     )];
   }
 }
 
 class CountdownConfig extends WorkoutConfig {
   final int minutes, seconds;
-  CountdownConfig({required this.minutes, required this.seconds}) : super(phaseType: TimerType.countdown);
+  CountdownConfig({required this.minutes, required this.seconds, required String phaseTitle, required String phaseSetting})
+      : super(phaseType: TimerType.countdown, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
     return [WorkoutInterval(
       id: "countdown_${DateTime.now().microsecondsSinceEpoch}",
       title: "COUNTDOWN",
@@ -131,35 +160,19 @@ class CountdownConfig extends WorkoutConfig {
       totalPhases: totalPhases,
       currentRound: 1,
       totalRounds: 1,
-    )];
-  }
-}
-
-class StopwatchConfig extends WorkoutConfig {
-  StopwatchConfig() : super(phaseType: TimerType.stopwatch);
-
-  @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
-    return [WorkoutInterval(
-      id: "stopwatch_${DateTime.now().microsecondsSinceEpoch}",
-      title: "STOPWATCH",
-      durationSeconds: 0,
-      type: IntervalType.work,
-      sourcePhase: phaseType,
-      currentPhase: currentPhase,
-      totalPhases: totalPhases,
-      currentRound: 1,
-      totalRounds: 1,
+      nextPhaseTitle: nextPhaseTitle,
+      nextPhaseSettings: nextPhaseSettings,
     )];
   }
 }
 
 class RestConfig extends WorkoutConfig {
   final int durationSeconds;
-  RestConfig({required this.durationSeconds}) : super(phaseType: TimerType.rest);
+  RestConfig({required this.durationSeconds, required String phaseTitle, required String phaseSetting})
+      : super(phaseType: TimerType.rest, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
     return [WorkoutInterval(
       id: "rest_${DateTime.now().microsecondsSinceEpoch}",
       title: "RIPOSO",
@@ -170,6 +183,8 @@ class RestConfig extends WorkoutConfig {
       totalPhases: totalPhases,
       currentRound: 1,
       totalRounds: 1,
+      nextPhaseTitle: nextPhaseTitle,
+      nextPhaseSettings: nextPhaseSettings,
     )];
   }
 }
