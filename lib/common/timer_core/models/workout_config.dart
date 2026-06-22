@@ -1,7 +1,7 @@
 import 'package:eland_athletic/common/strings.dart';
 
 import 'workout_interval.dart';
-import 'timer_enums.dart';
+import 'timercore_enums.dart';
 
 
 /// --- Abstract Workout Config class
@@ -9,10 +9,14 @@ abstract class WorkoutConfig {
   final TimerType phaseType;
   final String phaseTitle;
   final String phaseSetting;
+  final String workoutTitle;
+  final String workoutId;
   const WorkoutConfig({
     required this.phaseType,
     required this.phaseTitle,
     required this.phaseSetting,
+    required this.workoutTitle,
+    required this.workoutId,
   });
 
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings);
@@ -23,8 +27,8 @@ abstract class WorkoutConfig {
 /// +++ EMOM
 class EMOMConfig extends WorkoutConfig {
   final int totalMinutes;
-  EMOMConfig({required this.totalMinutes, required String phaseTitle, required String phaseSetting})
-      : super(phaseType: TimerType.emom, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
+  EMOMConfig({required this.totalMinutes, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId})
+      : super(phaseType: TimerType.emom, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId);
 
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
@@ -40,6 +44,8 @@ class EMOMConfig extends WorkoutConfig {
       totalPhases: totalPhases,
       nextPhaseTitle: nextPhaseTitle,
       nextPhaseSettings: nextPhaseSettings,
+      workoutId: workoutId,
+      workoutTitle: workoutTitle
     ));
   }
 }
@@ -54,8 +60,10 @@ class TabataConfig extends WorkoutConfig {
     required this.totalSets,
     required this.restBetweenSetsSeconds,
     required String phaseTitle,
-    required String phaseSetting
-  }) : super(phaseType: TimerType.tabata, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
+    required String phaseSetting,
+    required String workoutTitle,
+    required String workoutId,
+  }) : super(phaseType: TimerType.tabata, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId);
 
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
@@ -74,6 +82,8 @@ class TabataConfig extends WorkoutConfig {
           totalRounds: roundsPerSet,
           nextPhaseTitle: nextPhaseTitle,
           nextPhaseSettings: nextPhaseSettings,
+          workoutTitle: workoutTitle,
+          workoutId: workoutId
         ));
         intervals.add(WorkoutInterval(
           id: "tabata_rest_${set}_$round",
@@ -87,6 +97,8 @@ class TabataConfig extends WorkoutConfig {
           totalRounds: roundsPerSet,
           nextPhaseTitle: nextPhaseTitle,
           nextPhaseSettings: nextPhaseSettings,
+          workoutId: workoutId,
+          workoutTitle: workoutTitle
         ));
       }
     }
@@ -99,8 +111,10 @@ class AMRAPConfig extends WorkoutConfig {
   AMRAPConfig({
     required this.totalMinutes,
     required String phaseTitle,
-    required String phaseSetting
-  }) : super(phaseType: TimerType.amrap, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
+    required String phaseSetting,
+    required String workoutTitle,
+    required String workoutId,
+  }) : super(phaseType: TimerType.amrap, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId);
 
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
@@ -116,14 +130,16 @@ class AMRAPConfig extends WorkoutConfig {
       totalRounds: 1,
       nextPhaseTitle: nextPhaseTitle,
       nextPhaseSettings: nextPhaseSettings,
+      workoutTitle: workoutTitle,
+      workoutId: workoutId
     )];
   }
 }
 
 class ForTimeConfig extends WorkoutConfig {
   final int totalMinutes;
-  ForTimeConfig({required this.totalMinutes, required String phaseTitle, required String phaseSetting})
-      : super(phaseType: TimerType.fortime, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
+  ForTimeConfig({required this.totalMinutes, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId})
+      : super(phaseType: TimerType.fortime, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId);
 
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
@@ -139,14 +155,16 @@ class ForTimeConfig extends WorkoutConfig {
       totalRounds: 1,
       nextPhaseTitle: nextPhaseTitle,
       nextPhaseSettings: nextPhaseSettings,
+      workoutTitle: workoutTitle,
+      workoutId: workoutId
     )];
   }
 }
 
 class CountdownConfig extends WorkoutConfig {
   final int minutes, seconds;
-  CountdownConfig({required this.minutes, required this.seconds, required String phaseTitle, required String phaseSetting})
-      : super(phaseType: TimerType.countdown, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
+  CountdownConfig({required this.minutes, required this.seconds, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId})
+      : super(phaseType: TimerType.countdown, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId);
 
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
@@ -162,14 +180,16 @@ class CountdownConfig extends WorkoutConfig {
       totalRounds: 1,
       nextPhaseTitle: nextPhaseTitle,
       nextPhaseSettings: nextPhaseSettings,
+      workoutTitle: workoutTitle,
+      workoutId: workoutId
     )];
   }
 }
 
 class RestConfig extends WorkoutConfig {
   final int durationSeconds;
-  RestConfig({required this.durationSeconds, required String phaseTitle, required String phaseSetting})
-      : super(phaseType: TimerType.rest, phaseTitle: phaseTitle, phaseSetting: phaseSetting);
+  RestConfig({required this.durationSeconds, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId})
+      : super(phaseType: TimerType.rest, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId);
 
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
@@ -185,6 +205,8 @@ class RestConfig extends WorkoutConfig {
       totalRounds: 1,
       nextPhaseTitle: nextPhaseTitle,
       nextPhaseSettings: nextPhaseSettings,
+      workoutTitle: workoutTitle,
+      workoutId: workoutId
     )];
   }
 }

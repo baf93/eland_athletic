@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../workout_controller.dart';
+import '../controllers/workout_controller.dart';
 import '../../providers/timer_provider.dart';
-import '../model/timer_enums.dart';
+import '../models/timercore_enums.dart';
 
 class WorkoutPage extends ConsumerWidget {
   const WorkoutPage({super.key});

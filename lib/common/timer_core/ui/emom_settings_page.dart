@@ -1,7 +1,8 @@
+import 'package:eland_athletic/user_app/timer_core/models/workout_phase_summary.dart';
 import 'package:flutter/material.dart';
 import '../generators/workout_generator.dart';
-import '../workout_controller.dart';
-import '../model/workout_config.dart';
+import '../controllers/workout_controller.dart';
+import '../models/workout_config.dart';
 import 'workout_page.dart';
 import '../../../common/strings.dart';
 import '../../../common/widgets/timer_setting_selector.dart';
@@ -20,13 +21,14 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
   void _startWorkout() {
 
     final List<WorkoutConfig> configs = [
-      EMOMConfig(totalMinutes: _totalMinutes, phaseTitle: ElandStrings.of('timer_emom').toUpperCase(), phaseSetting: '${_totalMinutes} min' ),
+      EMOMConfig(workoutTitle: ElandStrings.of('timer_emom').toUpperCase(), workoutId: 'emom_qt', totalMinutes: _totalMinutes, phaseTitle: ElandStrings.of('timer_emom').toUpperCase(), phaseSetting: '${_totalMinutes} min' ),
     ];
 
     final generator = WorkoutGenerator();
     final workout = generator.generate(configs);
+    final List<WorkoutPhaseSummary> uiPhaseSummary = generator.generateUIPhaseSummary(configs);
 
-    WorkoutController.instance.launchWorkout(workout);
+    WorkoutController.instance.launchWorkout(workout, uiPhaseSummary);
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => const WorkoutPage()));
   }
 

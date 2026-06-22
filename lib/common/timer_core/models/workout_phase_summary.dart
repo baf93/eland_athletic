@@ -8,4 +8,10 @@ class WorkoutPhaseSummary {
     required this.details,
     this.isCompleted = false
   });
+
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'details': details,
+    'isCompleted': isCompleted,
+  };
 }

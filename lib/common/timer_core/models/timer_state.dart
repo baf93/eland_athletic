@@ -1,4 +1,4 @@
-import 'timer_enums.dart';
+import 'timercore_enums.dart';
 import 'workout_phase_summary.dart';
 
 class TimerState {
@@ -8,12 +8,13 @@ class TimerState {
   final String? currentIntervalNotes;
   final IntervalType intervalType;
   final TimerType timerType;
-  final List<WorkoutPhaseSummary> workoutPhaseSummary; //Da capire come aggiornarlo dal background service...
+  final List<WorkoutPhaseSummary> workoutPhaseSummary;
   final int currentPhaseIndex;
   final int totalPhases;
   final String workoutTitle;
   final bool isLastPhase;
   final double intervalProgress;
+  final String workoutId;
 
   const TimerState({
     required this.remainingSeconds,
@@ -28,12 +29,13 @@ class TimerState {
     required this.workoutTitle,
     required this.isLastPhase,
     required this.intervalProgress,
+    required this.workoutId,
   });
 
   factory TimerState.initial() {
     return const TimerState(
       remainingSeconds: 0,
-      status: TimerStatus.idle,
+      status: TimerStatus.paused,
       currentIntervalTitle: '',
       currentIntervalNotes: null,
       intervalType: IntervalType.work,
@@ -44,6 +46,7 @@ class TimerState {
       workoutTitle: '',
       isLastPhase: false,
       intervalProgress: 0,
+      workoutId: '',
     );
   }
 
@@ -60,6 +63,7 @@ class TimerState {
     String? workoutTitle,
     bool? isLastPhase,
     double? intervalProgress,
+    String? workoutId,
   }) {
     return TimerState(
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
@@ -74,6 +78,7 @@ class TimerState {
       workoutTitle: workoutTitle ?? this.workoutTitle,
       isLastPhase: isLastPhase ?? this.isLastPhase,
       intervalProgress: intervalProgress ?? this.intervalProgress,
+      workoutId: workoutId ?? this.workoutId,
     );
   }
 }

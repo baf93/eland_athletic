@@ -1,5 +1,6 @@
+import 'package:eland_athletic/user_app/timer_core/models/workout_phase_summary.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'model/workout_interval.dart';
+import '../models/workout_interval.dart';
 import 'dart:async';
 
 class WorkoutController {
@@ -9,7 +10,7 @@ class WorkoutController {
 
   final FlutterBackgroundService _service = FlutterBackgroundService();
 
-  Future<void> launchWorkout(List<WorkoutInterval> queue) async {
+  Future<void> launchWorkout(List<WorkoutInterval> queue, List<WorkoutPhaseSummary> uiPhaseSummary) async {
 
     if (!await _service.isRunning()) {
       print(" [+] Staring new service");
@@ -31,8 +32,9 @@ class WorkoutController {
     }
 
     final List<Map<String, dynamic>> jsonQueue = queue.map((interval) => interval.toJson()).toList();
+    final List<Map<String, dynamic>> jsonUiPhaseList = uiPhaseSummary.map((phase) => phase.toJson()).toList();
 
-    _service.invoke('startFullWorkout', {'queue': jsonQueue});
+    _service.invoke('startFullWorkout', {'queue': jsonQueue, 'uiPhaseList': jsonUiPhaseList});
   }
 
   void pauseWorkout() {

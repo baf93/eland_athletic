@@ -1,4 +1,4 @@
-import 'timer_enums.dart';
+import 'timercore_enums.dart';
 import 'interval_audio_haptic_config.dart';
 
 class WorkoutInterval {
@@ -19,6 +19,8 @@ class WorkoutInterval {
   final int totalRounds;
   final String? nextPhaseTitle;
   final String? nextPhaseSettings;
+  final String? workoutTitle;
+  final String? workoutId;
 
   const WorkoutInterval({
     required this.id,
@@ -35,6 +37,8 @@ class WorkoutInterval {
     required this.totalRounds,
     this.nextPhaseTitle,
     this.nextPhaseSettings,
+    this.workoutTitle,
+    this.workoutId
   });
 
   WorkoutInterval copyWith({String? nextPhaseTitle, String? nextPhaseSettings}) {
@@ -53,6 +57,8 @@ class WorkoutInterval {
       totalRounds: totalRounds,
       nextPhaseTitle: nextPhaseTitle ?? this.nextPhaseTitle,
       nextPhaseSettings: nextPhaseSettings ?? this.nextPhaseSettings,
+      workoutTitle:  workoutTitle,
+      workoutId: workoutId
     );
   }
 
@@ -72,5 +78,7 @@ class WorkoutInterval {
     'nextPhaseSettings': nextPhaseSettings,
     'audioConfig': audioConfig.toJson(),
     'hapticConfig': hapticConfig.toJson(),
+    'workoutTitle': workoutTitle,
+    'workoutId': workoutId
   };
 }

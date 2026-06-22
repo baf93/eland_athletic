@@ -1,5 +1,7 @@
-import '../model/workout_interval.dart';
-import '../model/workout_config.dart';
+import 'package:eland_athletic/user_app/timer_core/models/workout_phase_summary.dart';
+
+import '../models/workout_interval.dart';
+import '../models/workout_config.dart';
 
 class WorkoutGenerator {
   List<WorkoutInterval> generate(List<WorkoutConfig> sessionConfigs) {
@@ -30,5 +32,15 @@ class WorkoutGenerator {
     }).toList();
 
     return finalQueue;
+  }
+
+  List<WorkoutPhaseSummary> generateUIPhaseSummary(List<WorkoutConfig> sessionConfigs) {
+    return sessionConfigs.map((config) {
+      return WorkoutPhaseSummary(
+        title: config.phaseTitle,
+        details: config.phaseSetting,
+        isCompleted: false,
+      );
+    }).toList();
   }
 }

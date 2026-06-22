@@ -1,4 +1,4 @@
-import 'timer_enums.dart';
+import 'timercore_enums.dart';
 
 /// TODO: Capire se serve veramente la classe o le configurazioni dell'audio e del feedback aptico le mettiamo nella workout_config.dart
 
