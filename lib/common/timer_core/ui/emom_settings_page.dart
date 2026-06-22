@@ -1,9 +1,9 @@
-import 'package:eland_athletic/user_app/timer_core/models/workout_phase_summary.dart';
 import 'package:flutter/material.dart';
 import '../generators/workout_generator.dart';
 import '../controllers/workout_controller.dart';
 import '../models/workout_config.dart';
-import 'workout_page.dart';
+import 'workout_debug_page.dart';
+import '../models/workout_phase_summary.dart';
 import '../../../common/strings.dart';
 import '../../../common/widgets/timer_setting_selector.dart';
 

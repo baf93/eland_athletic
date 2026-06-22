@@ -9,7 +9,7 @@ import 'user_app/nutri_page.dart';
 import 'user_app/pt_page.dart';
 import 'common/strings.dart';
 import 'user_app/providers/settings_provider.dart';
-import 'user_app/timer_core/service/timer_background_service.dart';
+import 'common/timer_core/service/timer_background_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

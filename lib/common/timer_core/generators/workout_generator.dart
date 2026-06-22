@@ -1,7 +1,6 @@
-import 'package:eland_athletic/user_app/timer_core/models/workout_phase_summary.dart';
-
 import '../models/workout_interval.dart';
 import '../models/workout_config.dart';
+import '../models/workout_phase_summary.dart';
 
 class WorkoutGenerator {
   List<WorkoutInterval> generate(List<WorkoutConfig> sessionConfigs) {

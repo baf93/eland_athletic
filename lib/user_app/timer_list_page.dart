@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../common/strings.dart';
 import '../common/widgets/timer_row_item.dart';
-import 'timer_core/ui/emom_settings_page.dart';
+import '../common/timer_core/ui/emom_settings_page.dart';
 
 class TimerListPage extends StatelessWidget {
   const TimerListPage({super.key});

@@ -1,6 +1,6 @@
-import 'package:eland_athletic/user_app/timer_core/models/workout_phase_summary.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import '../models/workout_interval.dart';
+import '../models/workout_phase_summary.dart';
 import 'dart:async';
 
 class WorkoutController {
