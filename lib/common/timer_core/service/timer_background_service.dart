@@ -87,7 +87,7 @@ class TimerBackgroundService {
     List<int> lapTimes = [];
     int currentIntervalIndex = 0;
     bool isLastPhase = false;
-    double intervalProgress = 0;
+    double intervalProgress = 0.0;
     int stopWatchAccumulatedMs = 0;
 
 
@@ -308,5 +308,7 @@ class TimerBackgroundService {
         service.invoke('uiUpdate', {'lapTimes': lapTimes});
       }
     });
+
+    service.invoke('serviceReady');
   }
 }

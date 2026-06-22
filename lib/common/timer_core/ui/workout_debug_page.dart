@@ -17,6 +17,8 @@ class WorkoutPage extends ConsumerWidget {
     final timerState = ref.watch(timerProvider);
     final colorScheme = Theme.of(context).colorScheme;
 
+    WorkoutController.instance.requestStatus();
+
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
@@ -38,17 +40,23 @@ class WorkoutPage extends ConsumerWidget {
               title: const Text("Dati TimerState (Debug)"),
               subtitle: const Text("Espandi per vedere lo stato completo"),
               children: [
-                _buildDebugRow("Status", timerState.status.name),
                 _buildDebugRow("Workout ID", timerState.workoutId),
-                _buildDebugRow("Title", timerState.workoutTitle),
+                _buildDebugRow("Workout Title", timerState.workoutTitle),
+                _buildDebugRow("Status", timerState.status.name),
+                _buildDebugRow("Remaining Seconds", timerState.remainingSeconds.toString()),
                 _buildDebugRow("Phase", "${timerState.currentPhaseIndex + 1}/${timerState.totalPhases}"),
                 _buildDebugRow("Is Last Phase", timerState.isLastPhase.toString()),
                 _buildDebugRow("Interval Type", timerState.intervalType.name),
                 _buildDebugRow("Timer Type", timerState.timerType.name),
                 _buildDebugRow("Progress", (timerState.intervalProgress * 100).toStringAsFixed(1) + "%"),
+                _buildDebugRow("Current Interval Title", timerState.currentIntervalTitle),
                 _buildDebugRow("Notes", timerState.currentIntervalNotes ?? "N/A"),
+                _buildDebugRow("Workout Phase Summary", timerState.workoutPhaseSummary.toString())
               ],
             ),
+
+
+
 
             const SizedBox(height: 40),
 

@@ -13,8 +13,6 @@ class TimerNotifier extends Notifier<TimerState> {
   TimerState build() {
     ref.onDispose(() => _serviceSubscription?.cancel());
     _listenToBackgroundService();
-
-    WorkoutController.instance.requestStatus();
     return TimerState.initial();
   }
 
@@ -40,6 +38,7 @@ class TimerNotifier extends Notifier<TimerState> {
         orElse: () => IntervalType.preparation,
       );
 
+      // TODO:
       //         'workoutPhaseSummary': uiPhaseList,
       //   final List<WorkoutPhaseSummary> workoutPhaseSummary;
 
