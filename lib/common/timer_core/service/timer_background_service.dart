@@ -11,17 +11,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 class TimerBackgroundService {
   static const String channelId = 'eland_notification_channel';
   static const int notificationId = 102;
+  static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   /// Initialization of the notification channel and background service
   static Future<void> initialize() async {
-    print("[BS] [+] Service initializing");
     final service = FlutterBackgroundService();
     const AndroidNotificationChannel notificationChannel = AndroidNotificationChannel(
       channelId,
       'ELAND notification channel',
       description: 'This channel is used for ELAND notifications',
-      importance: Importance.low,
+      importance: Importance.high,
       playSound: false,
+      enableVibration: false,
     );
 
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -53,8 +54,8 @@ class TimerBackgroundService {
         android: AndroidNotificationDetails(
           channelId,
           'ELAND notification channel',
-          importance: Importance.low,
-          priority: Priority.low,
+          importance: Importance.defaultImportance,
+          priority: Priority.high,
           ongoing: true,
           showWhen: false,
           onlyAlertOnce: true,
@@ -62,6 +63,7 @@ class TimerBackgroundService {
         ),
         iOS: DarwinNotificationDetails(presentAlert: true, presentSound: false),
       ),
+      payload: 'open_workout_page'
     );
   }
 
@@ -72,7 +74,6 @@ class TimerBackgroundService {
 
   @pragma('vm:entry-point')
   static void onStart(ServiceInstance service) async {
-    print('[BS] [+] Service start');
 
     // --- Variables for Internal status
     bool isPaused = false;
@@ -82,6 +83,7 @@ class TimerBackgroundService {
     List<dynamic> uiPhaseList = [];
     bool soundEnabled = true;
     bool hapticEnabled = true;
+    bool notificationEnabled = false;
     bool stopWatchMode = false;
     int remainingSeconds = 0;
     List<int> lapTimes = [];
@@ -152,6 +154,7 @@ class TimerBackgroundService {
       // I'm at the end of the workout
       if(currentIntervalIndex >= intervalQueue.length){
         service.invoke('uiUpdate', {'status': 'completed', 'remainingSeconds': 0, 'intervalProgress': 1.0});
+        flutterLocalNotificationsPlugin.cancel(id: notificationId);
         ticker?.cancel();
         service.stopSelf();
         return;
@@ -178,15 +181,16 @@ class TimerBackgroundService {
 
         // End of interval. Next one
         if (remainingSeconds <= 0) {
-          print("[++++] LAUNCHING NEW INTERVAL");
           ticker?.cancel();
           ticker = null;
+          accumulatedMsDuringStop = 0;
           currentIntervalIndex++;
           runInterval();
           return;
         }
 
-        print("[BS] UI Update from BS");
+        if(notificationEnabled) _updateNotification(flutterLocalNotificationsPlugin, interval['title'], _formatDisplayTime(remainingSeconds));
+
         /// Update UI with new values
         service.invoke('uiUpdate', {
           'status': 'running',
@@ -214,7 +218,6 @@ class TimerBackgroundService {
     // --- Listeners for actions
     service.on('startFullWorkout').listen((event) async {
       if (event == null) return;
-      print('[BS] [+] Starting Full Workout');
 
       /// --- remove any previous timers
       ticker?.cancel();
@@ -226,12 +229,12 @@ class TimerBackgroundService {
       final prefs = await SharedPreferences.getInstance();
       soundEnabled = prefs.getBool('soundEnabled') ?? true;
       hapticEnabled = prefs.getBool('hapticFeedback') ?? true;
+      notificationEnabled = prefs.getBool('notifications') ?? false;
 
       intervalQueue = event['queue'] as List<dynamic>? ?? [];
       uiPhaseList = event['uiPhaseList'] as List<dynamic>? ?? [];
       isPaused = false;
       runInterval();
-      print('[BS] [+] Full Workout Started');
     });
 
     service.on('pause').listen((event){
@@ -286,6 +289,7 @@ class TimerBackgroundService {
 
     service.on('stop').listen((event){
       ticker?.cancel();
+      flutterLocalNotificationsPlugin.cancel(id: notificationId);
       audioPlayer.dispose();
       service.stopSelf();
     });

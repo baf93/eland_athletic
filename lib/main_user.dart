@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:eland_athletic/user_app/timer_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'common/theme.dart';
@@ -10,6 +11,10 @@ import 'user_app/pt_page.dart';
 import 'common/strings.dart';
 import 'user_app/providers/settings_provider.dart';
 import 'common/timer_core/service/timer_background_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'common/timer_core/ui/workout_debug_page.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +23,24 @@ void main() async {
   final SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
   final String savedLanguage = sharedPrefs.getString('language') ?? PlatformDispatcher.instance.locale.languageCode;
   ElandStrings.initLocale(savedLanguage);
+
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  await flutterLocalNotificationsPlugin.initialize(
+    settings:  InitializationSettings(android: AndroidInitializationSettings('@mipmap/launcher_icon')),
+    onDidReceiveNotificationResponse: (response) {
+      if (response.payload == 'open_workout_page') {
+        final List<String> routesToPush = ['/', '/timer_list', '/workout'];
+
+        // 3. Pulisci tutto lo stack esistente
+        navigatorKey.currentState?.popUntil((route) => false);
+
+        // 4. Spingi le rotte in sequenza
+        for (var routeName in routesToPush) {
+          navigatorKey.currentState?.pushNamed(routeName);
+        }
+      }
+    },
+  );
 
   await TimerBackgroundService.initialize();
 
@@ -45,6 +68,13 @@ class ElandUserApp extends ConsumerWidget {
     
     return MaterialApp(
       title: ElandStrings.of('app_name_user'),
+
+      // Set Route and navigatorkey for notification clicks
+      navigatorKey: navigatorKey,
+      routes: {
+        '/timer_list': (context) => const TimerListPage(),
+        '/workout': (context) => const WorkoutPage(),
+      },
 
       // Theme Injection
       theme: ElandTheme.lightTheme,
