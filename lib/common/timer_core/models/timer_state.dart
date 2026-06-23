@@ -15,6 +15,8 @@ class TimerState {
   final bool isLastPhase;
   final double intervalProgress;
   final String workoutId;
+  final int currentRound;
+  final int totalRound;
 
   const TimerState({
     required this.remainingSeconds,
@@ -30,6 +32,8 @@ class TimerState {
     required this.isLastPhase,
     required this.intervalProgress,
     required this.workoutId,
+    required this.currentRound,
+    required this.totalRound,
   });
 
   factory TimerState.initial() {
@@ -47,6 +51,8 @@ class TimerState {
       isLastPhase: false,
       intervalProgress: 0,
       workoutId: '',
+      currentRound: 1,
+      totalRound: 1,
     );
   }
 
@@ -64,6 +70,8 @@ class TimerState {
     bool? isLastPhase,
     double? intervalProgress,
     String? workoutId,
+    int? totalRound,
+    int? currentRound,
   }) {
     return TimerState(
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
@@ -79,6 +87,8 @@ class TimerState {
       isLastPhase: isLastPhase ?? this.isLastPhase,
       intervalProgress: intervalProgress ?? this.intervalProgress,
       workoutId: workoutId ?? this.workoutId,
+      currentRound: currentRound ?? this.currentRound,
+      totalRound: totalRound ?? this.totalRound,
     );
   }
 }

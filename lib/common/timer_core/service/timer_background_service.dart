@@ -88,7 +88,7 @@ class TimerBackgroundService {
     int currentIntervalIndex = 0;
     bool isLastPhase = false;
     double intervalProgress = 0.0;
-    int stopWatchAccumulatedMs = 0;
+    int accumulatedMsDuringStop = 0;
 
 
     // ---
@@ -110,6 +110,7 @@ class TimerBackgroundService {
     }
 
     void sendFullTimerStatus(){
+      if (intervalQueue.isEmpty) return;
       final interval = intervalQueue[currentIntervalIndex] as Map<String, dynamic>;
 
       service.invoke('uiUpdate', {
@@ -126,6 +127,8 @@ class TimerBackgroundService {
         'workoutTitle': interval['workoutTitle'] as String?,
         'workoutId': interval['workoutId'] as String?,
         'workoutPhaseSummary': uiPhaseList,
+        'currentRound': interval['currentRound'] as int,
+        'totalRound': interval['totalRound'] as int
       });
     }
 
@@ -137,7 +140,7 @@ class TimerBackgroundService {
     void runInterval(){
       // I'm at the end of the workout
       if(currentIntervalIndex >= intervalQueue.length){
-        service.invoke('uiUpdate', {'status': 'completed'});
+        service.invoke('uiUpdate', {'status': 'completed', 'remainingSeconds': 0, 'intervalProgress': 1.0});
         ticker?.cancel();
         service.stopSelf();
         return;
@@ -151,41 +154,33 @@ class TimerBackgroundService {
       isLastPhase = interval['currentPhase'] as int == interval['totalPhases'] as int;
 
       // Update UI with new Interval details
-      service.invoke('uiUpdate', {
-        'status': 'running',
-        'remainingSeconds': remainingSeconds,
-        'currentIntervalTitle': interval['title'],
-        'currentIntervalNotes': interval['notes'],
-        'intervalType': interval['type'],
-        'currentPhaseIndex': interval['currentPhase'] as int,
-        'totalPhases': interval['totalPhases'] as int,
-        'isLastPhase': isLastPhase,
-        'timerType': interval['sourcePhase'] as String,
-        'intervalProgress': 0.0,
-      });
+      sendFullTimerStatus();
 
       // Every Second update logic
       ticker = Timer.periodic(const Duration(seconds: 1), (t){
         if (isPaused) return;
 
-        final elapsed = DateTime.now().difference(timerStartTime!).inSeconds;
-        remainingSeconds = intervalDuration - elapsed;
-        final double progress = (intervalDuration > 0) ? (intervalDuration - remainingSeconds) / intervalDuration : 1.0;
+        final Duration elapsed = Duration(milliseconds: DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop);
+        remainingSeconds = Duration(seconds: intervalDuration - elapsed.inSeconds).inSeconds;
+        intervalProgress = (intervalDuration > 0) ? (intervalDuration - remainingSeconds) / intervalDuration : 1.0;
 
 
         // End of interval. Next one
         if (remainingSeconds <= 0) {
+          print("[++++] LAUNCHING NEW INTERVAL");
           ticker?.cancel();
+          ticker = null;
           currentIntervalIndex++;
           runInterval();
           return;
         }
 
+        print("[BS] UI Update from BS");
         /// Update UI with new values
         service.invoke('uiUpdate', {
           'status': 'running',
           'remainingSeconds': remainingSeconds,
-          'intervalProgress': progress,
+          'intervalProgress': intervalProgress,
         });
       });
     }
@@ -194,7 +189,7 @@ class TimerBackgroundService {
 
       ticker = Timer.periodic(const Duration(milliseconds: 50), (t) {
 
-        final Duration elapsed = Duration(milliseconds: DateTime.now().difference(timerStartTime!).inMilliseconds + stopWatchAccumulatedMs);
+        final Duration elapsed = Duration(milliseconds: DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop);
 
 
         service.invoke('uiUpdate', {
@@ -235,10 +230,13 @@ class TimerBackgroundService {
         ticker?.cancel();
         if (timerStartTime != null) {
           final Duration elapsed = DateTime.now().difference(timerStartTime!);
-          stopWatchAccumulatedMs += elapsed.inMilliseconds;
+          accumulatedMsDuringStop += elapsed.inMilliseconds;
           timerStartTime = null;
         }
       }else{
+        final Duration elapsed = DateTime.now().difference(timerStartTime!);
+        accumulatedMsDuringStop += elapsed.inMilliseconds;
+        timerStartTime = null;
         isPaused = true;
       }
       service.invoke('uiUpdate', {'status': 'paused'});
@@ -250,6 +248,7 @@ class TimerBackgroundService {
         timerStartTime = DateTime.now();
         runStopWatch();
       }else {
+        timerStartTime = DateTime.now();
         isPaused = false;
       }
       service.invoke('uiUpdate', {'status': 'running'});
@@ -262,7 +261,7 @@ class TimerBackgroundService {
       isPaused = true;
       timerStartTime = null;
       lapTimes = [];
-      stopWatchAccumulatedMs = 0;
+      accumulatedMsDuringStop = 0;
 
       service.invoke('uiUpdate', {
         'status': 'paused',
@@ -294,7 +293,7 @@ class TimerBackgroundService {
       intervalQueue = [];
       uiPhaseList = [];
       timerStartTime = null;
-      stopWatchAccumulatedMs = 0;
+      accumulatedMsDuringStop = 0;
 
       isPaused = false;
       runStopWatch();
@@ -302,7 +301,7 @@ class TimerBackgroundService {
 
     service.on('stopWatchLap').listen((event){
       if (timerStartTime != null) {
-        final lap = DateTime.now().difference(timerStartTime!).inMilliseconds + stopWatchAccumulatedMs;
+        final lap = DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop;
         lapTimes.add(lap);
         
         service.invoke('uiUpdate', {'lapTimes': lapTimes});

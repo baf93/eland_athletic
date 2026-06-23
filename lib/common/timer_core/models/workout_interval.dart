@@ -16,7 +16,7 @@ class WorkoutInterval {
   final int currentPhase;
   final int totalPhases;
   final int currentRound;
-  final int totalRounds;
+  final int totalRound;
   final String? nextPhaseTitle;
   final String? nextPhaseSettings;
   final String? workoutTitle;
@@ -34,7 +34,7 @@ class WorkoutInterval {
     required this.currentPhase,
     required this.totalPhases,
     required this.currentRound,
-    required this.totalRounds,
+    required this.totalRound,
     this.nextPhaseTitle,
     this.nextPhaseSettings,
     this.workoutTitle,
@@ -54,7 +54,7 @@ class WorkoutInterval {
       currentPhase: currentPhase,
       totalPhases: totalPhases,
       currentRound: currentRound,
-      totalRounds: totalRounds,
+      totalRound: totalRound,
       nextPhaseTitle: nextPhaseTitle ?? this.nextPhaseTitle,
       nextPhaseSettings: nextPhaseSettings ?? this.nextPhaseSettings,
       workoutTitle:  workoutTitle,
@@ -73,7 +73,7 @@ class WorkoutInterval {
     'currentPhase': currentPhase,
     'totalPhases': totalPhases,
     'currentRound': currentRound,
-    'totalRounds': totalRounds,
+    'totalRound': totalRound,
     'nextPhaseTitle': nextPhaseTitle,
     'nextPhaseSettings': nextPhaseSettings,
     'audioConfig': audioConfig.toJson(),

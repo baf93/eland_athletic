@@ -1,17 +1,26 @@
 class WorkoutPhaseSummary {
   final String title;
   final String details;
-  final bool isCompleted;
 
   const WorkoutPhaseSummary({
     required this.title,
     required this.details,
-    this.isCompleted = false
   });
+
+  factory WorkoutPhaseSummary.fromJson(Map<String, dynamic> json) {
+    return WorkoutPhaseSummary(
+      title: json['title'] as String,
+      details: json['details'] as String,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     'title': title,
     'details': details,
-    'isCompleted': isCompleted,
   };
+
+  @override
+  String toString() {
+    return '{title: $title, details: $details}';
+  }
 }

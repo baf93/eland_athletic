@@ -38,7 +38,6 @@ class WorkoutGenerator {
       return WorkoutPhaseSummary(
         title: config.phaseTitle,
         details: config.phaseSetting,
-        isCompleted: false,
       );
     }).toList();
   }
