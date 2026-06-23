@@ -42,10 +42,6 @@ class TimerNotifier extends Notifier<TimerState> {
         }
       }
 
-      // TODO:
-      //         'workoutPhaseSummary': uiPhaseList,
-      //   final List<WorkoutPhaseSummary> workoutPhaseSummary;
-
       print('EVENT: ${event}');
 
       state = state.copyWith(

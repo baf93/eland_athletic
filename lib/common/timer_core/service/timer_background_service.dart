@@ -134,6 +134,17 @@ class TimerBackgroundService {
 
     void sendFullStopWatchStatus(){
 
+      final Duration elapsed = Duration(milliseconds: DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop);
+
+
+      service.invoke('uiUpdate', {
+        'status': isPaused ? 'paused' : 'running',
+        'elapsedMilliseconds': elapsed.inMilliseconds % 1000,
+        'elapsedSeconds': elapsed.inSeconds % 60,
+        'elapsedMinutes': elapsed.inMinutes % 60,
+        'elapsedHours': elapsed.inHours,
+        'lapTimes': lapTimes
+      });
     }
 
     // --- Runners
@@ -187,8 +198,7 @@ class TimerBackgroundService {
     void runStopWatch(){
       timerStartTime = DateTime.now();
 
-      ticker = Timer.periodic(const Duration(milliseconds: 50), (t) {
-
+      ticker = Timer.periodic(const Duration(milliseconds: 20), (t) {
         final Duration elapsed = Duration(milliseconds: DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop);
 
 
@@ -233,6 +243,7 @@ class TimerBackgroundService {
           accumulatedMsDuringStop += elapsed.inMilliseconds;
           timerStartTime = null;
         }
+        isPaused = true;
       }else{
         final Duration elapsed = DateTime.now().difference(timerStartTime!);
         accumulatedMsDuringStop += elapsed.inMilliseconds;
@@ -246,6 +257,7 @@ class TimerBackgroundService {
       if(stopWatchMode == true){
         // In stopwatch mode, "resuming" just means to start the ticker again and continue accumulating the elapsed time
         timerStartTime = DateTime.now();
+        isPaused = false;
         runStopWatch();
       }else {
         timerStartTime = DateTime.now();
@@ -295,11 +307,10 @@ class TimerBackgroundService {
       timerStartTime = null;
       accumulatedMsDuringStop = 0;
 
-      isPaused = false;
-      runStopWatch();
+      isPaused = true;
     });
 
-    service.on('stopWatchLap').listen((event){
+    service.on('recordLap').listen((event){
       if (timerStartTime != null) {
         final lap = DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop;
         lapTimes.add(lap);

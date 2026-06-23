@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../common/strings.dart';
 import '../common/widgets/timer_row_item.dart';
 import '../common/timer_core/ui/emom_settings_page.dart';
+import '../common/timer_core/ui/stopwatch_page.dart';
 
 class TimerListPage extends StatelessWidget {
   const TimerListPage({super.key});
@@ -110,7 +111,13 @@ class TimerListPage extends StatelessWidget {
               TimerRowItem(
                 icon: Icons.shutter_speed_rounded,
                 title: ElandStrings.of('timer_stopwatch').toUpperCase(),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const StopwatchPage(),
+                    ),
+                  );
+                },
               ),
             ],
           ),
