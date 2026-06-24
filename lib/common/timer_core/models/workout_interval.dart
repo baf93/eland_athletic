@@ -9,8 +9,8 @@ class WorkoutInterval {
   final int durationSeconds;
   final IntervalType type;
   final TimerType sourcePhase;
-  final IntervalAudioConfig audioConfig;
-  final IntervalHapticConfig hapticConfig;
+  final List<IntervalAudioConfig> audioConfig;
+  final List<IntervalHapticConfig> hapticConfig;
 
   // UI Specific fields
   final int currentPhase;
@@ -29,8 +29,8 @@ class WorkoutInterval {
     required this.durationSeconds,
     required this.type,
     required this.sourcePhase,
-    this.audioConfig = const IntervalAudioConfig(),
-    this.hapticConfig = const IntervalHapticConfig(),
+    this.audioConfig = const [],
+    this.hapticConfig = const [],
     required this.currentPhase,
     required this.totalPhases,
     required this.currentRound,
@@ -76,9 +76,9 @@ class WorkoutInterval {
     'totalRound': totalRound,
     'nextPhaseTitle': nextPhaseTitle,
     'nextPhaseSettings': nextPhaseSettings,
-    'audioConfig': audioConfig.toJson(),
-    'hapticConfig': hapticConfig.toJson(),
     'workoutTitle': workoutTitle,
-    'workoutId': workoutId
+    'workoutId': workoutId,
+    'audioConfigs': audioConfig.map((item) => item.toJson()).toList(),
+    'hapticConfigs': hapticConfig.map((item) => item.toJson()).toList(),
   };
 }

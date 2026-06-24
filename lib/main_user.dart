@@ -13,11 +13,15 @@ import 'user_app/providers/settings_provider.dart';
 import 'common/timer_core/service/timer_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'common/timer_core/ui/workout_debug_page.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final notificationStatus = await Permission.notification.status;
+  if(notificationStatus.isDenied) Permission.notification.request();
 
   //Load Shared Prefs
   final SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
@@ -31,10 +35,8 @@ void main() async {
       if (response.payload == 'open_workout_page') {
         final List<String> routesToPush = ['/', '/timer_list', '/workout'];
 
-        // 3. Pulisci tutto lo stack esistente
         navigatorKey.currentState?.popUntil((route) => false);
 
-        // 4. Spingi le rotte in sequenza
         for (var routeName in routesToPush) {
           navigatorKey.currentState?.pushNamed(routeName);
         }

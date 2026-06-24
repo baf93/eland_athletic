@@ -72,7 +72,10 @@ class ElandStrings {
       //Utils
       'start_btn': 'Start',
       'save_btn': 'Save',
-      'wip_function': 'Coming soon!'
+      'wip_function': 'Coming soon!',
+      'starting_workout': 'Starting workout...',
+      'stopwatch_running': 'Stopwatch running...',
+      'notification_title': 'ELAND Athletic'
     },
 
     AppLanguage.it: {
@@ -143,7 +146,10 @@ class ElandStrings {
       //Utils
       'start_btn': 'Inizia',
       'save_btn': 'Salva',
-      'wip_function': 'Funzionalità in arrivo!'
+      'wip_function': 'Funzionalità in arrivo!',
+      'starting_workout': 'Avvio allenamento...',
+      'stopwatch_running': 'Cronometro avviato...',
+      'notification_title': 'ELAND Athletic'
     },
   };
 

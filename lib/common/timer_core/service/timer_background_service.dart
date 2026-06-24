@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'dart:ui';
-import 'package:flutter/material.dart';
+import 'package:eland_athletic/common/strings.dart';
+import 'package:eland_athletic/common/timer_core/models/interval_audio_haptic_config.dart';
+import 'package:eland_athletic/common/timer_core/models/timercore_enums.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -12,6 +13,7 @@ class TimerBackgroundService {
   static const String channelId = 'eland_notification_channel';
   static const int notificationId = 102;
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final Map<String, AudioPool> _audioPools = {};
 
   /// Initialization of the notification channel and background service
   static Future<void> initialize() async {
@@ -75,6 +77,7 @@ class TimerBackgroundService {
   @pragma('vm:entry-point')
   static void onStart(ServiceInstance service) async {
 
+    _updateNotification(flutterLocalNotificationsPlugin, ElandStrings.of('notification_title'), ElandStrings.of('starting_workout'));
     // --- Variables for Internal status
     bool isPaused = false;
     DateTime? timerStartTime;
@@ -83,7 +86,6 @@ class TimerBackgroundService {
     List<dynamic> uiPhaseList = [];
     bool soundEnabled = true;
     bool hapticEnabled = true;
-    bool notificationEnabled = false;
     bool stopWatchMode = false;
     int remainingSeconds = 0;
     List<int> lapTimes = [];
@@ -91,24 +93,59 @@ class TimerBackgroundService {
     bool isLastPhase = false;
     double intervalProgress = 0.0;
     int accumulatedMsDuringStop = 0;
-
-
+    List<IntervalAudioConfig> audioConfig = [];
+    List<IntervalHapticConfig> hapticConfig = [];
     // ---
 
     // Audio Setup
-    final AudioPlayer audioPlayer = AudioPlayer();
-    await audioPlayer.setReleaseMode(ReleaseMode.stop);
-
     final AudioContext audioContext = AudioContext(
-      android: AudioContextAndroid(isSpeakerphoneOn: true, stayAwake: true, contentType: AndroidContentType.sonification, usageType: AndroidUsageType.assistanceSonification, audioFocus: AndroidAudioFocus.gainTransientMayDuck),
+      android: AudioContextAndroid(stayAwake: true, contentType: AndroidContentType.music, usageType: AndroidUsageType.media, audioFocus: AndroidAudioFocus.gainTransientMayDuck),
       iOS: AudioContextIOS(category: AVAudioSessionCategory.playback, options: {AVAudioSessionOptions.duckOthers, AVAudioSessionOptions.mixWithOthers}),
     );
     await AudioPlayer.global.setAudioContext(audioContext);
 
 
     /// Utilities functions
-    void triggerAudioHapticFeedback(String trigger){
-      return; //TODO: Implementare gestione audio e feedback aptico
+    Future<void> preloadAllNeededSounds(List<IntervalAudioConfig> audioConfigs) async {
+      final futures = audioConfigs
+          .where((c) => c.fileName.isNotEmpty && !_audioPools.containsKey(c.fileName))
+          .map((c) => AudioPool.create(source: AssetSource('audio/${c.fileName}'), maxPlayers: 2)
+          .then((pool) => _audioPools[c.fileName] = pool));
+
+      await Future.wait(futures);
+    }
+
+    void triggerAudioHapticFeedback(AudioHapticTrigger trigger){
+      if (soundEnabled){
+        final fileName = audioConfig.firstWhere(
+                (c) => c.audioTrigger == trigger,
+            orElse: () => IntervalAudioConfig(fileName: '')
+        ).fileName;
+
+        if (fileName.isNotEmpty && _audioPools.containsKey(fileName)) {
+          _audioPools[fileName]!.start(volume: 1.0);
+        }
+      }
+
+      if (hapticEnabled){
+        final hapticPattern = hapticConfig.firstWhere((config) => config.trigger == trigger, orElse: () => IntervalHapticConfig(trigger: trigger, pattern: HapticPattern.none)).pattern;
+        switch (hapticPattern){
+          case HapticPattern.light:
+            Vibration.vibrate(duration: 50);
+            break;
+          case HapticPattern.medium:
+            Vibration.vibrate(duration: 100);
+            break;
+          case HapticPattern.heavy:
+            Vibration.vibrate(duration: 200);
+            break;
+          case HapticPattern.doubleTap:
+            Vibration.vibrate(pattern: [0, 50, 100, 50]);
+            break;
+          default:
+            break;
+        }
+      }
     }
 
     void sendFullTimerStatus(){
@@ -150,7 +187,7 @@ class TimerBackgroundService {
     }
 
     // --- Runners
-    void runInterval(){
+    void runInterval() async {
       // I'm at the end of the workout
       if(currentIntervalIndex >= intervalQueue.length){
         service.invoke('uiUpdate', {'status': 'completed', 'remainingSeconds': 0, 'intervalProgress': 1.0});
@@ -167,6 +204,22 @@ class TimerBackgroundService {
       remainingSeconds = intervalDuration;
       isLastPhase = interval['currentPhase'] as int == interval['totalPhases'] as int;
 
+      // Get Audio & Haptic config for current interval
+      final List<dynamic> rawAudio = interval['audioConfigs'] as List<dynamic>;
+      final List<dynamic> rawHaptic = interval['hapticConfigs'] as List<dynamic>;
+
+      audioConfig = rawAudio.map((item) {
+        return IntervalAudioConfig().fromJson(item as Map<String, dynamic>);
+      }).toList();
+
+      hapticConfig = rawHaptic.map((item) {
+        return IntervalHapticConfig().fromJson(item as Map<String, dynamic>);
+      }).toList();
+
+      await preloadAllNeededSounds(audioConfig);
+
+      triggerAudioHapticFeedback(AudioHapticTrigger.start);
+
       // Update UI with new Interval details
       sendFullTimerStatus();
 
@@ -181,6 +234,7 @@ class TimerBackgroundService {
 
         // End of interval. Next one
         if (remainingSeconds <= 0) {
+          triggerAudioHapticFeedback(AudioHapticTrigger.end);
           ticker?.cancel();
           ticker = null;
           accumulatedMsDuringStop = 0;
@@ -189,7 +243,15 @@ class TimerBackgroundService {
           return;
         }
 
-        if(notificationEnabled) _updateNotification(flutterLocalNotificationsPlugin, interval['title'], _formatDisplayTime(remainingSeconds));
+        _updateNotification(flutterLocalNotificationsPlugin, ElandStrings.of('notification_title'), '${_formatDisplayTime(remainingSeconds)} | ${interval['title']} (${interval['currentPhase']}/${interval['totalPhases']})');
+
+        if (intervalDuration / 2 == remainingSeconds) {
+          triggerAudioHapticFeedback(AudioHapticTrigger.half);
+        }else if (remainingSeconds == 10) {
+          triggerAudioHapticFeedback(AudioHapticTrigger.tenSeconds);
+        }else if (remainingSeconds <= 3 && remainingSeconds > 0) {
+          triggerAudioHapticFeedback(AudioHapticTrigger.lastThreeSeconds);
+        }
 
         /// Update UI with new values
         service.invoke('uiUpdate', {
@@ -229,7 +291,6 @@ class TimerBackgroundService {
       final prefs = await SharedPreferences.getInstance();
       soundEnabled = prefs.getBool('soundEnabled') ?? true;
       hapticEnabled = prefs.getBool('hapticFeedback') ?? true;
-      notificationEnabled = prefs.getBool('notifications') ?? false;
 
       intervalQueue = event['queue'] as List<dynamic>? ?? [];
       uiPhaseList = event['uiPhaseList'] as List<dynamic>? ?? [];
@@ -290,7 +351,8 @@ class TimerBackgroundService {
     service.on('stop').listen((event){
       ticker?.cancel();
       flutterLocalNotificationsPlugin.cancel(id: notificationId);
-      audioPlayer.dispose();
+      _audioPools.forEach((key, pool) => pool.dispose());
+      _audioPools.clear();
       service.stopSelf();
     });
 
@@ -310,6 +372,7 @@ class TimerBackgroundService {
       uiPhaseList = [];
       timerStartTime = null;
       accumulatedMsDuringStop = 0;
+      _updateNotification(flutterLocalNotificationsPlugin, ElandStrings.of('notification_title'), ElandStrings.of('stopwatch_running'));
 
       isPaused = true;
     });

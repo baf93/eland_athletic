@@ -1,3 +1,5 @@
+import 'package:eland_athletic/common/timer_core/models/interval_audio_haptic_config.dart';
+import 'package:eland_athletic/common/timer_core/models/timercore_enums.dart';
 import 'package:flutter/material.dart';
 import '../generators/workout_generator.dart';
 import '../controllers/workout_controller.dart';
@@ -16,12 +18,29 @@ class EMOMSettingsPage extends StatefulWidget {
 
 class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
   int _totalMinutes = 10;
+  int _roundDuration = 60;
 
   /// Utilities functions
   void _startWorkout() {
 
+    final List<IntervalAudioConfig> audioConfigs = [
+      IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'go.m4a'),
+      IntervalAudioConfig(audioTrigger: AudioHapticTrigger.half, fileName: 'half.m4a'),
+      IntervalAudioConfig(audioTrigger: AudioHapticTrigger.tenSeconds, fileName: 'ten_seconds.m4a'),
+      IntervalAudioConfig(audioTrigger: AudioHapticTrigger.lastThreeSeconds, fileName: 'countdown_321.m4a'),
+      IntervalAudioConfig(audioTrigger: AudioHapticTrigger.end, fileName: 'workout_complete.m4a'),
+    ];
+
+    final List<IntervalHapticConfig> hapticConfigs = [
+      IntervalHapticConfig(trigger: AudioHapticTrigger.start, pattern: HapticPattern.heavy),
+      IntervalHapticConfig(trigger: AudioHapticTrigger.half, pattern: HapticPattern.doubleTap),
+      IntervalHapticConfig(trigger: AudioHapticTrigger.tenSeconds, pattern: HapticPattern.medium),
+      IntervalHapticConfig(trigger: AudioHapticTrigger.lastThreeSeconds, pattern: HapticPattern.light),
+      IntervalHapticConfig(trigger: AudioHapticTrigger.end, pattern: HapticPattern.heavy),
+    ];
+
     final List<WorkoutConfig> configs = [
-      EMOMConfig(workoutTitle: ElandStrings.of('timer_emom').toUpperCase(), workoutId: 'emom_qt', totalMinutes: _totalMinutes, phaseTitle: ElandStrings.of('timer_emom').toUpperCase(), phaseSetting: '${_totalMinutes} min' ),
+      EMOMConfig(roundDuration: _roundDuration, workoutTitle: ElandStrings.of('timer_emom').toUpperCase(), workoutId: 'emom_qt', totalMinutes: _totalMinutes, phaseTitle: ElandStrings.of('timer_emom').toUpperCase(), phaseSetting: '${_totalMinutes} min', audioConfigs: audioConfigs, hapticConfigs: hapticConfigs ),
     ];
 
     final generator = WorkoutGenerator();
@@ -69,6 +88,9 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  TimerSettingSelector(label: 'Durata', value: _roundDuration, onChanged: (newValue) {
+                    setState(() => _roundDuration = newValue);
+                  }),
                   TimerSettingSelector(
                     label: ElandStrings.of('total_min'),
                     value: _totalMinutes,

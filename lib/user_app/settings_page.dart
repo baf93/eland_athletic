@@ -105,16 +105,6 @@ class SettingsPage extends ConsumerWidget {
               ),
 
               SettingsSwitchTile(
-                icon: Icons.notifications_off_rounded,
-                title: ElandStrings.of('setting_notifications_title'),
-                subtitle: ElandStrings.of('setting_notifications_subtitle'),
-                value: settings.notifications,
-                onChanged: (bool value) {
-                  settingsNotifier.toggleNotifications(value);
-                }
-              ),
-
-              SettingsSwitchTile(
                 icon: Icons.phone_android_rounded,
                 title: ElandStrings.of('setting_screen_title'),
                 subtitle: ElandStrings.of('setting_screen_subtitle'),

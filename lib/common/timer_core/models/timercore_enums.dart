@@ -13,15 +13,12 @@ enum HapticPattern {
   doubleTap,
 }
 
-enum AudioTriggerType {
-  prepare,
-  go,
-  rest,
-  nextStage,
-  workoutComplete,
+enum AudioHapticTrigger {
+  start,
   half,
-  countdown321,
   tenSeconds,
+  lastThreeSeconds,
+  end,
 }
 
 enum TimerType {
