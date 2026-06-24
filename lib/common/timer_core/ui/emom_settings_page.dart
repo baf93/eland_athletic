@@ -21,35 +21,49 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
   int _roundDuration = 60;
 
   /// Utilities functions
-  void _startWorkout() {
+  List<WorkoutConfig> _generateConfigs(){
+    final List<List<IntervalAudioConfig>> audioConfigs = List.generate(_totalMinutes,
+            (i) => [
+          IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'go.m4a'),
+          IntervalAudioConfig(audioTrigger: AudioHapticTrigger.half, fileName: 'half.m4a'),
+          IntervalAudioConfig(audioTrigger: AudioHapticTrigger.tenSeconds, fileName: 'ten_seconds.m4a'),
+          IntervalAudioConfig(audioTrigger: AudioHapticTrigger.lastThreeSeconds, fileName: 'beep.m4a'),
+          if(i+1 == _totalMinutes) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.end, fileName: 'workout_complete.m4a'),
+        ]
+    );
 
-    final List<IntervalAudioConfig> audioConfigs = [
-      IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'go.m4a'),
-      IntervalAudioConfig(audioTrigger: AudioHapticTrigger.half, fileName: 'half.m4a'),
-      IntervalAudioConfig(audioTrigger: AudioHapticTrigger.tenSeconds, fileName: 'ten_seconds.m4a'),
-      IntervalAudioConfig(audioTrigger: AudioHapticTrigger.lastThreeSeconds, fileName: 'countdown_321.m4a'),
-      IntervalAudioConfig(audioTrigger: AudioHapticTrigger.end, fileName: 'workout_complete.m4a'),
-    ];
+    final List<List<IntervalHapticConfig>> hapticConfigs = List.generate(_totalMinutes,
+            (i) => [
+          IntervalHapticConfig(trigger: AudioHapticTrigger.start, pattern: HapticPattern.heavy),
+          IntervalHapticConfig(trigger: AudioHapticTrigger.half, pattern: HapticPattern.doubleTap),
+          IntervalHapticConfig(trigger: AudioHapticTrigger.tenSeconds, pattern: HapticPattern.medium),
+          IntervalHapticConfig(trigger: AudioHapticTrigger.lastThreeSeconds, pattern: HapticPattern.light),
+          if(i+1 == _totalMinutes) IntervalHapticConfig(trigger: AudioHapticTrigger.end, pattern: HapticPattern.heavy),
+        ]
+    );
 
-    final List<IntervalHapticConfig> hapticConfigs = [
-      IntervalHapticConfig(trigger: AudioHapticTrigger.start, pattern: HapticPattern.heavy),
-      IntervalHapticConfig(trigger: AudioHapticTrigger.half, pattern: HapticPattern.doubleTap),
-      IntervalHapticConfig(trigger: AudioHapticTrigger.tenSeconds, pattern: HapticPattern.medium),
-      IntervalHapticConfig(trigger: AudioHapticTrigger.lastThreeSeconds, pattern: HapticPattern.light),
-      IntervalHapticConfig(trigger: AudioHapticTrigger.end, pattern: HapticPattern.heavy),
-    ];
 
     final List<WorkoutConfig> configs = [
-      EMOMConfig(roundDuration: _roundDuration, workoutTitle: ElandStrings.of('timer_emom').toUpperCase(), workoutId: 'emom_qt', totalMinutes: _totalMinutes, phaseTitle: ElandStrings.of('timer_emom').toUpperCase(), phaseSetting: '${_totalMinutes} min', audioConfigs: audioConfigs, hapticConfigs: hapticConfigs ),
+      EMOMConfig(roundDuration: _roundDuration, workoutTitle: ElandStrings.of('timer_emom').toUpperCase(), workoutId: 'emom_qt', totalMinutes: _totalMinutes, phaseTitle: ElandStrings.of('timer_emom').toUpperCase(), phaseSetting: '$_totalMinutes min', audioConfigs: audioConfigs, hapticConfigs: hapticConfigs ),
     ];
 
+    return configs;
+  }
+
+  void _startWorkout() {
+
+    final List<WorkoutConfig> configs = _generateConfigs();
     final generator = WorkoutGenerator();
+
+
     final workout = generator.generate(configs);
     final List<WorkoutPhaseSummary> uiPhaseSummary = generator.generateUIPhaseSummary(configs);
 
     WorkoutController.instance.launchWorkout(workout, uiPhaseSummary);
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => const WorkoutPage()));
   }
+
+
 
   /// UI
   @override
@@ -88,9 +102,10 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TimerSettingSelector(label: 'Durata', value: _roundDuration, onChanged: (newValue) {
+                  TimerSettingSelector(label: '${ElandStrings.of('round_duration')} (s)', value: _roundDuration, onChanged: (newValue) {
                     setState(() => _roundDuration = newValue);
                   }),
+                  const SizedBox(height: 20),
                   TimerSettingSelector(
                     label: ElandStrings.of('total_min'),
                     value: _totalMinutes,

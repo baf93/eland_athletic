@@ -12,8 +12,8 @@ abstract class WorkoutConfig {
   final String phaseSetting;
   final String workoutTitle;
   final String workoutId;
-  final List<IntervalAudioConfig> audioConfigs;
-  final List<IntervalHapticConfig> hapticConfigs;
+  final List<List<IntervalAudioConfig>> audioConfigs;
+  final List<List<IntervalHapticConfig>> hapticConfigs;
   const WorkoutConfig({
     required this.phaseType,
     required this.phaseTitle,
@@ -28,12 +28,11 @@ abstract class WorkoutConfig {
 }
 
 /// --- Implementation of real classes
-/// TODO: Gestire le configurazioni dell'audio e del feedback aptico
 /// +++ EMOM
 class EMOMConfig extends WorkoutConfig {
   final int roundDuration;
   final int totalMinutes;
-  EMOMConfig({required this.roundDuration, required this.totalMinutes, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId, required List<IntervalAudioConfig> audioConfigs, required List<IntervalHapticConfig> hapticConfigs})
+  EMOMConfig({required this.roundDuration, required this.totalMinutes, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId, required List<List<IntervalAudioConfig>> audioConfigs, required List<List<IntervalHapticConfig>> hapticConfigs})
       : super(phaseType: TimerType.emom, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: audioConfigs, hapticConfigs: hapticConfigs);
 
   @override
@@ -52,15 +51,17 @@ class EMOMConfig extends WorkoutConfig {
       nextPhaseSettings: nextPhaseSettings,
       workoutId: workoutId,
       workoutTitle: workoutTitle,
-      audioConfig: audioConfigs,
-      hapticConfig: hapticConfigs,
+      audioConfig: audioConfigs[i],
+      hapticConfig: hapticConfigs[i],
     ));
   }
 }
-// TODO: from here
+
+
 /// +++ TABATA
 class TabataConfig extends WorkoutConfig {
   final int workSeconds, restSeconds, roundsPerSet, totalSets, restBetweenSetsSeconds;
+
   TabataConfig({
     required this.workSeconds,
     required this.restSeconds,
@@ -71,15 +72,28 @@ class TabataConfig extends WorkoutConfig {
     required String phaseSetting,
     required String workoutTitle,
     required String workoutId,
-    required List<IntervalAudioConfig> audioConfigs,
-    required List<IntervalHapticConfig> hapticConfigs,
-  }) : super(phaseType: TimerType.tabata, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: audioConfigs, hapticConfigs: hapticConfigs);
+    // Nota: passiamo liste di liste perché ogni intervallo (work/rest) ha la sua config
+    required List<List<IntervalAudioConfig>> audioConfigs,
+    required List<List<IntervalHapticConfig>> hapticConfigs,
+  }) : super(
+    phaseType: TimerType.tabata,
+    phaseTitle: phaseTitle,
+    phaseSetting: phaseSetting,
+    workoutTitle: workoutTitle,
+    workoutId: workoutId,
+    audioConfigs: audioConfigs,
+    hapticConfigs: hapticConfigs,
+  );
 
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
     List<WorkoutInterval> intervals = [];
+    int intervalIndex = 0; // Per mappare correttamente le config audio/haptic
+
     for (int set = 1; set <= totalSets; set++) {
       for (int round = 1; round <= roundsPerSet; round++) {
+
+        // 1. Intervallo di LAVORO
         intervals.add(WorkoutInterval(
           id: "tabata_work_${set}_$round",
           title: "LAVORO",
@@ -94,9 +108,12 @@ class TabataConfig extends WorkoutConfig {
           nextPhaseSettings: nextPhaseSettings,
           workoutTitle: workoutTitle,
           workoutId: workoutId,
-          audioConfig: audioConfigs,
-          hapticConfig: hapticConfigs,
+          audioConfig: audioConfigs[intervalIndex], // Config corretta per questo step
+          hapticConfig: hapticConfigs[intervalIndex],
         ));
+        intervalIndex++;
+
+        // 2. Intervallo di RIPOSO
         intervals.add(WorkoutInterval(
           id: "tabata_rest_${set}_$round",
           title: "RIPOSO",
@@ -109,16 +126,23 @@ class TabataConfig extends WorkoutConfig {
           totalRound: roundsPerSet,
           nextPhaseTitle: nextPhaseTitle,
           nextPhaseSettings: nextPhaseSettings,
-          workoutId: workoutId,
           workoutTitle: workoutTitle,
-          audioConfig: audioConfigs,
-          hapticConfig: hapticConfigs,
+          workoutId: workoutId,
+          audioConfig: audioConfigs[intervalIndex],
+          hapticConfig: hapticConfigs[intervalIndex],
         ));
+        intervalIndex++;
       }
+
+      // 3. (Opzionale) Gestione pausa tra set
+      // Se vuoi aggiungere un intervallo di pausa extra tra i set, andrebbe aggiunto qui
     }
     return intervals;
   }
 }
+
+/*
+// TODO: from here
 
 class AMRAPConfig extends WorkoutConfig {
   final int totalMinutes;
@@ -130,7 +154,7 @@ class AMRAPConfig extends WorkoutConfig {
     required String workoutId,
     required List<IntervalAudioConfig> audioConfigs,
     required List<IntervalHapticConfig> hapticConfigs,
-  }) : super(phaseType: TimerType.amrap, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: audioConfigs, hapticConfigs: hapticConfigs);
+  }) : super(phaseType: TimerType.amrap, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: [audioConfigs], hapticConfigs: [hapticConfigs]);
 
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
@@ -157,7 +181,7 @@ class AMRAPConfig extends WorkoutConfig {
 class ForTimeConfig extends WorkoutConfig {
   final int totalMinutes;
   ForTimeConfig({required this.totalMinutes, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId, required List<IntervalAudioConfig> audioConfigs, required List<IntervalHapticConfig> hapticConfigs})
-      : super(phaseType: TimerType.fortime, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: audioConfigs, hapticConfigs: hapticConfigs);
+      : super(phaseType: TimerType.fortime, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: [audioConfigs], hapticConfigs: [hapticConfigs]);
 
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
@@ -184,7 +208,7 @@ class ForTimeConfig extends WorkoutConfig {
 class CountdownConfig extends WorkoutConfig {
   final int minutes, seconds;
   CountdownConfig({required this.minutes, required this.seconds, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId, required List<IntervalAudioConfig> audioConfigs, required List<IntervalHapticConfig> hapticConfigs})
-      : super(phaseType: TimerType.countdown, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: audioConfigs, hapticConfigs: hapticConfigs);
+      : super(phaseType: TimerType.countdown, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: [audioConfigs], hapticConfigs: [hapticConfigs]);
 
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
@@ -211,7 +235,7 @@ class CountdownConfig extends WorkoutConfig {
 class RestConfig extends WorkoutConfig {
   final int durationSeconds;
   RestConfig({required this.durationSeconds, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId, required List<IntervalAudioConfig> audioConfigs, required List<IntervalHapticConfig> hapticConfigs})
-      : super(phaseType: TimerType.rest, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: audioConfigs, hapticConfigs: hapticConfigs);
+      : super(phaseType: TimerType.rest, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: [audioConfigs], hapticConfigs: [hapticConfigs]);
 
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
@@ -233,4 +257,4 @@ class RestConfig extends WorkoutConfig {
       hapticConfig: hapticConfigs,
     )];
   }
-}
+}*/

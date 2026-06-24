@@ -13,7 +13,6 @@ class WorkoutController {
   Future<void> launchWorkout(List<WorkoutInterval> queue, List<WorkoutPhaseSummary> uiPhaseSummary) async {
 
     if (!await _service.isRunning()) {
-      print(" [+] Starting new service");
       await _service.startService();
       // Wait for the service to be running before sending data
       final Completer<void> readyCompleter = Completer<void>();

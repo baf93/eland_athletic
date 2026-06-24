@@ -193,7 +193,6 @@ class TimerBackgroundService {
         service.invoke('uiUpdate', {'status': 'completed', 'remainingSeconds': 0, 'intervalProgress': 1.0});
         flutterLocalNotificationsPlugin.cancel(id: notificationId);
         ticker?.cancel();
-        service.stopSelf();
         return;
       }
 

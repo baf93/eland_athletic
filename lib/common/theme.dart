@@ -37,7 +37,7 @@ class ElandCustomColors extends ThemeExtension<ElandCustomColors> {
 
 class ElandTheme {
   // Brand color for the app, used in both dark and light mode
-  static const Color orangeAccent = Color(0xFFFFB04A);
+  static const Color orangeAccent = Color(0xFFFF9500);
 
   // --- Dark Mode ---
   static ThemeData get darkTheme {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../strings.dart';
 
 class TimerSettingSelector extends StatelessWidget {
   final String label;
@@ -22,6 +23,7 @@ class TimerSettingSelector extends StatelessWidget {
   void _showPickerDialog(BuildContext context) {
     HapticFeedback.lightImpact();
     int tempValue = value;
+    final theme = Theme.of(context);
 
     showModalBottomSheet(
       context: context,
@@ -30,9 +32,10 @@ class TimerSettingSelector extends StatelessWidget {
       builder: (context) {
         return Container(
           height: 320,
-          decoration: const BoxDecoration(
-            color: Color(0xFF1E1E1E),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            border: Border.all(color: theme.dividerColor),
           ),
           child: Column(
             children: [
@@ -41,7 +44,7 @@ class TimerSettingSelector extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade600,
+                  color: theme.dividerColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -58,7 +61,7 @@ class TimerSettingSelector extends StatelessWidget {
                         (index) => Center(
                       child: Text(
                         "${index + min}",
-                        style: const TextStyle(color: Colors.white, fontSize: 28),
+                        style: TextStyle(color: theme.textTheme.headlineLarge?.color, fontSize: 28),
                       ),
                     ),
                   ),
@@ -68,7 +71,7 @@ class TimerSettingSelector extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
+                    backgroundColor: theme.colorScheme.primary,
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -76,7 +79,9 @@ class TimerSettingSelector extends StatelessWidget {
                     onChanged(tempValue);
                     Navigator.pop(context);
                   },
-                  child: const Text("OK", style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
+                  child: Text(ElandStrings.of('ok_btn'),
+                      style: TextStyle(color: theme.colorScheme.onPrimary, fontSize: 18, fontWeight: FontWeight.bold)
+                  ),
                 ),
               ),
             ],
@@ -88,15 +93,17 @@ class TimerSettingSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       children: [
         Text(
           label.toUpperCase(),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
+          style: TextStyle(
+            color: theme.colorScheme.primary,
+            fontSize: 14,
             letterSpacing: 1.5,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w800,
           ),
         ),
         const SizedBox(height: 12),
@@ -116,11 +123,11 @@ class TimerSettingSelector extends StatelessWidget {
                   child: Text(
                     "$value",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.orange,
-                      fontSize: 50,
+                    style: TextStyle(
+                      color: theme.textTheme.headlineLarge?.color,
+                      fontSize: 40,
                       fontWeight: FontWeight.bold,
-                      fontFeatures: [FontFeature.tabularFigures()],
+                      fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
                 ),
@@ -167,6 +174,7 @@ class _RepeatableButtonState extends State<_RepeatableButton> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: (_) => _stopTimer(),
@@ -176,9 +184,9 @@ class _RepeatableButtonState extends State<_RepeatableButton> {
         height: 50,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.grey.shade700, width: 1.5),
+          border: Border.all(color: theme.dividerColor, width: 1.5),
         ),
-        child: Icon(widget.icon, color: Colors.orange, size: 24),
+        child: Icon(widget.icon, color: theme.colorScheme.primary, size: 24),
       ),
     );
   }

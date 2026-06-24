@@ -68,6 +68,13 @@ class ElandStrings {
 
       //Timer Settings
       'total_min': 'Total Minutes',
+      'round_duration': 'Round Duration',
+      'work_time': 'Work',
+      'rest_time': 'Rest',
+      'round_set': 'Round per set',
+      'set_number': 'Number of sets',
+      'rest_between_set': 'Rest between sets',
+      'total_time': 'Total Time',
 
       //Utils
       'start_btn': 'Start',
@@ -75,7 +82,8 @@ class ElandStrings {
       'wip_function': 'Coming soon!',
       'starting_workout': 'Starting workout...',
       'stopwatch_running': 'Stopwatch running...',
-      'notification_title': 'ELAND Athletic'
+      'notification_title': 'ELAND Athletic',
+      'ok_btn': 'OK',
     },
 
     AppLanguage.it: {
@@ -142,6 +150,13 @@ class ElandStrings {
 
       //Timer Settings
       'total_min': 'Minuti Totali',
+      'round_duration': 'Durata Round',
+      'work_time': 'Lavoro',
+      'rest_time': 'Riposo',
+      'round_set': 'Round per set',
+      'set_number': 'Numero di set',
+      'rest_between_set': 'Riposo tra i set',
+      'total_time': 'Tempo totale',
 
       //Utils
       'start_btn': 'Inizia',
@@ -149,7 +164,8 @@ class ElandStrings {
       'wip_function': 'Funzionalità in arrivo!',
       'starting_workout': 'Avvio allenamento...',
       'stopwatch_running': 'Cronometro avviato...',
-      'notification_title': 'ELAND Athletic'
+      'notification_title': 'ELAND Athletic',
+      'ok_btn': 'OK',
     },
   };
 
