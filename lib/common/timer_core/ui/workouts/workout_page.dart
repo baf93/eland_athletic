@@ -5,7 +5,11 @@ import '../../controllers/workout_controller.dart';
 import '../../providers/timer_provider.dart';
 import '../../models/timercore_enums.dart';
 import '../../../widgets/progress_bar.dart';
-// Importa i tuoi widget dinamici
+import '../../models/timer_state.dart';
+import '../../models/timercore_enums.dart';
+import '../../../strings.dart';
+import '../../../widgets/eland_action_button.dart';
+// Runners Widgets
 import 'amrap_workout.dart';
 import 'countdown_workout.dart';
 import 'emom_workout.dart';
@@ -13,8 +17,7 @@ import 'fortime_workout.dart';
 import 'rest_workout.dart';
 import 'tabata_workout.dart';
 import 'prepare_workout.dart';
-import '../../models/timer_state.dart';
-import '../../models/timercore_enums.dart';
+
 
 class WorkoutPage extends ConsumerWidget {
   const WorkoutPage({super.key});
@@ -23,74 +26,107 @@ class WorkoutPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final timerState = ref.watch(timerProvider);
 
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF000000), // Nero OLED
+      backgroundColor: theme.scaffoldBackgroundColor, // Nero OLED
+      // --- APP BAR ---
+      appBar: AppBar(backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () => Navigator.maybePop(context),
+        ),
+        title: Text(
+          timerState.workoutTitle.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            // 1. HEADER (Freccia indietro + Nome Workout)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    timerState.workoutTitle.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+
+
+            /// --- APP BAR ---
+
+
+
 
             // 2. BODY DINAMICO (Carica il widget in base al tipo di workout)
             Expanded(
               child: Center(
-                child: _buildWorkoutSpecificBody(timerState),
+                child:
+                  AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                  child: _buildWorkoutSpecificBody(timerState), // Il tuo widget dinamico
+                  // IMPORTANTE: Assicurati che i widget figli abbiano Key univoche!
+                ),
               ),
             ),
 
-            // 3. BOTTOM (Controlli + Linea Fasi)
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _elandActionButton(Icons.skip_next, () => WorkoutController.instance.skipPhase()),
-                      const SizedBox(width: 25),
-                      _elandActionButton(
-                        timerState.status == TimerStatus.running ? Icons.pause : Icons.play_arrow,
-                            () => timerState.status == TimerStatus.running
-                            ? WorkoutController.instance.pauseWorkout()
-                            : WorkoutController.instance.resumeWorkout(),
-                      ),
-                      const SizedBox(width: 25),
-                      _elandActionButton(Icons.close, () {
-                        WorkoutController.instance.stopWorkout();
-                        Navigator.of(context).pop();
-                      }),
-                    ],
-                  ),
-                ),
+          ],
+        ),
+      ),
+      // FOOTER FISSO
+// Sostituisci persistentFooterButtons con questo:
+      bottomNavigationBar: Container(
+        color: theme.scaffoldBackgroundColor, // O il tuo colore di sfondo
+        padding: const EdgeInsets.only(bottom: 20, top: 10),
+        child: Column(
 
-                // Footer Fasi
-                ElandSegmentedProgressBar(
-                  totalSegments: timerState.totalPhases,
-                  currentSegment: timerState.currentPhaseIndex,
-                  onTap: () => _openPhaseSummary(context, timerState),
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(height: 1, color: Colors.white10),
+            const SizedBox(height: 20),
+            // I tuoi controlli
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElandActionButton(
+                  icon: Icons.skip_next_rounded,
+                  onPressed: () => WorkoutController.instance.skipPhase(),
+                  iconColor: Colors.blue,
+                  borderColor: Colors.blue,
+                  size: 75,
+                ),
+                const SizedBox(width: 40),
+                ElandActionButton(
+                  icon: timerState.status == TimerStatus.running ? Icons.pause : Icons.play_arrow,
+                  onPressed: () => timerState.status == TimerStatus.running
+                      ? WorkoutController.instance.pauseWorkout()
+                      : WorkoutController.instance.resumeWorkout(),
+                  iconColor: timerState.status == TimerStatus.running ? Colors.yellow : Colors.green,
+                  borderColor: timerState.status == TimerStatus.running ? Colors.yellow : Colors.green,
+                  size: 75,
+                ),
+                const SizedBox(width: 40),
+
+                ElandActionButton(
+                  icon: Icons.close_rounded,
+                  onPressed: () => WorkoutController.instance.stopWorkout(),
+                  iconColor: Colors.red,
+                  borderColor: Colors.red,
+                  size: 75,
                 ),
               ],
             ),
+            const SizedBox(height: 20),
+            // Footer Fasi
+            ElandSegmentedProgressBar(
+              totalSegments: timerState.totalPhases,
+              currentSegment: timerState.currentPhaseIndex,
+              onTap: () => _openPhaseSummary(context, timerState),
+            ),
+            const SizedBox(height: 5),
           ],
         ),
       ),
@@ -120,17 +156,6 @@ class WorkoutPage extends ConsumerWidget {
   }
 
   // --- COMPONENTI ---
-  Widget _elandActionButton(IconData icon, VoidCallback onPressed) {
-    return InkWell(
-      onTap: onPressed,
-      child: Container(
-        width: 65, height: 65,
-        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white24, width: 1)),
-        child: Icon(icon, color: Colors.white, size: 28),
-      ),
-    );
-  }
-
   void _openPhaseSummary(BuildContext context, timerState) {
     showModalBottomSheet(
       context: context,

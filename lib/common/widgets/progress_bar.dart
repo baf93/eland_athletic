@@ -64,9 +64,6 @@ class ElandSegmentedProgressBar extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Linea inferiore
-            Container(height: 1, color: Colors.white10),
           ],
         ),
       ),
