@@ -44,8 +44,8 @@ class ElandTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: const Color(0xFF121212),
-      cardColor: const Color(0xFF121212),
+      scaffoldBackgroundColor: const Color(0xFF000000), //0xFF121212
+      cardColor: const Color(0xFF000000),
       dividerColor: Colors.white24,
 
       colorScheme: const ColorScheme.dark(
@@ -76,8 +76,8 @@ class ElandTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: const Color(0xFFF8F9FA),
-      cardColor: const Color(0xFFF8F9FA),
+      scaffoldBackgroundColor: const Color(0xFFFFFFFF), //0xFFF8F9FA
+      cardColor: const Color(0xFFFFFFFF),
       dividerColor: Colors.black26,
 
       colorScheme: const ColorScheme.light(

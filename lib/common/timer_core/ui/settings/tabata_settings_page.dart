@@ -1,15 +1,15 @@
 import 'package:eland_athletic/common/timer_core/models/interval_audio_haptic_config.dart';
 import 'package:eland_athletic/common/timer_core/models/timercore_enums.dart';
 import 'package:flutter/material.dart';
-import '../generators/workout_generator.dart';
-import '../controllers/workout_controller.dart';
-import '../models/workout_config.dart';
-import 'workout_debug_page.dart'; // Assicurati che sia importata la pagina corretta
-import '../models/workout_phase_summary.dart';
-import '../../../common/strings.dart';
-import '../../../common/widgets/timer_setting_selector.dart';
-import '../../../common/widgets/pill_badge.dart';
-import '../../../common/widgets/primary_action_button.dart';
+import '../../generators/workout_generator.dart';
+import '../../controllers/workout_controller.dart';
+import '../../models/workout_config.dart';
+import '../workouts/workout_page.dart';
+import '../../models/workout_phase_summary.dart';
+import '../../../strings.dart';
+import '../../../widgets/timer_setting_selector.dart';
+import '../../../widgets/pill_badge.dart';
+import '../../../widgets/primary_action_button.dart';
 
 class TabataSettingsPage extends StatefulWidget {
   const TabataSettingsPage({super.key});

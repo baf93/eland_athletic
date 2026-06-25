@@ -12,7 +12,7 @@ import 'common/strings.dart';
 import 'user_app/providers/settings_provider.dart';
 import 'common/timer_core/service/timer_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'common/timer_core/ui/workout_debug_page.dart';
+import 'common/timer_core/ui/workouts/workout_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

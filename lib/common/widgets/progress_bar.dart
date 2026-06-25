@@ -15,6 +15,7 @@ class ElandSegmentedProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // GestureDetector avvolge il container per rendere l'intera area interattiva
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -22,11 +23,14 @@ class ElandSegmentedProgressBar extends StatelessWidget {
       },
       child: Container(
         width: double.infinity,
-        color: Colors.transparent,
+        color: Colors.transparent, // Assicura che l'intera area risponda al tocco
         child: Column(
           children: [
+            // Linea superiore
+            Container(height: 1, color: Colors.white10),
+
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -41,17 +45,18 @@ class ElandSegmentedProgressBar extends StatelessWidget {
                   ),
                   const SizedBox(width: 20),
 
-                  // Frecce "incastrate" usando Transform.translate
+                  // Frecce "incastrate" tramite Row e Transform.translate
+                  // Questo evita padding negativi non consentiti dal framework
                   Row(
                     children: List.generate(totalSegments, (index) {
                       return Transform.translate(
                         offset: Offset(index == 0 ? 0 : -8.0 * index, 0),
                         child: Icon(
-                          Icons.arrow_forward_ios_sharp,
+                          Icons.play_arrow,
                           size: 24,
                           color: index <= currentSegment
-                              ? const Color(0xFFE69138)
-                              : Colors.white10,
+                              ? const Color(0xFFE69138) // Arancio Eland
+                              : Colors.white10,         // Spento
                         ),
                       );
                     }),
@@ -59,7 +64,9 @@ class ElandSegmentedProgressBar extends StatelessWidget {
                 ],
               ),
             ),
-            Container(height: 2, color: Colors.white10),
+
+            // Linea inferiore
+            Container(height: 1, color: Colors.white10),
           ],
         ),
       ),

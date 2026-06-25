@@ -1,24 +1,24 @@
 import 'package:eland_athletic/common/timer_core/models/interval_audio_haptic_config.dart';
 import 'package:eland_athletic/common/timer_core/models/timercore_enums.dart';
 import 'package:flutter/material.dart';
-import '../generators/workout_generator.dart';
-import '../controllers/workout_controller.dart';
-import '../models/workout_config.dart';
-import 'workout_page.dart';
-import '../models/workout_phase_summary.dart';
-import '../../../common/strings.dart';
-import '../../../common/widgets/timer_setting_selector.dart';
-import '../../../common/widgets/pill_badge.dart';
-import '../../../common/widgets/primary_action_button.dart';
+import '../../generators/workout_generator.dart';
+import '../../controllers/workout_controller.dart';
+import '../../models/workout_config.dart';
+import '../workouts/workout_page.dart';
+import '../../models/workout_phase_summary.dart';
+import '../../../strings.dart';
+import '../../../widgets/timer_setting_selector.dart';
+import '../../../widgets/pill_badge.dart';
+import '../../../widgets/primary_action_button.dart';
 
-class CountdownSettingsPage extends StatefulWidget {
-  const CountdownSettingsPage({super.key});
+class FortimeSettingsPage extends StatefulWidget {
+  const FortimeSettingsPage({super.key});
 
   @override
-  State<CountdownSettingsPage> createState() => _CountdownSettingsPageState();
+  State<FortimeSettingsPage> createState() => _FortimeSettingsPageState();
 }
 
-class _CountdownSettingsPageState extends State<CountdownSettingsPage> {
+class _FortimeSettingsPageState extends State<FortimeSettingsPage> {
   int _totalMinutes = 10;
   int _totalSeconds = 0;
 
@@ -41,7 +41,7 @@ class _CountdownSettingsPageState extends State<CountdownSettingsPage> {
     ]];
 
     final List<WorkoutConfig> configs = [
-      CountdownConfig(totalMinutes: _totalMinutes, totalSeconds: _totalSeconds, workoutTitle: ElandStrings.of('timer_countdown').toUpperCase(), workoutId: 'countdown_qt', phaseTitle: ElandStrings.of('timer_countdown').toUpperCase(), phaseSetting: '$_totalMinutes min $_totalSeconds sec', audioConfigs: audioConfigs, hapticConfigs: hapticConfigs ),
+      FortimeConfig(totalMinutes: _totalMinutes, totalSeconds: _totalSeconds, workoutTitle: ElandStrings.of('timer_fortime').toUpperCase(), workoutId: 'fortime_qt', phaseTitle: ElandStrings.of('timer_fortime').toUpperCase(), phaseSetting: '$_totalMinutes min $_totalSeconds sec', audioConfigs: audioConfigs, hapticConfigs: hapticConfigs ),
     ];
 
     return configs;
@@ -83,7 +83,7 @@ class _CountdownSettingsPageState extends State<CountdownSettingsPage> {
           onPressed: () => Navigator.maybePop(context),
         ),
         title: Text(
-          ElandStrings.of('timer_countdown').toUpperCase(),
+          ElandStrings.of('timer_fortime').toUpperCase(),
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w900,
@@ -107,7 +107,7 @@ class _CountdownSettingsPageState extends State<CountdownSettingsPage> {
                   ),
                   const SizedBox(height: 30),
                   TimerSettingSelector(
-                    label: ElandStrings.of('total_min'),
+                    label: ElandStrings.of('time_cap_min'),
                     value: _totalMinutes,
                     min: 0,
                     onChanged: (newValue) {
@@ -116,7 +116,7 @@ class _CountdownSettingsPageState extends State<CountdownSettingsPage> {
                   ),
 
                   const SizedBox(height: 20),
-                  TimerSettingSelector(label: ElandStrings.of('total_sec'), value: _totalSeconds, min: 0, max: 59, onChanged: (newValue) {
+                  TimerSettingSelector(label: ElandStrings.of('time_cap_sec'), value: _totalSeconds, min: 0, max: 59, onChanged: (newValue) {
                     setState(() => _totalSeconds = newValue);
                   }),
 

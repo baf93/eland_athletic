@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import '../common/strings.dart';
 import '../common/widgets/timer_row_item.dart';
-import '../common/timer_core/ui/emom_settings_page.dart';
-import '../common/timer_core/ui/stopwatch_page.dart';
-import '../common/timer_core/ui/tabata_settings_page.dart';
-import '../common/timer_core/ui/amrap_settings_page.dart';
-import '../common/timer_core/ui/fortime_settings_page.dart';
-import '../common/timer_core/ui/countdown_settings_page.dart';
+import '../common/timer_core/ui/settings/emom_settings_page.dart';
+import '../common/timer_core/ui/workouts/stopwatch_page.dart';
+import '../common/timer_core/ui/settings/tabata_settings_page.dart';
+import '../common/timer_core/ui/settings/amrap_settings_page.dart';
+import '../common/timer_core/ui/settings/fortime_settings_page.dart';
+import '../common/timer_core/ui/settings/countdown_settings_page.dart';
 
 class TimerListPage extends StatelessWidget {
   const TimerListPage({super.key});

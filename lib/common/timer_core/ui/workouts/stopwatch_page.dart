@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../controllers/stopwatch_controller.dart';
-import '../providers/stopwatch_provider.dart';
-import '../models/timercore_enums.dart';
+import '../../controllers/stopwatch_controller.dart';
+import '../../providers/stopwatch_provider.dart';
+import '../../models/timercore_enums.dart';
 
 class StopwatchPage extends ConsumerStatefulWidget {
   const StopwatchPage({super.key});

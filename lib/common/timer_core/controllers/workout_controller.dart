@@ -51,4 +51,8 @@ class WorkoutController {
   void requestStatus() {
     _service.invoke('requestStatus');
   }
+
+  void skipPhase(){
+    return;
+  }
 }
