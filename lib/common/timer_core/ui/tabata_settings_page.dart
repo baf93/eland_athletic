@@ -9,6 +9,7 @@ import '../models/workout_phase_summary.dart';
 import '../../../common/strings.dart';
 import '../../../common/widgets/timer_setting_selector.dart';
 import '../../../common/widgets/pill_badge.dart';
+import '../../../common/widgets/primary_action_button.dart';
 
 class TabataSettingsPage extends StatefulWidget {
   const TabataSettingsPage({super.key});
@@ -24,7 +25,7 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
   int _setNumber = 3;
   int _restBetweenSet = 60;
 
-  /// Calcolo del tempo totale per il Tabata
+  /// Total workout time in minutes and seconds for pill badge
   String get _totalWorkoutTime {
     final int totalSeconds = (_workTime + _restTime) * _roundSet * _setNumber +
         (_restBetweenSet * (_setNumber - 1));
@@ -35,29 +36,58 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
     return '${minutes}M ${seconds > 0 ? '${seconds}S' : ''}';
   }
 
-  /// Genera le configurazioni per il Tabata
+  /// Get Configurations
   List<WorkoutConfig> _generateConfigs() {
-    // Il Tabata totale è (Round * Set) * 2 (Work + Rest)
-    final totalIntervals = _roundSet * _setNumber * 2;
+    /// 2 round, 3 Sets = Work 1-1, Rest 1-1, Work 2-1, Set-Rest 1-2, Work 1-2, Rest 1-2, Work 2-2, Set-Rest 2-3, Work 1-3, Rest 1-3, Work 2-3 = 11 Intervalli
+    /// 2 round, 2 Sets = Work 1-1, Rest 1-1, Work 2-1, Set-Rest 1-2, Work 1-2, Rest 1-2, Work 2-2 = 7 Intervalli
+    /// round * sets * 2 - 1 = 2*3*2-1 = 11, 2*2*2-1 = 7
+    final totalIntervals = (_roundSet * _setNumber * 2) - 1;
 
     final List<List<IntervalAudioConfig>> audioConfigs = List.generate(totalIntervals, (i) {
-      bool isWork = i.isEven; // 0, 2, 4... sono Lavoro; 1, 3, 5... sono Riposo
+      bool isWork = i.isEven;
+      int currentRound = (i ~/ 2) % _roundSet +1;
 
-      // Configurazione specifica per Lavoro o Riposo
       return [
-        if (isWork) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'go.m4a'),
-        // ... aggiungi qui altri trigger (half, tenSeconds, ecc.)
-        if (i == totalIntervals - 1)
-          IntervalAudioConfig(audioTrigger: AudioHapticTrigger.end, fileName: 'workout_complete.m4a'),
+        /// -- START Audio Configs
+        if (i==0) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'go.m4a'),
+        if (isWork && i>0 && currentRound != _roundSet) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'round$currentRound.m4a'),
+        if (isWork && currentRound == _roundSet) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'last_round.m4a'),
+
+        if(!isWork && currentRound != _roundSet) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'rest.m4a'),
+        if(!isWork && currentRound == _roundSet) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName:  'set_rest.m4a'),
+
+        /// -- Half
+        if(isWork) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.half, fileName: 'half.m4a'),
+
+        /// -- Ten Seconds
+        if(isWork) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.tenSeconds, fileName: 'ten_seconds.m4a'),
+
+        /// -- Last three seconds
+        IntervalAudioConfig(audioTrigger: AudioHapticTrigger.lastThreeSeconds, fileName: 'beep.m4a'),
+
+        /// -- END
+        if(i==totalIntervals-1) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.end, fileName: 'workout_complete.m4a'),
       ];
     });
 
     final List<List<IntervalHapticConfig>> hapticConfigs = List.generate(totalIntervals, (i) {
       bool isWork = i.isEven;
+
       return [
-        if (isWork) IntervalHapticConfig(trigger: AudioHapticTrigger.start, pattern: HapticPattern.heavy),
-        if (i == totalIntervals - 1)
-          IntervalHapticConfig(trigger: AudioHapticTrigger.end, pattern: HapticPattern.heavy),
+        /// -- START Haptic Configs
+        IntervalHapticConfig(trigger: AudioHapticTrigger.start, pattern: HapticPattern.heavy),
+
+        /// -- Half
+        if(isWork) IntervalHapticConfig(trigger: AudioHapticTrigger.start, pattern: HapticPattern.doubleTap),
+
+        /// -- Ten Seconds
+        if(isWork) IntervalHapticConfig(trigger: AudioHapticTrigger.tenSeconds, pattern: HapticPattern.medium),
+
+        /// -- Last 3 seconds
+        IntervalHapticConfig(trigger: AudioHapticTrigger.lastThreeSeconds, pattern: HapticPattern.light),
+
+        /// -- END
+        if(i==totalIntervals-1) IntervalHapticConfig(trigger: AudioHapticTrigger.end, pattern: HapticPattern.heavy),
       ];
     });
 
@@ -67,12 +97,12 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
         restSeconds: _restTime,
         roundsPerSet: _roundSet,
         totalSets: _setNumber,
-        restBetweenSetsSeconds: _restBetweenSet,
+        restBetweenSets: _restBetweenSet,
         phaseTitle: ElandStrings.of('timer_tabata').toUpperCase(),
         phaseSetting: '$_roundSet R x $_setNumber S',
         workoutTitle: ElandStrings.of('timer_tabata').toUpperCase(),
         workoutId: 'tabata_qt',
-        audioConfigs: audioConfigs, // Ora questa è List<List<...>> come richiesto
+        audioConfigs: audioConfigs,
         hapticConfigs: hapticConfigs,
       ),
     ];
@@ -89,12 +119,15 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => const WorkoutPage()));
   }
 
+  /// UI
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
+
+      // --- APP BAR ---
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -109,6 +142,8 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
         ),
         centerTitle: true,
       ),
+
+      // --- BODY ---
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
@@ -130,24 +165,12 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
                   TimerSettingSelector(label: ElandStrings.of('set_number'), min: 1, value: _setNumber, onChanged: (v) => setState(() => _setNumber = v)),
                   const SizedBox(height: 20),
                   TimerSettingSelector(label: '${ElandStrings.of('rest_between_set')} (s)', min: 1, value: _restBetweenSet, onChanged: (v) => setState(() => _restBetweenSet = v)),
-
                   const SizedBox(height: 40),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.primary,
-                        foregroundColor: theme.colorScheme.onPrimary,
-                        minimumSize: const Size(double.infinity, 60),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      onPressed: _startWorkout,
-                      child: Text(
-                        ElandStrings.of('start_btn').toUpperCase(),
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 1.2),
-                      ),
-                    ),
+                  // Start button
+                  PrimaryActionButton(
+                    label: ElandStrings.of('start_btn'),
+                    onPressed: _startWorkout,
                   ),
                   const SizedBox(height: 20),
                 ],

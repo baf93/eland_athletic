@@ -65,9 +65,14 @@ class ElandStrings {
       'timer_fortime': 'For Time',
       'timer_countdown': 'Countdown',
       'timer_stopwatch': 'Stopwatch',
+      'timer_preparation': 'Preparation',
+      'timer_rest': 'Rest',
 
       //Timer Settings
       'total_min': 'Total Minutes',
+      'total_sec': 'Total Seconds',
+      'time_cap_min': 'Time Cap (minutes)',
+      'time_cap_sec': 'Time Cap (seconds)',
       'round_duration': 'Round Duration',
       'work_time': 'Work',
       'rest_time': 'Rest',
@@ -147,9 +152,14 @@ class ElandStrings {
       'timer_fortime': 'For Time',
       'timer_countdown': 'Conto alla rovescia',
       'timer_stopwatch': 'Cronometro',
+      'timer_preparation': 'Preparazione',
+      'timer_rest': 'Riposo',
 
       //Timer Settings
       'total_min': 'Minuti Totali',
+      'total_sec': 'Secondi Totali',
+      'time_cap_min': 'Tempo limite (minuti)',
+      'time_cap_sec': 'Tempo limite (secondi)',
       'round_duration': 'Durata Round',
       'work_time': 'Lavoro',
       'rest_time': 'Riposo',

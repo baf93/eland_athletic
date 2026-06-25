@@ -8,6 +8,8 @@ import 'workout_debug_page.dart';
 import '../models/workout_phase_summary.dart';
 import '../../../common/strings.dart';
 import '../../../common/widgets/timer_setting_selector.dart';
+import '../../../common/widgets/pill_badge.dart';
+import '../../../common/widgets/primary_action_button.dart';
 
 class EMOMSettingsPage extends StatefulWidget {
   const EMOMSettingsPage({super.key});
@@ -63,6 +65,14 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => const WorkoutPage()));
   }
 
+  String get _totalWorkoutTime {
+    final int totalSeconds = _totalMinutes * _roundDuration;
+
+    final int minutes = totalSeconds ~/ 60;
+    final int seconds = totalSeconds % 60;
+
+    return '${minutes}M ${seconds > 0 ? '${seconds}S' : ''}';
+  }
 
 
   /// UI
@@ -102,6 +112,10 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  PillBadge(
+                    text: '${ElandStrings.of('total_time').toUpperCase()}: $_totalWorkoutTime',
+                  ),
+                  const SizedBox(height: 30),
                   TimerSettingSelector(label: '${ElandStrings.of('round_duration')} (s)', value: _roundDuration, onChanged: (newValue) {
                     setState(() => _roundDuration = newValue);
                   }),
@@ -119,27 +133,9 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
                   const SizedBox(height: 80),
 
                   // Start button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
-                        foregroundColor: Colors.black,
-                        minimumSize: const Size(double.infinity, 60),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: _startWorkout,
-                      child: Text(
-                        ElandStrings.of('start_btn').toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                    ),
+                  PrimaryActionButton(
+                    label: ElandStrings.of('start_btn'),
+                    onPressed: _startWorkout,
                   ),
                 ],
               ),

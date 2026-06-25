@@ -167,7 +167,9 @@ class TimerBackgroundService {
         'workoutId': interval['workoutId'] as String?,
         'workoutPhaseSummary': uiPhaseList,
         'currentRound': interval['currentRound'] as int,
-        'totalRound': interval['totalRound'] as int
+        'totalRound': interval['totalRound'] as int,
+        'currentSet': interval['currentSet'] as int,
+        'totalSet': interval['totalSet'] as int
       });
     }
 
@@ -244,7 +246,7 @@ class TimerBackgroundService {
 
         _updateNotification(flutterLocalNotificationsPlugin, ElandStrings.of('notification_title'), '${_formatDisplayTime(remainingSeconds)} | ${interval['title']} (${interval['currentPhase']}/${interval['totalPhases']})');
 
-        if (intervalDuration / 2 == remainingSeconds) {
+        if (intervalDuration ~/ 2 == remainingSeconds) {
           triggerAudioHapticFeedback(AudioHapticTrigger.half);
         }else if (remainingSeconds == 10) {
           triggerAudioHapticFeedback(AudioHapticTrigger.tenSeconds);
@@ -290,9 +292,55 @@ class TimerBackgroundService {
       final prefs = await SharedPreferences.getInstance();
       soundEnabled = prefs.getBool('soundEnabled') ?? true;
       hapticEnabled = prefs.getBool('hapticFeedback') ?? true;
+      final int prepTime = prefs.getInt('preparationTime') ?? 10;
 
-      intervalQueue = event['queue'] as List<dynamic>? ?? [];
-      uiPhaseList = event['uiPhaseList'] as List<dynamic>? ?? [];
+      var queue = event['queue'] as List<dynamic>? ?? [];
+
+      if (prepTime > 0) {
+        intervalQueue = [
+          {
+            'id': 'prep_phase',
+            'title': ElandStrings.of('timer_preparation'),
+            'duration': prepTime,
+            'type': 'preparation',
+            'sourcePhase': 'preparation',
+            'currentPhase': 1,
+            'totalPhases': queue[0]['totalPhases']+1 ?? 0,
+            'currentRound': 1,
+            'totalRound': 1,
+            'workoutTitle': queue[0]['workoutTitle'] ?? '',
+            'workoutId': queue[0]['workoutId'] ?? '',
+            'currentSet': 1,
+            'totalSet': 1,
+            'audioConfigs': [
+              {'audioTrigger': 'start', 'fileName': 'getready.m4a'},
+              {'audioTrigger': 'lastThreeSeconds', 'fileName': 'beep.m4a'},
+            ],
+            'hapticConfigs': [
+              {'trigger': 'start', 'pattern': 'heavy'},
+              {'trigger': 'lastThreeSeconds', 'pattern': 'light'},
+            ],
+
+          }
+        ];
+
+        uiPhaseList = [
+          {
+           'title': ElandStrings.of('timer_preparation'),
+           'details': '$prepTime s',
+          }
+        ];
+
+
+        queue.asMap().forEach((index, item) {
+          item['currentPhase'] = (item['currentPhase'] ?? 0) + 1;
+          item['totalPhases'] = (item['totalPhases'] ?? 0) + 1;
+        });
+      }
+
+
+      intervalQueue.addAll(event['queue'] as List<dynamic>? ?? []);
+      uiPhaseList.addAll(event['uiPhaseList'] as List<dynamic>? ?? []);
       isPaused = false;
       runInterval();
     });

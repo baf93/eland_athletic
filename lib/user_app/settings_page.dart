@@ -63,7 +63,7 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('setting_prep_title'),
                 subtitle: ElandStrings.of('setting_prep_subtitle'),
                 value: settings.preparationTime,
-                items: const [5, 10, 15, 20],
+                items: const [0, 5, 10, 15, 30, 45, 60],
                 onChanged: (val) => settingsNotifier.updatePreparationTime(val!),
               ),
 

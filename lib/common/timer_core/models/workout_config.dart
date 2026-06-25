@@ -24,7 +24,7 @@ abstract class WorkoutConfig {
     required this.hapticConfigs
   });
 
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings);
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases);
 }
 
 /// --- Implementation of real classes
@@ -32,11 +32,19 @@ abstract class WorkoutConfig {
 class EMOMConfig extends WorkoutConfig {
   final int roundDuration;
   final int totalMinutes;
-  EMOMConfig({required this.roundDuration, required this.totalMinutes, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId, required List<List<IntervalAudioConfig>> audioConfigs, required List<List<IntervalHapticConfig>> hapticConfigs})
-      : super(phaseType: TimerType.emom, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: audioConfigs, hapticConfigs: hapticConfigs);
+  EMOMConfig({
+    required this.roundDuration,
+    required this.totalMinutes,
+    required super.phaseTitle,
+    required super.phaseSetting,
+    required super.workoutTitle,
+    required super.workoutId,
+    required super.audioConfigs,
+    required super.hapticConfigs,
+  }) : super(phaseType: TimerType.emom);
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
     return List.generate(totalMinutes, (i) => WorkoutInterval(
       id: "emom_${DateTime.now().microsecondsSinceEpoch}_$i",
       title: ElandStrings.of('timer_emom').toUpperCase(),
@@ -44,11 +52,11 @@ class EMOMConfig extends WorkoutConfig {
       type: IntervalType.work,
       sourcePhase: phaseType,
       currentRound: i + 1,
+      currentSet: 1,
+      totalSet: 1,
       totalRound: totalMinutes,
       currentPhase: currentPhase,
       totalPhases: totalPhases,
-      nextPhaseTitle: nextPhaseTitle,
-      nextPhaseSettings: nextPhaseSettings,
       workoutId: workoutId,
       workoutTitle: workoutTitle,
       audioConfig: audioConfigs[i],
@@ -60,201 +68,227 @@ class EMOMConfig extends WorkoutConfig {
 
 /// +++ TABATA
 class TabataConfig extends WorkoutConfig {
-  final int workSeconds, restSeconds, roundsPerSet, totalSets, restBetweenSetsSeconds;
+  final int workSeconds, restSeconds, roundsPerSet, totalSets, restBetweenSets;
 
   TabataConfig({
     required this.workSeconds,
     required this.restSeconds,
     required this.roundsPerSet,
     required this.totalSets,
-    required this.restBetweenSetsSeconds,
-    required String phaseTitle,
-    required String phaseSetting,
-    required String workoutTitle,
-    required String workoutId,
-    // Nota: passiamo liste di liste perché ogni intervallo (work/rest) ha la sua config
-    required List<List<IntervalAudioConfig>> audioConfigs,
-    required List<List<IntervalHapticConfig>> hapticConfigs,
-  }) : super(
-    phaseType: TimerType.tabata,
-    phaseTitle: phaseTitle,
-    phaseSetting: phaseSetting,
-    workoutTitle: workoutTitle,
-    workoutId: workoutId,
-    audioConfigs: audioConfigs,
-    hapticConfigs: hapticConfigs,
-  );
+    required this.restBetweenSets,
+    required super.phaseTitle,
+    required super.phaseSetting,
+    required super.workoutTitle,
+    required super.workoutId,
+    required super.audioConfigs,
+    required super.hapticConfigs,
+  }) : super(phaseType: TimerType.tabata);
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
-    List<WorkoutInterval> intervals = [];
-    int intervalIndex = 0; // Per mappare correttamente le config audio/haptic
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
 
-    for (int set = 1; set <= totalSets; set++) {
-      for (int round = 1; round <= roundsPerSet; round++) {
+    final totalIntervals = (roundsPerSet * totalSets * 2) - 1;
 
-        // 1. Intervallo di LAVORO
-        intervals.add(WorkoutInterval(
-          id: "tabata_work_${set}_$round",
-          title: "LAVORO",
+    final List<WorkoutInterval> intervals = List.generate(totalIntervals, (i){
+      bool isWork = i.isEven;
+      int currentRound = (i ~/ 2) % roundsPerSet +1;
+      int currentSets = i ~/ (roundsPerSet * 2) + 1;
+
+      if(isWork){
+        return WorkoutInterval(
+          id: "tabata_work_$i",
+          title: ElandStrings.of('timer_tabata').toUpperCase(),
           durationSeconds: workSeconds,
           type: IntervalType.work,
           sourcePhase: phaseType,
+          currentRound: currentRound,
+          totalRound: roundsPerSet,
+          currentSet: currentSets,
+          totalSet: totalSets,
           currentPhase: currentPhase,
           totalPhases: totalPhases,
-          currentRound: round,
-          totalRound: roundsPerSet,
-          nextPhaseTitle: nextPhaseTitle,
-          nextPhaseSettings: nextPhaseSettings,
-          workoutTitle: workoutTitle,
           workoutId: workoutId,
-          audioConfig: audioConfigs[intervalIndex], // Config corretta per questo step
-          hapticConfig: hapticConfigs[intervalIndex],
-        ));
-        intervalIndex++;
-
-        // 2. Intervallo di RIPOSO
-        intervals.add(WorkoutInterval(
-          id: "tabata_rest_${set}_$round",
-          title: "RIPOSO",
-          durationSeconds: restSeconds,
+          workoutTitle: workoutTitle,
+          audioConfig: audioConfigs[i],
+          hapticConfig: hapticConfigs[i],
+        );
+      }else{
+        return WorkoutInterval(
+          id: "tabata_rest_$i",
+          title: ElandStrings.of('timer_tabata').toUpperCase(),
+          durationSeconds: currentRound == roundsPerSet ? restBetweenSets : restSeconds,
           type: IntervalType.rest,
           sourcePhase: phaseType,
+          currentRound: currentRound,
+          totalRound: roundsPerSet,
+          currentSet: currentSets,
+          totalSet: totalSets,
           currentPhase: currentPhase,
           totalPhases: totalPhases,
-          currentRound: round,
-          totalRound: roundsPerSet,
-          nextPhaseTitle: nextPhaseTitle,
-          nextPhaseSettings: nextPhaseSettings,
-          workoutTitle: workoutTitle,
           workoutId: workoutId,
-          audioConfig: audioConfigs[intervalIndex],
-          hapticConfig: hapticConfigs[intervalIndex],
-        ));
-        intervalIndex++;
+          workoutTitle: workoutTitle,
+          audioConfig: audioConfigs[i],
+          hapticConfig: hapticConfigs[i],
+        );
       }
+    });
 
-      // 3. (Opzionale) Gestione pausa tra set
-      // Se vuoi aggiungere un intervallo di pausa extra tra i set, andrebbe aggiunto qui
-    }
     return intervals;
   }
 }
 
-/*
-// TODO: from here
-
+/// +++ AMRAP
 class AMRAPConfig extends WorkoutConfig {
   final int totalMinutes;
+  final int totalSeconds;
   AMRAPConfig({
     required this.totalMinutes,
-    required String phaseTitle,
-    required String phaseSetting,
-    required String workoutTitle,
-    required String workoutId,
-    required List<IntervalAudioConfig> audioConfigs,
-    required List<IntervalHapticConfig> hapticConfigs,
-  }) : super(phaseType: TimerType.amrap, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: [audioConfigs], hapticConfigs: [hapticConfigs]);
+    required this.totalSeconds,
+    required super.phaseTitle,
+    required super.phaseSetting,
+    required super.workoutTitle,
+    required super.workoutId,
+    required super.audioConfigs,
+    required super.hapticConfigs
+  }) : super(
+    phaseType: TimerType.amrap
+  );
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
     return [WorkoutInterval(
       id: "amrap_${DateTime.now().microsecondsSinceEpoch}",
-      title: "AMRAP",
-      durationSeconds: totalMinutes * 60,
+      title: ElandStrings.of('timer_amrap').toUpperCase(),
+      durationSeconds: totalMinutes * 60 + totalSeconds,
       type: IntervalType.work,
       sourcePhase: phaseType,
-      currentPhase: currentPhase,
-      totalPhases: totalPhases,
       currentRound: 1,
       totalRound: 1,
-      nextPhaseTitle: nextPhaseTitle,
-      nextPhaseSettings: nextPhaseSettings,
-      workoutTitle: workoutTitle,
+      currentSet: 1,
+      totalSet: 1,
+      currentPhase: currentPhase,
+      totalPhases: totalPhases,
       workoutId: workoutId,
-      audioConfig: audioConfigs,
-      hapticConfig: hapticConfigs,
+      workoutTitle: workoutTitle,
+      audioConfig: audioConfigs[0],
+      hapticConfig: hapticConfigs[0],
     )];
   }
 }
 
-class ForTimeConfig extends WorkoutConfig {
+/// +++ FORTIME
+class FortimeConfig extends WorkoutConfig {
   final int totalMinutes;
-  ForTimeConfig({required this.totalMinutes, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId, required List<IntervalAudioConfig> audioConfigs, required List<IntervalHapticConfig> hapticConfigs})
-      : super(phaseType: TimerType.fortime, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: [audioConfigs], hapticConfigs: [hapticConfigs]);
+  final int totalSeconds;
+  FortimeConfig({
+    required this.totalMinutes,
+    required this.totalSeconds,
+    required super.phaseTitle,
+    required super.phaseSetting,
+    required super.workoutTitle,
+    required super.workoutId,
+    required super.audioConfigs,
+    required super.hapticConfigs
+  }) : super(
+      phaseType: TimerType.fortime
+  );
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
     return [WorkoutInterval(
       id: "fortime_${DateTime.now().microsecondsSinceEpoch}",
-      title: "FOR TIME",
-      durationSeconds: totalMinutes * 60,
+      title: ElandStrings.of('timer_fortime').toUpperCase(),
+      durationSeconds: totalMinutes * 60 + totalSeconds,
       type: IntervalType.work,
       sourcePhase: phaseType,
-      currentPhase: currentPhase,
-      totalPhases: totalPhases,
       currentRound: 1,
       totalRound: 1,
-      nextPhaseTitle: nextPhaseTitle,
-      nextPhaseSettings: nextPhaseSettings,
-      workoutTitle: workoutTitle,
+      currentSet: 1,
+      totalSet: 1,
+      currentPhase: currentPhase,
+      totalPhases: totalPhases,
       workoutId: workoutId,
-      audioConfig: audioConfigs,
-      hapticConfig: hapticConfigs,
+      workoutTitle: workoutTitle,
+      audioConfig: audioConfigs[0],
+      hapticConfig: hapticConfigs[0],
     )];
   }
 }
 
+/// +++ COUNTDOWN
 class CountdownConfig extends WorkoutConfig {
-  final int minutes, seconds;
-  CountdownConfig({required this.minutes, required this.seconds, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId, required List<IntervalAudioConfig> audioConfigs, required List<IntervalHapticConfig> hapticConfigs})
-      : super(phaseType: TimerType.countdown, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: [audioConfigs], hapticConfigs: [hapticConfigs]);
+  final int totalMinutes;
+  final int totalSeconds;
+  CountdownConfig({
+    required this.totalMinutes,
+    required this.totalSeconds,
+    required super.phaseTitle,
+    required super.phaseSetting,
+    required super.workoutTitle,
+    required super.workoutId,
+    required super.audioConfigs,
+    required super.hapticConfigs
+  }) : super(
+      phaseType: TimerType.countdown
+  );
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
     return [WorkoutInterval(
       id: "countdown_${DateTime.now().microsecondsSinceEpoch}",
-      title: "COUNTDOWN",
-      durationSeconds: (minutes * 60) + seconds,
+      title: ElandStrings.of('timer_countdown').toUpperCase(),
+      durationSeconds: totalMinutes * 60 + totalSeconds,
       type: IntervalType.work,
       sourcePhase: phaseType,
-      currentPhase: currentPhase,
-      totalPhases: totalPhases,
       currentRound: 1,
       totalRound: 1,
-      nextPhaseTitle: nextPhaseTitle,
-      nextPhaseSettings: nextPhaseSettings,
-      workoutTitle: workoutTitle,
+      currentSet: 1,
+      totalSet: 1,
+      currentPhase: currentPhase,
+      totalPhases: totalPhases,
       workoutId: workoutId,
-      audioConfig: audioConfigs,
-      hapticConfig: hapticConfigs,
+      workoutTitle: workoutTitle,
+      audioConfig: audioConfigs[0],
+      hapticConfig: hapticConfigs[0],
     )];
   }
 }
 
+/// +++ REST
 class RestConfig extends WorkoutConfig {
-  final int durationSeconds;
-  RestConfig({required this.durationSeconds, required String phaseTitle, required String phaseSetting, required String workoutTitle, required String workoutId, required List<IntervalAudioConfig> audioConfigs, required List<IntervalHapticConfig> hapticConfigs})
-      : super(phaseType: TimerType.rest, phaseTitle: phaseTitle, phaseSetting: phaseSetting, workoutTitle: workoutTitle, workoutId: workoutId, audioConfigs: [audioConfigs], hapticConfigs: [hapticConfigs]);
+  final int totalMinutes;
+  final int totalSeconds;
+  RestConfig({
+    required this.totalMinutes,
+    required this.totalSeconds,
+    required super.phaseTitle,
+    required super.phaseSetting,
+    required super.workoutTitle,
+    required super.workoutId,
+    required super.audioConfigs,
+    required super.hapticConfigs
+  }) : super(
+      phaseType: TimerType.rest
+  );
 
   @override
-  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases, String nextPhaseTitle, String nextPhaseSettings) {
+  List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
     return [WorkoutInterval(
       id: "rest_${DateTime.now().microsecondsSinceEpoch}",
-      title: "RIPOSO",
-      durationSeconds: durationSeconds,
+      title: ElandStrings.of('timer_rest').toUpperCase(),
+      durationSeconds: totalMinutes * 60 + totalSeconds,
       type: IntervalType.rest,
       sourcePhase: phaseType,
-      currentPhase: currentPhase,
-      totalPhases: totalPhases,
       currentRound: 1,
       totalRound: 1,
-      nextPhaseTitle: nextPhaseTitle,
-      nextPhaseSettings: nextPhaseSettings,
-      workoutTitle: workoutTitle,
+      currentSet: 1,
+      totalSet: 1,
+      currentPhase: currentPhase,
+      totalPhases: totalPhases,
       workoutId: workoutId,
-      audioConfig: audioConfigs,
-      hapticConfig: hapticConfigs,
+      workoutTitle: workoutTitle,
+      audioConfig: audioConfigs[0],
+      hapticConfig: hapticConfigs[0],
     )];
   }
-}*/
+}

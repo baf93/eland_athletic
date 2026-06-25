@@ -4,6 +4,9 @@ import '../common/widgets/timer_row_item.dart';
 import '../common/timer_core/ui/emom_settings_page.dart';
 import '../common/timer_core/ui/stopwatch_page.dart';
 import '../common/timer_core/ui/tabata_settings_page.dart';
+import '../common/timer_core/ui/amrap_settings_page.dart';
+import '../common/timer_core/ui/fortime_settings_page.dart';
+import '../common/timer_core/ui/countdown_settings_page.dart';
 
 class TimerListPage extends StatelessWidget {
   const TimerListPage({super.key});
@@ -87,13 +90,25 @@ class TimerListPage extends StatelessWidget {
               TimerRowItem(
                 icon: Icons.all_inclusive_rounded,
                 title: ElandStrings.of('timer_amrap').toUpperCase(),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const AmrapSettingsPage(),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 12),
               TimerRowItem(
                 icon: Icons.timer_10_outlined,
                 title: ElandStrings.of('timer_fortime').toUpperCase(),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const FortimeSettingsPage(),
+                    ),
+                  );
+                },
               ),
 
               const SizedBox(height: 28),
@@ -112,7 +127,13 @@ class TimerListPage extends StatelessWidget {
               TimerRowItem(
                 icon: Icons.hourglass_bottom_rounded,
                 title: ElandStrings.of('timer_countdown').toUpperCase(),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CountdownSettingsPage(),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 12),
               TimerRowItem(

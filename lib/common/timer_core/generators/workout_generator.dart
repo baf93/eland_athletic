@@ -11,22 +11,10 @@ class WorkoutGenerator {
         .entries
         .expand((entry) {
       final int currentIndex = entry.key;
-      final int nextIndex = currentIndex + 1;
-
-      final bool hasNext = nextIndex < sessionConfigs.length;
-
-      final String nextTitle = hasNext
-          ? sessionConfigs[nextIndex].phaseTitle
-          : "";
-      final String nextSetting = hasNext
-          ? sessionConfigs[nextIndex].phaseSetting
-          : "";
 
       return entry.value.toIntervals(
           currentIndex + 1,
-          totalPhases,
-          nextTitle,
-          nextSetting
+          totalPhases
       );
     }).toList();
 

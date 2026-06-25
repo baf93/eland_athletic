@@ -17,6 +17,8 @@ class TimerState {
   final String workoutId;
   final int currentRound;
   final int totalRound;
+  final int currentSet;
+  final int totalSet;
 
   const TimerState({
     required this.remainingSeconds,
@@ -34,6 +36,8 @@ class TimerState {
     required this.workoutId,
     required this.currentRound,
     required this.totalRound,
+    required this.currentSet,
+    required this.totalSet
   });
 
   factory TimerState.initial() {
@@ -53,6 +57,8 @@ class TimerState {
       workoutId: '',
       currentRound: 1,
       totalRound: 1,
+      currentSet: 1,
+      totalSet: 1
     );
   }
 
@@ -72,6 +78,8 @@ class TimerState {
     String? workoutId,
     int? totalRound,
     int? currentRound,
+    int? currentSet,
+    int? totalSet
   }) {
     return TimerState(
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
@@ -89,6 +97,8 @@ class TimerState {
       workoutId: workoutId ?? this.workoutId,
       currentRound: currentRound ?? this.currentRound,
       totalRound: totalRound ?? this.totalRound,
+      currentSet: currentSet ?? this.currentSet,
+      totalSet: totalSet ?? this.totalSet
     );
   }
 }
