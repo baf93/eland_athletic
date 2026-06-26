@@ -81,6 +81,11 @@ class ElandStrings {
       'rest_between_set': 'Rest between sets',
       'total_time': 'Total Time',
 
+      //Workout UI
+      'no_notes_available': 'No notes available',
+      'workout_phase_notes_title': 'Phase Notes',
+      'workout_phases_title': 'Workout phase list',
+
       //Utils
       'start_btn': 'Start',
       'save_btn': 'Save',
@@ -89,6 +94,10 @@ class ElandStrings {
       'stopwatch_running': 'Stopwatch running...',
       'notification_title': 'ELAND Athletic',
       'ok_btn': 'OK',
+      'phases': 'Phases',
+      'phase': 'Phase',
+      'next': 'Next',
+      'workout_complete': 'Done',
     },
 
     AppLanguage.it: {
@@ -168,6 +177,11 @@ class ElandStrings {
       'rest_between_set': 'Riposo tra i set',
       'total_time': 'Tempo totale',
 
+      // Workout UI
+      'no_notes_available': 'Nessuna nota disponibile',
+      'workout_phase_notes_title': 'Note della fase',
+      'workout_phases_title': 'Lista delle fasi',
+
       //Utils
       'start_btn': 'Inizia',
       'save_btn': 'Salva',
@@ -176,6 +190,10 @@ class ElandStrings {
       'stopwatch_running': 'Cronometro avviato...',
       'notification_title': 'ELAND Athletic',
       'ok_btn': 'OK',
+      'phases': 'Fasi',
+      'phase': 'Fase',
+      'next': 'Prossimo',
+      'workout_complete': 'Completato'
     },
   };
 

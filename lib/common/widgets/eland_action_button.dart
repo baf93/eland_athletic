@@ -23,15 +23,14 @@ class ElandActionButton extends StatelessWidget {
     return InkWell(
       onTap: onPressed,
       customBorder: const CircleBorder(),
-      splashColor: iconColor?.withAlpha(50),
       child: Container(
         width: size,
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: elandColors.cardBorder!, width: 1),
+          border: Border.all(color: elandColors.cardBorder!, width: 2),
         ),
-        child: Icon(icon, color: iconColor, size: size * 0.43), // Proporzionale alla dimensione
+        child: Icon(icon, color: iconColor, size: size * 0.43),
       ),
     );
   }

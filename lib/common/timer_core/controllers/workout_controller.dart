@@ -53,6 +53,6 @@ class WorkoutController {
   }
 
   void skipPhase(){
-    return;
+    _service.invoke('skipPhase');
   }
 }

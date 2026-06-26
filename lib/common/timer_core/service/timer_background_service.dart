@@ -433,6 +433,16 @@ class TimerBackgroundService {
       }
     });
 
+    service.on('skipPhase').listen((event){
+      if (stopWatchMode == true) return;
+
+      ticker?.cancel();
+      accumulatedMsDuringStop = 0;
+      timerStartTime = null;
+      currentIntervalIndex++;
+      runInterval();
+    });
+
     service.invoke('serviceReady');
   }
 }
