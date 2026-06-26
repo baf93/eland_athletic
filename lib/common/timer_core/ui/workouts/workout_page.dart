@@ -1,3 +1,4 @@
+import 'package:eland_athletic/common/widgets/primary_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +19,7 @@ import 'fortime_workout.dart';
 import 'rest_workout.dart';
 import 'tabata_workout.dart';
 import 'prepare_workout.dart';
+import 'workout_complete.dart';
 
 class WorkoutPage extends ConsumerStatefulWidget {
   const WorkoutPage({super.key});
@@ -31,14 +33,25 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
 
   /// Dynamic loading of the workout body
   Widget _buildWorkoutSpecificBody(TimerState timerState) {
-    switch (timerState.timerType) {
-      case TimerType.tabata: return TabataWorkoutWidget(timerState: timerState);
-      case TimerType.emom: return EmomWorkoutWidget(timerState: timerState);
-      case TimerType.fortime: return FortimeWorkoutWidget(timerState: timerState);
-      case TimerType.rest: return RestWorkoutWidget(timerState: timerState);
-      case TimerType.amrap: return AmrapWorkoutWidget(timerState: timerState);
-      case TimerType.countdown: return CountdownWorkoutWidget(timerState: timerState);
-      case TimerType.preparation: return PrepareWorkoutWidget(timerState: timerState);
+    if (timerState.status == TimerStatus.completed){
+      return WorkoutCompleteWidget();
+    }else{
+      switch (timerState.timerType) {
+        case TimerType.tabata:
+          return TabataWorkoutWidget(timerState: timerState);
+        case TimerType.emom:
+          return EmomWorkoutWidget(timerState: timerState);
+        case TimerType.fortime:
+          return FortimeWorkoutWidget(timerState: timerState);
+        case TimerType.rest:
+          return RestWorkoutWidget(timerState: timerState);
+        case TimerType.amrap:
+          return AmrapWorkoutWidget(timerState: timerState, onIncrement: () => {}, onDecrement: () => {});
+        case TimerType.countdown:
+          return CountdownWorkoutWidget(timerState: timerState);
+        case TimerType.preparation:
+          return PrepareWorkoutWidget(timerState: timerState);
+      }
     }
   }
 
@@ -185,10 +198,10 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
 
     showElandDialog(
         context: context,
-        title: "Terminare Allenamento?",
-        content: "Sei sicuro di voler chiudere la sessione corrente?",
-        cancelText: "ANNULLA",
-        confirmText: "TERMINA",
+        title: ElandStrings.of('workout_abort_title').toUpperCase(),
+        content: ElandStrings.of('workout_abort_desc'),
+        cancelText: ElandStrings.of('cancel_btn').toUpperCase(),
+        confirmText: ElandStrings.of('ok_btn').toUpperCase(),
         onResult: (confirmed) {
           if(confirmed){
             WorkoutController.instance.stopWorkout();
@@ -279,6 +292,8 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
               children: [
                 Container(height: 1, color: theme.dividerColor),
                 const SizedBox(height: 20),
+                timerState.status == TimerStatus.completed ?
+                    PrimaryActionButton(height: 75, icon: Icons.waving_hand_rounded, label: ElandStrings.of('high_five').toUpperCase(), onPressed: () => _saveAndExit(timerState)) :
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

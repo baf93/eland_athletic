@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../common/strings.dart';
 import '../common/widgets/timer_row_item.dart';
 import '../common/timer_core/ui/settings/emom_settings_page.dart';
@@ -26,7 +27,10 @@ class TimerListPage extends StatelessWidget {
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => Navigator.maybePop(context),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            Navigator.maybePop(context);
+          },
         ),
         title: Text(
           ElandStrings.of('card_timer_title').toUpperCase(),
@@ -67,6 +71,7 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.fitness_center_rounded,
                 title: ElandStrings.of('timer_tabata').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => const TabataSettingsPage(),
@@ -79,6 +84,7 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.loop_rounded,
                 title: ElandStrings.of('timer_emom').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const EMOMSettingsPage(),
@@ -91,6 +97,7 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.all_inclusive_rounded,
                 title: ElandStrings.of('timer_amrap').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const AmrapSettingsPage(),
@@ -103,6 +110,7 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.timer_10_outlined,
                 title: ElandStrings.of('timer_fortime').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const FortimeSettingsPage(),
@@ -128,6 +136,7 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.hourglass_bottom_rounded,
                 title: ElandStrings.of('timer_countdown').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const CountdownSettingsPage(),
@@ -140,6 +149,7 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.shutter_speed_rounded,
                 title: ElandStrings.of('timer_stopwatch').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const StopwatchPage(),

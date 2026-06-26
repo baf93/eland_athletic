@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import '../../models/timer_state.dart';
+import '../../../strings.dart';
 
 class EmomWorkoutWidget extends StatelessWidget {
-  final dynamic timerState;
+  final TimerState timerState;
 
   const EmomWorkoutWidget({super.key, required this.timerState});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final double progress = 1.0 - (timerState.intervalProgress);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -14,26 +20,65 @@ class EmomWorkoutWidget extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             SizedBox(
-              width: 260,
-              height: 260,
+              width: 300,
+              height: 300,
               child: CircularProgressIndicator(
-                value: timerState.intervalProgress,
-                strokeWidth: 6,
-                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFE69138)),
-                backgroundColor: Colors.white10,
+                value: progress,
+                strokeWidth: 16,
+                valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                backgroundColor: theme.colorScheme.onSurface.withAlpha(30),
               ),
             ),
             Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const Text("ROUND", style: TextStyle(color: Colors.white54, letterSpacing: 2)),
                 Text(
-                  "${timerState.currentRound ?? 1}", // Assumi che ci sia currentRound
-                  style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.white),
+                  ElandStrings.of('round').toUpperCase(),
+                  style: TextStyle(
+                    color: theme.colorScheme.primary,
+                    fontSize: 16,
+                    letterSpacing: 4,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
-                const SizedBox(height: 10),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      '${timerState.currentRound}',
+                      style: TextStyle(
+                        fontSize: 84,
+                        fontWeight: FontWeight.w900,
+                        color: theme.textTheme.headlineLarge?.color,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4, bottom: 12),
+                      child: Text(
+                        "/${timerState.totalRound}",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                          color: theme.textTheme.bodyMedium?.color?.withAlpha(150),
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 Text(
-                  "${(timerState.remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(timerState.remainingSeconds % 60).toString().padLeft(2, '0')}",
-                  style: const TextStyle(fontSize: 24, color: Colors.white70),
+                  _formatTime(timerState.remainingSeconds),
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                    color: theme.textTheme.bodyMedium?.color?.withAlpha(200),
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
               ],
             ),
@@ -41,5 +86,10 @@ class EmomWorkoutWidget extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _formatTime(int s) {
+    final absS = s.abs();
+    return '${(absS ~/ 60).toString().padLeft(2, '0')}:${(absS % 60).toString().padLeft(2, '0')}';
   }
 }

@@ -61,7 +61,7 @@ class PhaseBar extends StatelessWidget {
                   Text(
                     nextPhase != null
                         ? nextPhase.title
-                        : ElandStrings.of('workout_complete').toUpperCase(),
+                        : ElandStrings.of('phase_complete').toUpperCase(),
                     textAlign: TextAlign.end,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../common/strings.dart';
 import '../common/widgets/eland_card.dart';
@@ -24,6 +25,7 @@ class FocusPage extends ConsumerWidget {
                   IconButton(
                     icon: const Icon(Icons.settings, size: 26),
                     onPressed: () {
+                      HapticFeedback.lightImpact();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -98,6 +100,7 @@ class FocusPage extends ConsumerWidget {
             ElandCard(
               title: ElandStrings.of('card_timer_title'),
               onTap: () {
+                HapticFeedback.lightImpact();
                 Navigator.push(
                   context,
                   MaterialPageRoute(

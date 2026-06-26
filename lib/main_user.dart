@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:eland_athletic/user_app/timer_list_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'common/theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -145,6 +146,7 @@ class _UserDashboardState extends State<UserDashboard> {
           child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) {
+            HapticFeedback.lightImpact();
             setState(() {
               _currentIndex = index;
             });

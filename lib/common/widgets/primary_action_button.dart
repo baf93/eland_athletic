@@ -5,6 +5,8 @@ class PrimaryActionButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Color? backgroundColor;
   final Color? foregroundColor;
+  final IconData? icon;
+  final double height;
 
   const PrimaryActionButton({
     super.key,
@@ -12,6 +14,8 @@ class PrimaryActionButton extends StatelessWidget {
     required this.onPressed,
     this.backgroundColor,
     this.foregroundColor,
+    this.icon,
+    this.height = 60,
   });
 
   @override
@@ -24,19 +28,28 @@ class PrimaryActionButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? theme.colorScheme.primary,
           foregroundColor: foregroundColor ?? theme.colorScheme.onPrimary,
-          minimumSize: const Size(double.infinity, 60),
+          minimumSize: Size(double.infinity, height),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
         ),
         onPressed: onPressed,
-        child: Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 28),
+              const SizedBox(width: 12),
+            ],
+            Text(
+              label.toUpperCase(),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -87,6 +87,14 @@ class ElandStrings {
       'no_notes_available': 'No notes available',
       'workout_phase_notes_title': 'Phase Notes',
       'workout_phases_title': 'Workout phase list',
+      'workout_abort_title': 'Cancel Workout',
+      'workout_abort_desc': 'Are you sure you want to exit the current workout?',
+      'high_five': 'High Five!',
+      'workout_completed': 'Workout\nCompleted',
+      'great_job': 'Great Job!',
+      'get_ready': 'Get Ready',
+      'get_ready_desc': 'Focus on your goal.',
+      'round': 'round',
 
       //Utils
       'start_btn': 'Start',
@@ -96,10 +104,12 @@ class ElandStrings {
       'stopwatch_running': 'Stopwatch running...',
       'notification_title': 'ELAND Athletic',
       'ok_btn': 'OK',
+      'cancel_btn': 'Cancel',
       'phases': 'Phases',
       'phase': 'Phase',
       'next': 'Next',
-      'workout_complete': 'Done',
+      'phase_complete': 'Done',
+      'time': 'Time',
     },
 
     AppLanguage.it: {
@@ -185,6 +195,14 @@ class ElandStrings {
       'no_notes_available': 'Nessuna nota disponibile',
       'workout_phase_notes_title': 'Note della fase',
       'workout_phases_title': 'Lista delle fasi',
+      'workout_abort_title': 'Annulla allenamento',
+      'workout_abort_desc': 'Sei sicuro di voler chiudere la sessione corrente?',
+      'high_five': 'Batti il cinque!',
+      'workout_completed': 'Allenamento\nCompletato',
+      'great_job': 'Ottimo Lavoro!',
+      'get_ready': 'Preparati',
+      'get_ready_desc': 'Concentrati sul tuo obiettivo.',
+      'round': 'round',
 
       //Utils
       'start_btn': 'Inizia',
@@ -194,10 +212,12 @@ class ElandStrings {
       'stopwatch_running': 'Cronometro avviato...',
       'notification_title': 'ELAND Athletic',
       'ok_btn': 'OK',
+      'cancel_btn': 'Annulla',
       'phases': 'Fasi',
       'phase': 'Fase',
       'next': 'Prossimo',
-      'workout_complete': 'Completato'
+      'phase_complete': 'Completato',
+      'time': 'Tempo',
     },
   };
 

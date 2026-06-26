@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../common/strings.dart';
 import 'providers/settings_provider.dart';
@@ -30,7 +31,10 @@ class SettingsPage extends ConsumerWidget {
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => Navigator.maybePop(context),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            Navigator.maybePop(context);
+          },
         ),
         title: Text(
           ElandStrings.of('setting_title').toUpperCase(),
@@ -56,7 +60,10 @@ class SettingsPage extends ConsumerWidget {
                 subtitle: ElandStrings.of('setting_lang_subtitle'),
                 value: settings.language,
                 items: const ['it', 'en'],
-                onChanged: (val) => settingsNotifier.updateLanguage(val!),
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.updateLanguage(val!);
+                },
               ),
 
               SettingsDropdownTile<int>(
@@ -65,7 +72,10 @@ class SettingsPage extends ConsumerWidget {
                 subtitle: ElandStrings.of('setting_prep_subtitle'),
                 value: settings.preparationTime,
                 items: const [0, 5, 10, 15, 30, 45, 60],
-                onChanged: (val) => settingsNotifier.updatePreparationTime(val!),
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.updatePreparationTime(val!);
+                },
               ),
 
               SettingsSwitchTile(
@@ -73,7 +83,10 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('setting_metric_title'),
                 subtitle: ElandStrings.of('setting_metric_subtitle'),
                 value: settings.useMetricUnits,
-                onChanged: settingsNotifier.toggleMetricUnits,
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.toggleMetricUnits(val);
+                },
               ),
 
               const SizedBox(height: 24),
@@ -86,7 +99,10 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('setting_theme_title'),
                 subtitle: ElandStrings.of('setting_theme_subtitle'),
                 value: settings.isDarkMode,
-                onChanged: settingsNotifier.toggleDarkMode,
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.toggleDarkMode(val);
+                },
               ),
 
               SettingsColorSelector(
@@ -94,7 +110,10 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('setting_color_title'),
                 colors: ElandColors.customPalette,
                 selectedIndex: settings.primaryColorIndex,
-                onColorSelected: (index) => settingsNotifier.updatePrimaryColor(index),
+                onColorSelected: (index) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.updatePrimaryColor(index);
+                },
               ),
 
               const SizedBox(height: 24),
@@ -107,7 +126,10 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('setting_sound_title'),
                 subtitle: ElandStrings.of('setting_sound_subtitle'),
                 value: settings.soundEnabled,
-                onChanged: settingsNotifier.toggleSound,
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.toggleSound(val);
+                },
               ),
 
               SettingsSwitchTile(
@@ -115,7 +137,10 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('setting_haptic_title'),
                 subtitle: ElandStrings.of('setting_haptic_subtitle'),
                 value: settings.hapticFeedback,
-                onChanged: settingsNotifier.toggleHaptic,
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.toggleHaptic(val);
+                },
               ),
 
               SettingsSwitchTile(
@@ -123,7 +148,10 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('setting_screen_title'),
                 subtitle: ElandStrings.of('setting_screen_subtitle'),
                 value: settings.keepScreenOn,
-                onChanged: settingsNotifier.toggleKeepScreenOn,
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.toggleKeepScreenOn(val);
+                },
               ),
 
               const SizedBox(height: 16),
@@ -134,6 +162,7 @@ class SettingsPage extends ConsumerWidget {
                 subtitle: ElandStrings.of('action_permissions_subtitle'),
                 trailing: const Icon(Icons.open_in_new_rounded, size: 18),
                 onTap: () async {
+                  HapticFeedback.lightImpact();
                   await openAppSettings();
                 },
               ),
@@ -249,6 +278,7 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('action_source_code'),
                 subtitle: ElandStrings.of('action_source_code_sub'),
                 onTap: () async {
+                  HapticFeedback.lightImpact();
                   final Uri url = Uri.parse('https://github.com/baf93/eland_athletic');
 
                   await launchUrl(
@@ -262,6 +292,7 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('action_license'),
                 subtitle: ElandStrings.of('action_license_sub'),
                 onTap: () async {
+                  HapticFeedback.lightImpact();
                   final Uri url = Uri.parse('https://creativecommons.org/licenses/by-nc/4.0/');
 
                   await launchUrl(
@@ -279,6 +310,7 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('action_tts_voice'),
                 subtitle: '',
                 onTap: () async {
+                  HapticFeedback.lightImpact();
                   final Uri url = Uri.parse('https://ttsmp3.com/');
 
                   await launchUrl(
@@ -292,6 +324,7 @@ class SettingsPage extends ConsumerWidget {
               Center(
                 child: TextButton(
                   onPressed: () {
+                    HapticFeedback.lightImpact();
                     showLicensePage(
                       context: context,
                       applicationName: ElandStrings.of('app_name_user'),

@@ -1,6 +1,7 @@
 import 'package:eland_athletic/common/timer_core/models/interval_audio_haptic_config.dart';
 import 'package:eland_athletic/common/timer_core/models/timercore_enums.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../generators/workout_generator.dart';
 import '../../controllers/workout_controller.dart';
 import '../../models/workout_config.dart';
@@ -90,7 +91,10 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => Navigator.maybePop(context),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            Navigator.maybePop(context);
+          },
         ),
         title: Text(
           ElandStrings.of('timer_emom').toUpperCase(),
@@ -150,7 +154,10 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
               padding: const EdgeInsets.only(top: 20, bottom: 20),
               child: PrimaryActionButton(
                 label: ElandStrings.of('start_btn'),
-                onPressed: _startWorkout,
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  _startWorkout();
+                },
               ),
             ),
           ],
