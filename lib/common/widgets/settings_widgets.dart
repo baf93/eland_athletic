@@ -195,3 +195,70 @@ class SettingsInfoCard extends StatelessWidget {
     );
   }
 }
+
+/// Settings row selector for colors
+class SettingsColorSelector extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final List<Color> colors;
+  final int selectedIndex;
+  final ValueChanged<int> onColorSelected;
+
+  const SettingsColorSelector({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.colors,
+    required this.selectedIndex,
+    required this.onColorSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: Icon(icon, color: theme.colorScheme.primary),
+          title: Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          alignment: WrapAlignment.center,
+          children: List.generate(colors.length, (index) {
+            final isSelected = selectedIndex == index;
+            return GestureDetector(
+              onTap: () => onColorSelected(index),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: colors[index],
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isSelected
+                        ? theme.colorScheme.onSurface
+                        : Colors.transparent,
+                    width: 3,
+                  ),
+                ),
+                child: isSelected
+                    ? Icon(Icons.check, size: 20, color: theme.colorScheme.onSurface)
+                    : null,
+              ),
+            );
+          }),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+}

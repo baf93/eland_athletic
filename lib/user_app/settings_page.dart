@@ -5,6 +5,7 @@ import 'providers/settings_provider.dart';
 import '../common/widgets/settings_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../common/theme.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -68,6 +69,19 @@ class SettingsPage extends ConsumerWidget {
               ),
 
               SettingsSwitchTile(
+                icon: Icons.fitness_center_rounded,
+                title: ElandStrings.of('setting_metric_title'),
+                subtitle: ElandStrings.of('setting_metric_subtitle'),
+                value: settings.useMetricUnits,
+                onChanged: settingsNotifier.toggleMetricUnits,
+              ),
+
+              const SizedBox(height: 24),
+
+              // Choose your mood
+              SettingsSectionTitle(title: ElandStrings.of('mood_selection').toUpperCase()),
+
+              SettingsSwitchTile(
                 icon: Icons.dark_mode_rounded,
                 title: ElandStrings.of('setting_theme_title'),
                 subtitle: ElandStrings.of('setting_theme_subtitle'),
@@ -75,12 +89,12 @@ class SettingsPage extends ConsumerWidget {
                 onChanged: settingsNotifier.toggleDarkMode,
               ),
 
-              SettingsSwitchTile(
-                icon: Icons.fitness_center_rounded,
-                title: ElandStrings.of('setting_metric_title'),
-                subtitle: ElandStrings.of('setting_metric_subtitle'),
-                value: settings.useMetricUnits,
-                onChanged: settingsNotifier.toggleMetricUnits,
+              SettingsColorSelector(
+                icon: Icons.palette_rounded,
+                title: ElandStrings.of('setting_color_title'),
+                colors: ElandColors.customPalette,
+                selectedIndex: settings.primaryColorIndex,
+                onColorSelected: (index) => settingsNotifier.updatePrimaryColor(index),
               ),
 
               const SizedBox(height: 24),

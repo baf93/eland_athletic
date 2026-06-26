@@ -105,3 +105,14 @@ class ElandTheme {
     );
   }
 }
+
+class ElandColors {
+  static const List<Color> customPalette = [
+    Color(0xFFFF9500), // 1. Eland Orange (Base)
+    Color(0xFFE74C3C), // 2. Sunset Red
+    Color(0xFFFFC107), // 3. Lemon Gold
+    Color(0xFF27AE60), // 4. Kelly Green
+    Color(0xFF3498DB), // 5. Sky Blue
+    Color(0xFF9B59B6), // 6. Electric Purple
+  ];
+}

@@ -57,6 +57,8 @@ class ElandStrings {
       'section_assets_resources': 'Asset and Resources',
       'action_tts_voice': 'Eland Voice',
       'button_third_party_licenses': 'Third Party Licenses',
+      'mood_selection': 'Select your mood',
+      'setting_color_title': 'How do you feel today?',
 
       //Timer Name
       'timer_tabata': 'Tabata',
@@ -153,6 +155,8 @@ class ElandStrings {
       'section_assets_resources': 'Asset e Risorse',
       'action_tts_voice': 'Voce di Eland',
       'button_third_party_licenses': 'Licenze di Terze Parti',
+      'mood_selection': 'Seleziona il tuo mood',
+      'setting_color_title': 'Come ti senti oggi?',
 
       //Timer Name
       'timer_tabata': 'Tabata',

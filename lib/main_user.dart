@@ -61,28 +61,39 @@ class ElandUserApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    
     final settings = ref.watch(settingsProvider);
 
     WakelockPlus.toggle(enable: settings.keepScreenOn);
-
     ElandStrings.initLocale(settings.language);
-    
+
+    final selectedColor = ElandColors.customPalette[settings.primaryColorIndex];
+
+    final lightColorScheme = ColorScheme.light(
+      primary: selectedColor,
+    );
+
+    final darkColorScheme = ColorScheme.dark(
+      primary: selectedColor,
+    );
+
+    final lightTheme = ElandTheme.lightTheme.copyWith(
+      colorScheme: lightColorScheme,
+    );
+
+    final darkTheme = ElandTheme.darkTheme.copyWith(
+      colorScheme: darkColorScheme,
+    );
+
     return MaterialApp(
       title: ElandStrings.of('app_name_user'),
-
-      // Set Route and navigatorkey for notification clicks
       navigatorKey: navigatorKey,
       routes: {
         '/timer_list': (context) => const TimerListPage(),
         '/workout': (context) => const WorkoutPage(),
       },
-
-      // Theme Injection
-      theme: ElandTheme.lightTheme,
-      darkTheme: ElandTheme.darkTheme,
+      theme: lightTheme,
+      darkTheme: darkTheme,
       themeMode: settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-
       home: UserDashboard(key: ValueKey(settings.language)),
     );
   }

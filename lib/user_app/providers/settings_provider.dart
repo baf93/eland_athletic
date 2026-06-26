@@ -11,6 +11,7 @@ class SettingsState {
   final bool hapticFeedback;
   final bool keepScreenOn;
   final String appVersion;
+  final int primaryColorIndex;
 
   SettingsState({
     required this.language,
@@ -21,6 +22,7 @@ class SettingsState {
     required this.hapticFeedback,
     required this.keepScreenOn,
     required this.appVersion,
+    this.primaryColorIndex = 0,
   });
 
   SettingsState copyWith({
@@ -32,6 +34,7 @@ class SettingsState {
     bool? hapticFeedback,
     bool? keepScreenOn,
     String? appVersion,
+    int? primaryColorIndex,
   }) {
     return SettingsState(
       language: language ?? this.language,
@@ -42,6 +45,7 @@ class SettingsState {
       hapticFeedback: hapticFeedback ?? this.hapticFeedback,
       keepScreenOn: keepScreenOn ?? this.keepScreenOn,
       appVersion: appVersion ?? this.appVersion,
+      primaryColorIndex: primaryColorIndex ?? this.primaryColorIndex,
     );
   }
 }
@@ -71,7 +75,8 @@ class SettingsNotifier extends Notifier<SettingsState> {
       soundEnabled: _prefs.getBool('soundEnabled') ?? true,
       hapticFeedback: _prefs.getBool('hapticFeedback') ?? true,
       keepScreenOn: _prefs.getBool('keepScreenOn') ?? true,
-      appVersion: 'N/A'
+      appVersion: 'N/A',
+      primaryColorIndex: _prefs.getInt('primaryColor') ?? 0,
     );
   }
 
@@ -121,6 +126,11 @@ class SettingsNotifier extends Notifier<SettingsState> {
   void toggleKeepScreenOn(bool value) {
     _prefs.setBool('keepScreenOn', value);
     state = state.copyWith(keepScreenOn: value);
+  }
+
+  void updatePrimaryColor(int value){
+    _prefs.setInt('primaryColor', value);
+    state = state.copyWith(primaryColorIndex: value);
   }
 }
 

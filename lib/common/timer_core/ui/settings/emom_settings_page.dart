@@ -104,44 +104,57 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
       ),
 
       // --- BODY ---
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  PillBadge(
-                    text: '${ElandStrings.of('total_time').toUpperCase()}: $_totalWorkoutTime',
-                  ),
-                  const SizedBox(height: 30),
-                  TimerSettingSelector(label: '${ElandStrings.of('round_duration')} (s)', value: _roundDuration, onChanged: (newValue) {
-                    setState(() => _roundDuration = newValue);
-                  }),
-                  const SizedBox(height: 20),
-                  TimerSettingSelector(
-                    label: ElandStrings.of('total_min'),
-                    value: _totalMinutes,
-                    min: 1,
-                    max: 60,
-                    onChanged: (newValue) {
-                      setState(() => _totalMinutes = newValue);
-                    },
-                  ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          children: [
 
-                  const SizedBox(height: 80),
+            PillBadge(
+              text: '${ElandStrings.of('total_time').toUpperCase()}: $_totalWorkoutTime',
+            ),
 
-                  // Start button
-                  PrimaryActionButton(
-                    label: ElandStrings.of('start_btn'),
-                    onPressed: _startWorkout,
-                  ),
-                ],
+
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TimerSettingSelector(
+                                label: '${ElandStrings.of('round_duration')} (s)',
+                                value: _roundDuration,
+                                onChanged: (newValue) => setState(() => _roundDuration = newValue)
+                            ),
+                            const SizedBox(height: 20),
+                            TimerSettingSelector(
+                              label: ElandStrings.of('total_min'),
+                              value: _totalMinutes,
+                              min: 1,
+                              max: 60,
+                              onChanged: (newValue) => setState(() => _totalMinutes = newValue),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
-          );
-        },
+
+            Padding(
+              padding: const EdgeInsets.only(top: 20, bottom: 20),
+              child: PrimaryActionButton(
+                label: ElandStrings.of('start_btn'),
+                onPressed: _startWorkout,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

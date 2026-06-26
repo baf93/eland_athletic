@@ -24,7 +24,7 @@ class WorkoutController {
       });
 
       await readyCompleter.future.timeout(
-        const Duration(seconds: 3),
+        const Duration(seconds: 10),
         onTimeout: () => print(" [!] Service Start: Timeout waiting for service to be ready."),
       );
       await subscription.cancel();

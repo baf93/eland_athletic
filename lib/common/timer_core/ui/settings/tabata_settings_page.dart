@@ -143,41 +143,51 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
         centerTitle: true,
       ),
 
-      // --- BODY ---
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  PillBadge(
-                    text: '${ElandStrings.of('total_time').toUpperCase()}: $_totalWorkoutTime',
-                  ),
-                  const SizedBox(height: 30),
-                  TimerSettingSelector(label: '${ElandStrings.of('work_time')} (s)', min: 1, value: _workTime, onChanged: (v) => setState(() => _workTime = v)),
-                  const SizedBox(height: 20),
-                  TimerSettingSelector(label: '${ElandStrings.of('rest_time')} (s)', min: 1, value: _restTime, onChanged: (v) => setState(() => _restTime = v)),
-                  const SizedBox(height: 20),
-                  TimerSettingSelector(label: ElandStrings.of('round_set'), min: 1, max: 20, value: _roundSet, onChanged: (v) => setState(() => _roundSet = v)),
-                  const SizedBox(height: 20),
-                  TimerSettingSelector(label: ElandStrings.of('set_number'), min: 1, value: _setNumber, onChanged: (v) => setState(() => _setNumber = v)),
-                  const SizedBox(height: 20),
-                  TimerSettingSelector(label: '${ElandStrings.of('rest_between_set')} (s)', min: 1, value: _restBetweenSet, onChanged: (v) => setState(() => _restBetweenSet = v)),
-                  const SizedBox(height: 40),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          children: [
+            PillBadge(
+              text: '${ElandStrings.of('total_time').toUpperCase()}: $_totalWorkoutTime',
+            ),
 
-                  // Start button
-                  PrimaryActionButton(
-                    label: ElandStrings.of('start_btn'),
-                    onPressed: _startWorkout,
-                  ),
-                  const SizedBox(height: 20),
-                ],
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TimerSettingSelector(label: '${ElandStrings.of('work_time')} (s)', min: 1, value: _workTime, onChanged: (v) => setState(() => _workTime = v)),
+                            const SizedBox(height: 20),
+                            TimerSettingSelector(label: '${ElandStrings.of('rest_time')} (s)', min: 1, value: _restTime, onChanged: (v) => setState(() => _restTime = v)),
+                            const SizedBox(height: 20),
+                            TimerSettingSelector(label: ElandStrings.of('round_set'), min: 1, max: 20, value: _roundSet, onChanged: (v) => setState(() => _roundSet = v)),
+                            const SizedBox(height: 20),
+                            TimerSettingSelector(label: ElandStrings.of('set_number'), min: 1, value: _setNumber, onChanged: (v) => setState(() => _setNumber = v)),
+                            const SizedBox(height: 20),
+                            TimerSettingSelector(label: '${ElandStrings.of('rest_between_set')} (s)', min: 1, value: _restBetweenSet, onChanged: (v) => setState(() => _restBetweenSet = v)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
-          );
-        },
+
+            Padding(
+              padding: const EdgeInsets.only(top: 20, bottom: 20),
+              child: PrimaryActionButton(
+                label: ElandStrings.of('start_btn'),
+                onPressed: _startWorkout,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
