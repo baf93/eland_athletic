@@ -338,7 +338,7 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
                     ElandActionButton(
                       icon: Icons.close_rounded,
                       onPressed: () => _stopWorkout(timerState),
-                      iconColor: theme.colorScheme.error,
+                      iconColor: Colors.redAccent,
                       size: 75,
                     ),
                   ],

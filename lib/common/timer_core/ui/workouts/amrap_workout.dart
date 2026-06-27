@@ -89,7 +89,7 @@ class AmrapWorkoutWidget extends StatelessWidget {
               style: TextStyle(letterSpacing: 2, fontSize: 12),
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: theme.colorScheme.error,
+              foregroundColor: Colors.redAccent,
               side: BorderSide(
                 color: theme.dividerColor,
                 width: 1.5,

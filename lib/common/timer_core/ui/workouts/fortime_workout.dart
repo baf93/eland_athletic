@@ -1,3 +1,4 @@
+import 'package:eland_athletic/common/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -14,14 +15,16 @@ class FortimeWorkoutWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final bool isPaused = timerState.status == TimerStatus.paused;
     final bool isOvertime = timerState.isOvertime;
-    final double progress = isOvertime ? 0.0 : (timerState.intervalProgress ?? 0.0).clamp(0.0, 1.0);
+
+    final double rawProgress = timerState.intervalProgress.clamp(0.0, 1.0);
+    final double progress = isOvertime ? 0.0 : (1.0 - rawProgress);
 
     final Color borderColor = isPaused
-        ? theme.colorScheme.onSurface.withOpacity(0.2)
+        ? theme.dividerColor
         : (isOvertime ? Colors.redAccent : theme.colorScheme.primary);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
       child: Column(
         children: [
           Expanded(
@@ -36,45 +39,47 @@ class FortimeWorkoutWidget extends StatelessWidget {
                     FlutterBackgroundService().invoke('pause');
                   }
                 },
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(16),
                 child: Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: borderColor, width: 3),
                   ),
                   child: Column(
                     children: [
-                      // Header e Motivazione nello stesso blocco
                       Text(
-                        isPaused ? "PAUSA" : (isOvertime ? "OVERTIME" : "FOR TIME"),
+                        isPaused ? ElandStrings.of('paused').toUpperCase() : (isOvertime ? ElandStrings.of('overtime').toUpperCase() : ElandStrings.of('timer_fortime').toUpperCase()),
                         style: TextStyle(
                           color: borderColor,
                           letterSpacing: 4,
+                          fontSize: 22,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 20),
                       Text(
-                        isOvertime ? "NON MOLLARE ORA" : "SPINGI AL MASSIMO",
+                        isOvertime ? ElandStrings.of('fortime_motivation_overtime').toUpperCase() : ElandStrings.of('fortime_motivation').toUpperCase(),
                         style: TextStyle(
-                          color: borderColor.withOpacity(0.6),
-                          fontSize: 10,
+                          color: theme.textTheme.bodyMedium!.color,
+                          fontSize: 16,
                           letterSpacing: 2,
                           fontWeight: FontWeight.w600,
+                          fontStyle: FontStyle.italic
                         ),
                       ),
-                      const Spacer(),
+                      const Spacer(flex: 2),
 
-                      // Timer Centrale
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
-                          isOvertime ? "+${_formatTime(timerState.remainingSeconds)}" : _formatTime(timerState.remainingSeconds),
-                          style: const TextStyle(
+                          isOvertime
+                              ? "+${_formatTime(timerState.remainingSeconds)}"
+                              : _formatTime(timerState.remainingSeconds),
+                          style: TextStyle(
                             fontSize: 140,
                             fontWeight: FontWeight.w900,
-                            color: Colors.white,
+                            color: theme.textTheme.headlineLarge!.color,
                             fontFeatures: [FontFeature.tabularFigures()],
                           ),
                         ),
@@ -83,20 +88,46 @@ class FortimeWorkoutWidget extends StatelessWidget {
                       if (isOvertime)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
-                          child: Text("TOT: ${_formatTime(timerState.elapsedSeconds)}",
-                              style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
+                          child: Column(
+                            children: [
+                              Text(
+                                ElandStrings.of('total_time').toUpperCase(),
+                                style: TextStyle(
+                                  color: theme.textTheme.bodyMedium!.color,
+                                  fontSize: 14,
+                                  letterSpacing: 2,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _formatTime(timerState.elapsedSeconds),
+                                style: TextStyle(
+                                  color: theme.textTheme.headlineLarge!.color,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
 
-                      const Spacer(),
+                      const Spacer(flex: 3),
 
-                      // Barra
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          minHeight: 8,
-                          backgroundColor: borderColor.withOpacity(0.15),
-                          valueColor: AlwaysStoppedAnimation<Color>(borderColor),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.zero,
+                          child: SizedBox(
+                            height: 18,
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              backgroundColor: borderColor.withAlpha(60),
+                              valueColor: AlwaysStoppedAnimation<Color>(borderColor),
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -106,14 +137,13 @@ class FortimeWorkoutWidget extends StatelessWidget {
             ),
           ),
 
-          // Istruzioni in basso (fuori dal container)
           Padding(
             padding: const EdgeInsets.only(top: 16),
             child: Text(
-              isPaused ? "TOCCA PER CONCLUDERE LA FASE" : "TOCCA PER PAUSARE E FINIRE",
+              isPaused ? ElandStrings.of('tap_to_close_phase').toUpperCase() : ElandStrings.of('tap_when_done').toUpperCase(),
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: theme.colorScheme.onSurface.withOpacity(0.3),
+                color: theme.dividerColor,
                 fontSize: 11,
                 letterSpacing: 1.5,
               ),

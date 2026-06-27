@@ -101,7 +101,14 @@ class ElandStrings {
       'breathe': 'Focus on your breathing',
       'tabata_motivation_work': 'PUSH TO THE LIMIT',
       'tabata_motivation_rest': 'CONTROL YOUR BREATH',
-      'tabata_motivation_cooldown': 'RSLOW YOUR HEART RATE',
+      'tabata_motivation_cooldown': 'SLOW YOUR HEART RATE',
+      'paused': 'paused',
+      'overtime': 'overtime',
+      'fortime_motivation': 'PUSH TO THE LIMIT',
+      'fortime_motivation_overtime': 'DON\'T GIVE UP NOW',
+      'tap_when_done': "Tap when you're done!",
+      'tap_to_close_phase': "Tap again to close this phase",
+
 
       //Utils
       'start_btn': 'Start',
@@ -217,6 +224,12 @@ class ElandStrings {
       'tabata_motivation_work': 'SPINGI AL MASSIMO',
       'tabata_motivation_rest': 'CONTROLLA IL RESPIRO',
       'tabata_motivation_cooldown': 'RALLENTA IL BATTITO',
+      'paused': 'Pausa',
+      'overtime': 'overtime',
+      'fortime_motivation': 'SPINGI AL MASSIMO',
+      'fortime_motivation_overtime': 'NON MOLLARE ORA',
+      'tap_when_done': "Tocca quando hai finito!",
+      'tap_to_close_phase': "Tocca di nuovo per chiudere questa fase",
 
       //Utils
       'start_btn': 'Inizia',
