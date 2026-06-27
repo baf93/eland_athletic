@@ -88,6 +88,7 @@ class TimerBackgroundService {
     bool hapticEnabled = true;
     bool stopWatchMode = false;
     int remainingSeconds = 0;
+    int elapsedSeconds = 0;
     List<int> lapTimes = [];
     int currentIntervalIndex = 0;
     bool isLastPhase = false;
@@ -95,6 +96,7 @@ class TimerBackgroundService {
     int accumulatedMsDuringStop = 0;
     List<IntervalAudioConfig> audioConfig = [];
     List<IntervalHapticConfig> hapticConfig = [];
+    bool isOvertime = false;
     // ---
 
     // Audio Setup
@@ -155,6 +157,7 @@ class TimerBackgroundService {
       service.invoke('uiUpdate', {
         'status': isPaused ? 'paused' : 'running',
         'remainingSeconds': remainingSeconds,
+        'elapsedSeconds': elapsedSeconds,
         'currentIntervalTitle': interval['title'],
         'currentIntervalNotes': interval['notes'],
         'intervalType': interval['type'],
@@ -169,7 +172,8 @@ class TimerBackgroundService {
         'currentRound': interval['currentRound'] as int,
         'totalRound': interval['totalRound'] as int,
         'currentSet': interval['currentSet'] as int,
-        'totalSet': interval['totalSet'] as int
+        'totalSet': interval['totalSet'] as int,
+        'isOvertime': isOvertime,
       });
     }
 
@@ -189,6 +193,69 @@ class TimerBackgroundService {
     }
 
     // --- Runners
+    void runForTime() async {
+
+      timerStartTime = DateTime.now();
+
+      final interval = intervalQueue[currentIntervalIndex] as Map<String, dynamic>;
+      final int intervalDuration = interval['duration'] as int;
+      remainingSeconds = 0;
+      elapsedSeconds = 0;
+      intervalProgress = 0.0;
+      isOvertime = false;
+      isLastPhase = interval['currentPhase'] as int == interval['totalPhases'] as int;
+
+      // Get Audio & Haptic config for current interval
+      final List<dynamic> rawAudio = interval['audioConfigs'] as List<dynamic>;
+      final List<dynamic> rawHaptic = interval['hapticConfigs'] as List<dynamic>;
+
+      audioConfig = rawAudio.map((item) {
+        return IntervalAudioConfig().fromJson(item as Map<String, dynamic>);
+      }).toList();
+
+      hapticConfig = rawHaptic.map((item) {
+        return IntervalHapticConfig().fromJson(item as Map<String, dynamic>);
+      }).toList();
+
+      await preloadAllNeededSounds(audioConfig);
+
+      triggerAudioHapticFeedback(AudioHapticTrigger.start);
+
+      // Update UI with new Interval details
+      sendFullTimerStatus();
+
+      // Every Second update logic
+      ticker = Timer.periodic(const Duration(seconds: 1), (t){
+        if (isPaused) return;
+
+        final Duration elapsed = Duration(milliseconds: DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop);
+        elapsedSeconds = elapsed.inSeconds;
+        remainingSeconds = Duration(seconds: intervalDuration - elapsed.inSeconds).inSeconds;
+        intervalProgress = (intervalDuration > 0) ? (intervalDuration - remainingSeconds) / intervalDuration : 1.0;
+
+        _updateNotification(flutterLocalNotificationsPlugin, ElandStrings.of('notification_title'), '${_formatDisplayTime(elapsed.inSeconds)} | ${interval['title']} (${interval['currentPhase']}/${interval['totalPhases']})');
+
+        if (intervalDuration ~/ 2 == remainingSeconds) {
+          triggerAudioHapticFeedback(AudioHapticTrigger.half);
+        }else if (remainingSeconds == 10) {
+          triggerAudioHapticFeedback(AudioHapticTrigger.tenSeconds);
+        }else if (remainingSeconds <= 3 && remainingSeconds > 0) {
+          triggerAudioHapticFeedback(AudioHapticTrigger.lastThreeSeconds);
+        }
+
+        if (elapsedSeconds > intervalDuration) isOvertime = true;
+
+        /// Update UI with new values
+        service.invoke('uiUpdate', {
+          'status': 'running',
+          'elapsedSeconds': elapsedSeconds,
+          'remainingSeconds': remainingSeconds,
+          'intervalProgress': intervalProgress,
+          'isOvertime': isOvertime
+        });
+      });
+    }
+
     void runInterval() async {
       // I'm at the end of the workout
       if(currentIntervalIndex >= intervalQueue.length){
@@ -198,11 +265,17 @@ class TimerBackgroundService {
         return;
       }
 
+      if (intervalQueue[currentIntervalIndex]['sourcePhase'] == 'fortime') {
+        runForTime();
+        return;
+      }
+
       timerStartTime = DateTime.now();
 
       final interval = intervalQueue[currentIntervalIndex] as Map<String, dynamic>;
       final int intervalDuration = interval['duration'] as int;
       remainingSeconds = intervalDuration;
+      elapsedSeconds = 0;
       intervalProgress = 0.0;
       isLastPhase = interval['currentPhase'] as int == interval['totalPhases'] as int;
 
@@ -230,6 +303,7 @@ class TimerBackgroundService {
         if (isPaused) return;
 
         final Duration elapsed = Duration(milliseconds: DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop);
+        elapsedSeconds = elapsed.inSeconds;
         remainingSeconds = Duration(seconds: intervalDuration - elapsed.inSeconds).inSeconds;
         intervalProgress = (intervalDuration > 0) ? (intervalDuration - remainingSeconds) / intervalDuration : 1.0;
 
@@ -259,10 +333,12 @@ class TimerBackgroundService {
         service.invoke('uiUpdate', {
           'status': 'running',
           'remainingSeconds': remainingSeconds,
+          'elapsedSeconds': elapsedSeconds,
           'intervalProgress': intervalProgress,
         });
       });
     }
+
     void runStopWatch(){
       timerStartTime = DateTime.now();
 
@@ -347,6 +423,9 @@ class TimerBackgroundService {
     });
 
     service.on('pause').listen((event){
+
+      if (timerStartTime == null) return;
+
       if(stopWatchMode == true){
         // In stopwatch mode, "pausing" just means to stop the ticker and accumulate the elapsed time
         ticker?.cancel();
@@ -438,6 +517,7 @@ class TimerBackgroundService {
       if (stopWatchMode == true) return;
 
       ticker?.cancel();
+      isOvertime = false;
       accumulatedMsDuringStop = 0;
       timerStartTime = null;
       currentIntervalIndex++;

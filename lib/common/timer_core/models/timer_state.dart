@@ -3,6 +3,7 @@ import 'workout_phase_summary.dart';
 
 class TimerState {
   final int remainingSeconds;
+  final int elapsedSeconds;
   final TimerStatus status;
   final String currentIntervalTitle;
   final String? currentIntervalNotes;
@@ -19,9 +20,11 @@ class TimerState {
   final int totalRound;
   final int currentSet;
   final int totalSet;
+  final bool isOvertime;
 
   const TimerState({
     required this.remainingSeconds,
+    required this.elapsedSeconds,
     required this.status,
     required this.currentIntervalTitle,
     this.currentIntervalNotes,
@@ -37,12 +40,14 @@ class TimerState {
     required this.currentRound,
     required this.totalRound,
     required this.currentSet,
-    required this.totalSet
+    required this.totalSet,
+    required this.isOvertime
   });
 
   factory TimerState.initial() {
     return const TimerState(
       remainingSeconds: 0,
+      elapsedSeconds: 0,
       status: TimerStatus.paused,
       currentIntervalTitle: '',
       currentIntervalNotes: null,
@@ -58,12 +63,14 @@ class TimerState {
       currentRound: 1,
       totalRound: 1,
       currentSet: 1,
-      totalSet: 1
+      totalSet: 1,
+      isOvertime: false
     );
   }
 
   TimerState copyWith({
     int? remainingSeconds,
+    int? elapsedSeconds,
     TimerStatus? status,
     String? currentIntervalTitle,
     String? currentIntervalNotes,
@@ -79,10 +86,12 @@ class TimerState {
     int? totalRound,
     int? currentRound,
     int? currentSet,
-    int? totalSet
+    int? totalSet,
+    bool? isOvertime
   }) {
     return TimerState(
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
+      elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
       status: status ?? this.status,
       currentIntervalTitle: currentIntervalTitle ?? this.currentIntervalTitle,
       currentIntervalNotes: currentIntervalNotes ?? this.currentIntervalNotes,
@@ -98,7 +107,8 @@ class TimerState {
       currentRound: currentRound ?? this.currentRound,
       totalRound: totalRound ?? this.totalRound,
       currentSet: currentSet ?? this.currentSet,
-      totalSet: totalSet ?? this.totalSet
+      totalSet: totalSet ?? this.totalSet,
+      isOvertime: isOvertime ?? this.isOvertime
     );
   }
 }

@@ -61,7 +61,9 @@ class TimerNotifier extends Notifier<TimerState> {
         totalRound: event['totalRound'] as int? ?? state.totalRound,
         currentRound: event['currentRound'] as int? ?? state.currentRound,
         currentSet: event['currentSet'] as int? ?? state.currentSet,
-        totalSet: event['totalSet'] as int? ?? state.totalSet
+        totalSet: event['totalSet'] as int? ?? state.totalSet,
+        isOvertime: event['isOvertime'] as bool? ?? state.isOvertime,
+        elapsedSeconds: event['elapsedSeconds'] as int? ?? state.elapsedSeconds
       );
     });
   }
