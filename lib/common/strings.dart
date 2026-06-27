@@ -108,6 +108,10 @@ class ElandStrings {
       'fortime_motivation_overtime': 'DON\'T GIVE UP NOW',
       'tap_when_done': "Tap when you're done!",
       'tap_to_close_phase': "Tap again to close this phase",
+      'lap': 'lap',
+      'lap_title': 'lap times',
+      'reset': 'reset',
+      'exit': 'exit',
 
 
       //Utils
@@ -230,6 +234,10 @@ class ElandStrings {
       'fortime_motivation_overtime': 'NON MOLLARE ORA',
       'tap_when_done': "Tocca quando hai finito!",
       'tap_to_close_phase': "Tocca di nuovo per chiudere questa fase",
+      'lap_title': 'Lista giri',
+      'lap': 'giro',
+      'reset': 'reset',
+      'exit': 'exit',
 
       //Utils
       'start_btn': 'Inizia',

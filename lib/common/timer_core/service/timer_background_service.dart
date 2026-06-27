@@ -499,6 +499,7 @@ class TimerBackgroundService {
       uiPhaseList = [];
       timerStartTime = null;
       accumulatedMsDuringStop = 0;
+      sendFullStopWatchStatus();
       _updateNotification(flutterLocalNotificationsPlugin, ElandStrings.of('notification_title'), ElandStrings.of('stopwatch_running'));
 
       isPaused = true;
