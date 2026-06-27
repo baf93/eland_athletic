@@ -117,7 +117,7 @@ class TabataConfig extends WorkoutConfig {
           id: "tabata_rest_$i",
           title: ElandStrings.of('timer_tabata').toUpperCase(),
           durationSeconds: currentRound == roundsPerSet ? restBetweenSets : restSeconds,
-          type: IntervalType.rest,
+          type: currentRound == roundsPerSet ? IntervalType.cooldown : IntervalType.rest,
           sourcePhase: phaseType,
           currentRound: currentRound,
           totalRound: roundsPerSet,

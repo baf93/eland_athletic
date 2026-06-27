@@ -203,6 +203,7 @@ class TimerBackgroundService {
       final interval = intervalQueue[currentIntervalIndex] as Map<String, dynamic>;
       final int intervalDuration = interval['duration'] as int;
       remainingSeconds = intervalDuration;
+      intervalProgress = 0.0;
       isLastPhase = interval['currentPhase'] as int == interval['totalPhases'] as int;
 
       // Get Audio & Haptic config for current interval
