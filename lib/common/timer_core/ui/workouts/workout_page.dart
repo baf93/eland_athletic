@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:eland_athletic/common/widgets/primary_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,6 +32,20 @@ class WorkoutPage extends ConsumerStatefulWidget {
 
 class _WorkoutPageState extends ConsumerState<WorkoutPage> {
 
+  late ValueNotifier<int> _roundNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    _roundNotifier = ValueNotifier<int>(0);
+  }
+
+  @override
+  void dispose() {
+    _roundNotifier.dispose();
+    TimerState.initial();
+    super.dispose();
+  }
 
   /// Dynamic loading of the workout body
   Widget _buildWorkoutSpecificBody(TimerState timerState) {
@@ -46,7 +62,7 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
         case TimerType.rest:
           return RestWorkoutWidget(timerState: timerState);
         case TimerType.amrap:
-          return AmrapWorkoutWidget(timerState: timerState, onIncrement: () => {}, onDecrement: () => {});
+          return AmrapWorkoutWidget(timerState: timerState, roundNotifier: _roundNotifier);
         case TimerType.countdown:
           return CountdownWorkoutWidget(timerState: timerState);
         case TimerType.preparation:
@@ -260,7 +276,7 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
                 Expanded(
                   child: Center(
                     child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 500),
+                      duration: const Duration(milliseconds: 200),
                       transitionBuilder: (Widget child, Animation<double> animation) {
                         final curvedAnimation = CurvedAnimation(
                           parent: animation,

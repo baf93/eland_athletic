@@ -95,6 +95,8 @@ class ElandStrings {
       'get_ready': 'Get Ready',
       'get_ready_desc': 'Focus on your goal.',
       'round': 'round',
+      'remove_round': 'Remove Round',
+      'breathe': 'Focus on your breathing',
 
       //Utils
       'start_btn': 'Start',
@@ -203,6 +205,8 @@ class ElandStrings {
       'get_ready': 'Preparati',
       'get_ready_desc': 'Concentrati sul tuo obiettivo.',
       'round': 'round',
+      'remove_round': 'Rimuovi Round',
+      'breathe': 'Concentrati sul tuo respiro',
 
       //Utils
       'start_btn': 'Inizia',

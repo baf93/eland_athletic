@@ -52,7 +52,7 @@ class ElandTheme {
         primary: orangeAccent,
         secondary: orangeAccent,
         surface: Color(0xFF1E1E1E),
-        error: Colors.red,
+        error: Color(0xFFFF0000),
       ),
 
       textTheme: const TextTheme(
@@ -85,7 +85,7 @@ class ElandTheme {
         primary: orangeAccent,
         secondary: Color(0xFFE09030),
         surface: Colors.white,
-        error: Colors.red,
+        error: Color(0xFFFF0000),
       ),
 
       textTheme: const TextTheme(
