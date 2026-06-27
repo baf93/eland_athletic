@@ -50,5 +50,9 @@ class StopwatchController {
   void recordLap(){
     _service.invoke('recordLap');
   }
+
+  void resetStopWatch(){
+    _service.invoke('resetStopWatch');
+  }
 }
 

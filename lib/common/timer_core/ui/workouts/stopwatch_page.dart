@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/stopwatch_controller.dart';
 import '../../providers/stopwatch_provider.dart';
 import '../../models/timercore_enums.dart';
+import '../../../strings.dart';
 
 class StopwatchPage extends ConsumerStatefulWidget {
   const StopwatchPage({super.key});
@@ -12,111 +14,177 @@ class StopwatchPage extends ConsumerStatefulWidget {
 }
 
 class _StopwatchPageState extends ConsumerState<StopwatchPage> {
+  final ScrollController _scrollController = ScrollController();
+  int _previousLapCount = 0;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       StopwatchController.instance.launchStopwatch();
       StopwatchController.instance.requestStatus();
+
+      final state = ref.read(stopwatchProvider);
+      _previousLapCount = state.laps.length;
     });
   }
 
-  // MM:SS.ms (Il mockup usa solo 2 cifre per i millisecondi / 10)
-  String _formatDisplayTime(int m, int s, int ms) {
-    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}.${(ms ~/ 10).toString().padLeft(2, '0')}';
+  String _formatMainTime(int h, int m, int s) {
+    String sStr = s.toString().padLeft(2, '0');
+    String mStr = m.toString().padLeft(2, '0');
+    if (h > 0) return '${h.toString().padLeft(2, '0')}:$mStr:$sStr';
+    return '$mStr:$sStr';
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(stopwatchProvider);
+    final theme = Theme.of(context);
+    final isRunning = state.status == TimerStatus.running;
+    final bool canReset = state.status == TimerStatus.paused &&
+        (state.elapsedSeconds > 0 || state.elapsedMinutes > 0 || state.elapsedHours > 0);
+
+    // Gestione auto-scroll con ritardo per garantire il rendering della lista
+    if (state.laps.length > _previousLapCount) {
+      _previousLapCount = state.laps.length;
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 60),
-
-            // --- TEMPO PRINCIPALE ---
-            Text(
-              _formatDisplayTime(state.elapsedMinutes, state.elapsedSeconds, state.elapsedMilliseconds),
-              style: const TextStyle(
-                color: Color(0xFFEBDCC9),
-                fontSize: 96,
-                fontWeight: FontWeight.w300,
-                fontFeatures: [FontFeature.tabularFigures()],
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        title: Text(ElandStrings.of('stopwatch').toUpperCase(),
+            style: const TextStyle(fontSize: 14, letterSpacing: 2, fontWeight: FontWeight.w900)),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Column(
+        children: [
+          // 1. TIMER BOX
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: theme.colorScheme.primary.withOpacity(0.5), width: 2),
+              ),
+              child: FittedBox(
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.white, fontFeatures: [FontFeature.tabularFigures()]),
+                    children: [
+                      TextSpan(text: _formatMainTime(state.elapsedHours, state.elapsedMinutes, state.elapsedSeconds), style: const TextStyle(fontSize: 84)),
+                      TextSpan(
+                        text: ".${(state.elapsedMilliseconds ~/ 10).toString().padLeft(2, '0')}",
+                        style: TextStyle(fontSize: 42, color: theme.colorScheme.primary),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 40),
+          ),
 
-            // --- BOTTONI CIRCOLARI ---
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          // 2. INTESTAZIONE LAPS
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Row(
               children: [
-                _circularButton(
-                    state.status == TimerStatus.running ? Icons.pause : Icons.play_arrow,
-                        () => state.status == TimerStatus.running ? StopwatchController.instance.pauseStopWatch() : StopwatchController.instance.resumeStopWatch(),
-                    "PAUSA", const Color(0xFFEBDCC9)),
-                _circularButton(Icons.close, () => StopwatchController.instance.stopStopWatch(), "ESCI", const Color(0xFFFF5252)),
-                _circularButton(Icons.timer_outlined, () => StopwatchController.instance.recordLap(), "GIRO", const Color(0xFF4A90E2)),
+                Text(ElandStrings.of('laps').toUpperCase(),
+                    style: TextStyle(color: theme.colorScheme.primary, fontSize: 10, letterSpacing: 2, fontWeight: FontWeight.bold)),
               ],
             ),
+          ),
 
-            const SizedBox(height: 40),
-
-            // --- BOX LISTA GIRI ---
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1C1C1E),
-                  borderRadius: BorderRadius.circular(35),
-                ),
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
-                  reverse: true,
-                  itemCount: state.laps.length,
-                  separatorBuilder: (context, index) => Divider(color: Colors.white.withOpacity(0.08), height: 30),
-                  itemBuilder: (context, index) {
-                    final lap = state.laps[index];
-                    final duration = Duration(milliseconds: lap.lapTimeMs);
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("GIRO ${state.laps.length - index}", // Numerazione invertita come da mockup
-                            style: const TextStyle(color: Color(0xFFEBDCC9), fontSize: 18, fontWeight: FontWeight.w600)),
-                        Text(_formatDisplayTime(duration.inMinutes % 60, duration.inSeconds % 60, duration.inMilliseconds),
-                            style: const TextStyle(color: Color(0xFFEBDCC9), fontSize: 18, fontWeight: FontWeight.w600, fontFamily: 'monospace')),
-                      ],
-                    );
-                  },
-                ),
-              ),
+          // 3. LISTA LAPS
+          Expanded(
+            child: ListView.separated(
+              controller: _scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              itemCount: state.laps.length,
+              separatorBuilder: (_, __) => Divider(color: Colors.white.withOpacity(0.08), height: 20),
+              itemBuilder: (context, index) {
+                final lap = state.laps[index];
+                final duration = Duration(milliseconds: lap.lapTimeMs);
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("LAP ${index + 1}", style: TextStyle(color: Colors.white.withOpacity(0.4), fontWeight: FontWeight.w600)),
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold),
+                        children: [
+                          TextSpan(text: _formatMainTime(0, duration.inMinutes % 60, duration.inSeconds % 60), style: const TextStyle(color: Colors.white)),
+                          TextSpan(text: ".${(duration.inMilliseconds % 1000 ~/ 10).toString().padLeft(2, '0')}", style: TextStyle(color: theme.colorScheme.primary)),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-            const SizedBox(height: 30),
-          ],
-        ),
+          ),
+
+          // 4. CONTROLLI
+          Container(
+            decoration: BoxDecoration(color: Colors.black, border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1), width: 1.0))),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _actionButton(
+                    canReset ? Icons.refresh : Icons.close,
+                    canReset ? Colors.amber : Colors.white.withOpacity(0.5),
+                    canReset ? "RESET" : ElandStrings.of('exit'),
+                        () => canReset ? StopwatchController.instance.resetStopWatch() : StopwatchController.instance.stopStopWatch()),
+
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    isRunning ? StopwatchController.instance.pauseStopWatch() : StopwatchController.instance.resumeStopWatch();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: theme.colorScheme.primary),
+                    child: Icon(isRunning ? Icons.pause : Icons.play_arrow, color: Colors.black, size: 36),
+                  ),
+                ),
+
+                _actionButton(Icons.timer_outlined, theme.colorScheme.primary, ElandStrings.of('lap'),
+                        () => StopwatchController.instance.recordLap()),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _circularButton(IconData icon, VoidCallback onPressed, String label, Color labelColor) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: onPressed,
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withOpacity(0.4), width: 1.0),
-            ),
-            child: Icon(icon, color: Colors.white, size: 32),
+  Widget _actionButton(IconData icon, Color color, String label, VoidCallback onPressed) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: color, width: 1.5)),
+            child: Icon(icon, color: color, size: 24),
           ),
-        ),
-        const SizedBox(height: 14),
-        Text(label, style: TextStyle(color: labelColor, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-      ],
+          const SizedBox(height: 8),
+          Text(label.toUpperCase(), style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
+        ],
+      ),
     );
   }
 }

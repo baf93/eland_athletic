@@ -504,6 +504,26 @@ class TimerBackgroundService {
       isPaused = true;
     });
 
+    service.on('resetStopWatch').listen((event){
+      if (stopWatchMode == false) return;
+
+      ticker?.cancel();
+      isPaused = true;
+      timerStartTime = null;
+      lapTimes = [];
+      accumulatedMsDuringStop = 0;
+      timerStartTime = null;
+
+      service.invoke('uiUpdate', {
+        'status': 'paused',
+        'elapsedMilliseconds': 0,
+        'elapsedSeconds': 0,
+        'elapsedMinutes': 0,
+        'elapsedHours': 0,
+        'lapTimes': null
+      });
+    });
+
     service.on('recordLap').listen((event){
       if (timerStartTime != null) {
         final lap = DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop;
