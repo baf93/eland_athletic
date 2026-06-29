@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import "../theme.dart";
 
 class TimerRowItem extends StatelessWidget {
@@ -17,19 +18,25 @@ class TimerRowItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final elandColors = Theme.of(context).extension<ElandCustomColors>()!;
+    const double borderRadius = 16.0;
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(
-          color: elandColors.cardBorder!,
-          width: 1.2,
-        ),
-      ),
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(borderRadius),
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16.0),
-        child: Padding(
+        borderRadius: BorderRadius.circular(borderRadius),
+        onTap: () {
+          HapticFeedback.mediumImpact();
+          onTap();
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(borderRadius),
+            border: Border.all(
+              color: elandColors.cardBorder!,
+              width: 1.2,
+            ),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 18.0),
           child: Row(
             children: [

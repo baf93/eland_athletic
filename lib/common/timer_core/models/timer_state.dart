@@ -21,6 +21,7 @@ class TimerState {
   final int currentSet;
   final int totalSet;
   final bool isOvertime;
+  final bool isLoading;
 
   const TimerState({
     required this.remainingSeconds,
@@ -41,7 +42,8 @@ class TimerState {
     required this.totalRound,
     required this.currentSet,
     required this.totalSet,
-    required this.isOvertime
+    required this.isOvertime,
+    required this.isLoading,
   });
 
   factory TimerState.initial() {
@@ -64,7 +66,8 @@ class TimerState {
       totalRound: 1,
       currentSet: 1,
       totalSet: 1,
-      isOvertime: false
+      isOvertime: false,
+      isLoading: true
     );
   }
 
@@ -87,7 +90,8 @@ class TimerState {
     int? currentRound,
     int? currentSet,
     int? totalSet,
-    bool? isOvertime
+    bool? isOvertime,
+    bool? isLoading
   }) {
     return TimerState(
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
@@ -108,7 +112,8 @@ class TimerState {
       totalRound: totalRound ?? this.totalRound,
       currentSet: currentSet ?? this.currentSet,
       totalSet: totalSet ?? this.totalSet,
-      isOvertime: isOvertime ?? this.isOvertime
+      isOvertime: isOvertime ?? this.isOvertime,
+      isLoading: isLoading ?? this.isLoading
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme.dart';
 
 class ElandActionButton extends StatelessWidget {
@@ -20,17 +21,33 @@ class ElandActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final elandColors = Theme.of(context).extension<ElandCustomColors>()!;
-    return InkWell(
-      onTap: onPressed,
-      customBorder: const CircleBorder(),
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: elandColors.cardBorder!, width: 2),
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: () {
+          HapticFeedback.mediumImpact();
+          onPressed();
+        },
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+                color: borderColor ?? elandColors.cardBorder!,
+                width: 2
+            ),
+          ),
+          child: Center(
+            child: Icon(
+                icon,
+                color: iconColor,
+                size: size * 0.43
+            ),
+          ),
         ),
-        child: Icon(icon, color: iconColor, size: size * 0.43),
       ),
     );
   }

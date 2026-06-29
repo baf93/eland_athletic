@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:eland_athletic/common/widgets/primary_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +20,7 @@ import 'rest_workout.dart';
 import 'tabata_workout.dart';
 import 'prepare_workout.dart';
 import 'workout_complete.dart';
+import 'loading_workout.dart';
 
 class WorkoutPage extends ConsumerStatefulWidget {
   const WorkoutPage({super.key});
@@ -77,7 +76,7 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
       context: context,
       isScrollControlled: true,
       builder: (_) => ElandBottomSheet(
-        initialChildSize: 0.6,
+        initialChildSize: 0.45,
         builder: (scrollController) => ListView.builder(
           controller: scrollController,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -239,6 +238,10 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
   Widget build(BuildContext context) {
     final timerState = ref.watch(timerProvider);
     final theme = Theme.of(context);
+
+    if (timerState.isLoading) {
+      return const WorkoutLoadingPage();
+    }
 
     return PopScope(
       canPop: false,

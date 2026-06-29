@@ -1,3 +1,4 @@
+import 'package:eland_athletic/common/timer_core/controllers/stopwatch_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../common/strings.dart';
@@ -150,6 +151,7 @@ class TimerListPage extends StatelessWidget {
                 title: ElandStrings.of('timer_stopwatch').toUpperCase(),
                 onTap: () {
                   HapticFeedback.lightImpact();
+                  StopwatchController.instance.launchStopwatch();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const StopwatchPage(),

@@ -8,6 +8,7 @@ class StopwatchState {
   final int elapsedMinutes;
   final int elapsedHours;
   final List<StopWatchLap> laps;
+  final bool isLoading;
 
   const StopwatchState({
     required this.status,
@@ -16,6 +17,7 @@ class StopwatchState {
     required this.elapsedMinutes,
     required this.elapsedHours,
     required this.laps,
+    required this.isLoading,
   });
 
   factory StopwatchState.initial(){
@@ -25,6 +27,7 @@ class StopwatchState {
         elapsedSeconds: 0,
         elapsedMinutes: 0,
         elapsedHours: 0,
+        isLoading: true,
         laps: []
     );
   }
@@ -35,6 +38,7 @@ class StopwatchState {
     int? elapsedSeconds,
     int? elapsedMinutes,
     int? elapsedHours,
+    bool? isLoading,
     List<StopWatchLap>? laps,
   }) {
     return StopwatchState(
@@ -43,6 +47,7 @@ class StopwatchState {
       elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
       elapsedMinutes: elapsedMinutes ?? this.elapsedMinutes,
       elapsedHours: elapsedHours ?? this.elapsedHours,
+      isLoading: isLoading ?? this.isLoading,
       laps: laps ?? this.laps,
     );
   }

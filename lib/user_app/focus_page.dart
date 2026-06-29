@@ -76,6 +76,52 @@ class FocusPage extends ConsumerWidget {
 
             const SizedBox(height: 32),
 
+            // --- CARD: Quick Timers ---
+            ElandCard(
+              title: ElandStrings.of('card_timer_title'),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TimerListPage()),
+                );
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 1,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    color: Theme.of(context).dividerColor,
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "TABATA • EMOM • AMRAP • FOR TIME",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 2.0,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                        ),
+                      ),
+
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 20,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+
+            const SizedBox(height: 12),
+
             // --- CARD: Focus Workout --- TODO: Implementare la card
             ElandCard(
               title: ElandStrings.of('card_focus_title'),
@@ -93,55 +139,26 @@ class FocusPage extends ConsumerWidget {
               ),
             ),
 
-
-            const SizedBox(height: 12),
-
-            // --- CARD: Quick Timers ---
-            ElandCard(
-              title: ElandStrings.of('card_timer_title'),
-              onTap: () {
-                HapticFeedback.lightImpact();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TimerListPage(),
-                  ),
-                );
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Tabata, EMOM, AMRAP, ...',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge
-                  ),
-
-                  const SizedBox(width: 16),
-
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withAlpha(65),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.play_arrow_rounded,
-                      size: 26,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
             const SizedBox(height: 12),
 
             // --- CARD: NUTRITION (Next Meal) --- TODO: Implementare la card
+
             ElandCard(
+              title: ElandStrings.of('card_nutrition_title'),
+              onTap: () {
+                // TODO: Apri dettaglio allenamento
+              },
+              child: Text(
+                ElandStrings.of('wip_function'),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                ),
+              ),
+            ),
+           /* ElandCard(
               title: ElandStrings.of('card_nutrition_title'),
               subtitle: 'PRANZO - 13:00',
               onTap: () {
@@ -170,11 +187,26 @@ class FocusPage extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
+            ),*/
 
           ],
         ),
       ),
     );
   }
+}
+
+// Helper per i tag (mettilo fuori dal metodo build o come funzione privata)
+Widget _buildTag(String text) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.white.withAlpha(50)), // O colore neutro
+      borderRadius: BorderRadius.circular(4),
+    ),
+    child: Text(
+      text,
+      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1),
+    ),
+  );
 }

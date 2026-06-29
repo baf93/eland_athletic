@@ -13,10 +13,11 @@ class TimerNotifier extends Notifier<TimerState> {
   TimerState build() {
     ref.onDispose(() => _serviceSubscription?.cancel());
     _listenToBackgroundService();
-    return TimerState.initial();
+    return TimerState.initial().copyWith(isLoading: true);
   }
 
   void _listenToBackgroundService() {
+
     _serviceSubscription = _backgroundService.on('uiUpdate').listen((event) {
       if (event == null) return;
 
@@ -63,12 +64,13 @@ class TimerNotifier extends Notifier<TimerState> {
         currentSet: event['currentSet'] as int? ?? state.currentSet,
         totalSet: event['totalSet'] as int? ?? state.totalSet,
         isOvertime: event['isOvertime'] as bool? ?? state.isOvertime,
-        elapsedSeconds: event['elapsedSeconds'] as int? ?? state.elapsedSeconds
+        elapsedSeconds: event['elapsedSeconds'] as int? ?? state.elapsedSeconds,
+        isLoading: false
       );
     });
   }
 }
 
-final timerProvider = NotifierProvider<TimerNotifier, TimerState>(() {
+final timerProvider = NotifierProvider.autoDispose<TimerNotifier, TimerState>(() {
   return TimerNotifier();
 });

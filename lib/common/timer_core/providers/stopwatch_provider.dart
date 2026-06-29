@@ -13,7 +13,8 @@ class StopwatchNotifier extends Notifier<StopwatchState> {
   StopwatchState build() {
     ref.onDispose(() => _serviceSubscription?.cancel());
     _listenToBackgroundService();
-    return StopwatchState.initial();
+    _backgroundService.invoke('requestStatus');
+    return StopwatchState.initial().copyWith(isLoading: true);
   }
 
   void _listenToBackgroundService(){
@@ -42,12 +43,13 @@ class StopwatchNotifier extends Notifier<StopwatchState> {
         elapsedSeconds: event['elapsedSeconds'] as int? ?? state.elapsedSeconds,
         elapsedMinutes: event['elapsedMinutes'] as int? ?? state.elapsedMinutes,
         elapsedHours: event['elapsedHours'] as int? ?? state.elapsedHours,
+        isLoading: false,
         laps: newLaps ?? state.laps,
       );
     });
   }
 }
 
-final stopwatchProvider = NotifierProvider<StopwatchNotifier, StopwatchState>(() {
+final stopwatchProvider = NotifierProvider.autoDispose<StopwatchNotifier, StopwatchState>(() {
   return StopwatchNotifier();
 });

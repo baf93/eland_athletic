@@ -175,18 +175,23 @@ class _RepeatableButtonState extends State<_RepeatableButton> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: (_) => _stopTimer(),
-      onTapCancel: _stopTimer,
-      child: Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: theme.dividerColor, width: 1.5),
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTapDown: (_) => _onTapDown(TapDownDetails()),
+        onTapUp: (_) => _stopTimer(),
+        onTapCancel: _stopTimer,
+        child: Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: theme.dividerColor, width: 1.5),
+          ),
+          child: Icon(widget.icon, color: theme.colorScheme.primary, size: 24),
         ),
-        child: Icon(widget.icon, color: theme.colorScheme.primary, size: 24),
       ),
     );
   }

@@ -91,7 +91,7 @@ class ElandStrings {
       'workout_abort_title': 'Cancel Workout',
       'workout_abort_desc': 'Are you sure you want to exit the current workout?',
       'high_five': 'High Five!',
-      'workout_completed': 'Workout\nCompleted',
+      'workout_completed': 'Workout\nComplete',
       'great_job': 'Great Job!',
       'get_ready': 'Get Ready',
       'get_ready_desc': 'Focus on your goal',
@@ -112,6 +112,8 @@ class ElandStrings {
       'lap_title': 'lap times',
       'reset': 'reset',
       'exit': 'exit',
+      'loading_workout': 'READY TO PUSH?',
+      'cooldown_time': 'Cooldown',
 
 
       //Utils
@@ -128,6 +130,8 @@ class ElandStrings {
       'next': 'Next',
       'phase_complete': 'Done',
       'time': 'Time',
+      'workout_wip': 'We are building your training hub. Coming soon!',
+      'nutri_wip': 'We are finalizing the nutrition section. Your dietary strategy is coming soon!'
     },
 
     AppLanguage.it: {
@@ -238,6 +242,7 @@ class ElandStrings {
       'lap': 'giro',
       'reset': 'reset',
       'exit': 'exit',
+      'loading_workout': 'PRONTO A SPINGERE?',
 
       //Utils
       'start_btn': 'Inizia',
@@ -253,6 +258,8 @@ class ElandStrings {
       'next': 'Prossimo',
       'phase_complete': 'Completato',
       'time': 'Tempo',
+      'workout_wip': 'Stiamo costruendo il tuo hub di allenamento. Presto disponibile!',
+      'nutri_wip': 'Stiamo finalizzando la sezione nutrizione. La tua strategia alimentare sta arrivando!'
     },
   };
 

@@ -11,7 +11,7 @@
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 33CC111B2044C6BA0003C045 /* Build configuration list for PBXAggregateTarget "Flutter Assemble" */;
 			buildPhases = (
-				33CC111E2044C6BF0003C045 /* ShellScript */,
+				33CC111E2044C6BF0003C045,
 			);
 			dependencies = (
 			);
@@ -21,27 +21,34 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		26ED647E423B84487B678F44 /* Runner/Configs/proAppRelease.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0DFAA5430CCC66559DD60DA0 /* Runner/Configs/proAppRelease.xcconfig */; };
 		331C80D8294CF71000263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C80D7294CF71000263BE5 /* RunnerTests.swift */; };
 		335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */; };
 		33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC10F02044A3C60003C045 /* AppDelegate.swift */; };
 		33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F22044A3C60003C045 /* Assets.xcassets */; };
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
+		3426D89E86FF548D3E1BE1B1 /* Runner/Configs/userAppDebug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 30EAE7E9D1E39A5973166DC1 /* Runner/Configs/userAppDebug.xcconfig */; };
+		486A4AFFE864F6F689CF50D2 /* Runner/Configs/userAppRelease.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = DC04A6E043F6A0C6F53B27F2 /* Runner/Configs/userAppRelease.xcconfig */; };
+		6149D51DBF9FFD995C778B89 /* Runner/Configs/proAppDebug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0AF4A20009ABB0FD894F1F66 /* Runner/Configs/proAppDebug.xcconfig */; };
+		78A318202AECB46A00862997 = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997; };
+		AB3912575CB2A9D26F2D5A44 /* Runner/Configs/userAppProfile.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = B47985262830E7E4C991FE0E /* Runner/Configs/userAppProfile.xcconfig */; };
+		C09B3390A5B08A3D2801EA54 /* Runner/Configs/proAppProfile.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F850A5317CDEA1D12E4FDEE3 /* Runner/Configs/proAppProfile.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		331C80D9294CF71000263BE5 /* PBXContainerItemProxy */ = {
+		331C80D9294CF71000263BE5 = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 33CC10E52044A3C60003C045 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 33CC10EC2044A3C60003C045;
+			remoteGlobalIDString = 33CC10EC2044A3C60003C045 /* Runner */;
 			remoteInfo = Runner;
 		};
-		33CC111F2044C79F0003C045 /* PBXContainerItemProxy */ = {
+		33CC111F2044C79F0003C045 = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 33CC10E52044A3C60003C045 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 33CC111A2044C6BA0003C045;
+			remoteGlobalIDString = 33CC111A2044C6BA0003C045 /* Flutter Assemble */;
 			remoteInfo = FLX;
 		};
 /* End PBXContainerItemProxy section */
@@ -60,11 +67,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0AF4A20009ABB0FD894F1F66 /* Runner/Configs/proAppDebug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; path = Runner/Configs/proAppDebug.xcconfig; sourceTree = "<group>"; };
+		0DFAA5430CCC66559DD60DA0 /* Runner/Configs/proAppRelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; path = Runner/Configs/proAppRelease.xcconfig; sourceTree = "<group>"; };
+		30EAE7E9D1E39A5973166DC1 /* Runner/Configs/userAppDebug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; path = Runner/Configs/userAppDebug.xcconfig; sourceTree = "<group>"; };
 		331C80D5294CF71000263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		331C80D7294CF71000263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		333000ED22D3DE5D00554162 /* Warnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Warnings.xcconfig; sourceTree = "<group>"; };
 		335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedPluginRegistrant.swift; sourceTree = "<group>"; };
-		33CC10ED2044A3C60003C045 /* eland_athletic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "eland_athletic.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		33CC10ED2044A3C60003C045 /* eland_athletic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = eland_athletic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		33CC10F02044A3C60003C045 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		33CC10F22044A3C60003C045 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Runner/Assets.xcassets; sourceTree = "<group>"; };
 		33CC10F52044A3C60003C045 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -76,8 +86,12 @@
 		33E51913231747F40026EE4D /* DebugProfile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DebugProfile.entitlements; sourceTree = "<group>"; };
 		33E51914231749380026EE4D /* Release.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Release.entitlements; sourceTree = "<group>"; };
 		33E5194F232828860026EE4D /* AppInfo.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppInfo.xcconfig; sourceTree = "<group>"; };
+		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		B47985262830E7E4C991FE0E /* Runner/Configs/userAppProfile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; path = Runner/Configs/userAppProfile.xcconfig; sourceTree = "<group>"; };
+		DC04A6E043F6A0C6F53B27F2 /* Runner/Configs/userAppRelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; path = Runner/Configs/userAppRelease.xcconfig; sourceTree = "<group>"; };
+		F850A5317CDEA1D12E4FDEE3 /* Runner/Configs/proAppProfile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; path = Runner/Configs/proAppProfile.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78A318202AECB46A00862997,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -124,7 +139,12 @@
 				33CEB47122A05771004F2AC0 /* Flutter */,
 				331C80D6294CF71000263BE5 /* RunnerTests */,
 				33CC10EE2044A3C60003C045 /* Products */,
-				D73912EC22F37F3D000D13A0 /* Frameworks */,
+				30EAE7E9D1E39A5973166DC1 /* Runner/Configs/userAppDebug.xcconfig */,
+				B47985262830E7E4C991FE0E /* Runner/Configs/userAppProfile.xcconfig */,
+				DC04A6E043F6A0C6F53B27F2 /* Runner/Configs/userAppRelease.xcconfig */,
+				0AF4A20009ABB0FD894F1F66 /* Runner/Configs/proAppDebug.xcconfig */,
+				F850A5317CDEA1D12E4FDEE3 /* Runner/Configs/proAppProfile.xcconfig */,
+				0DFAA5430CCC66559DD60DA0 /* Runner/Configs/proAppRelease.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -151,6 +171,7 @@
 		33CEB47122A05771004F2AC0 /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
+				78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */,
 				335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */,
 				33CEB47222A05771004F2AC0 /* Flutter-Debug.xcconfig */,
 				33CEB47422A05771004F2AC0 /* Flutter-Release.xcconfig */,
@@ -172,13 +193,6 @@
 			path = Runner;
 			sourceTree = "<group>";
 		};
-		D73912EC22F37F3D000D13A0 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -193,7 +207,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				331C80DA294CF71000263BE5 /* PBXTargetDependency */,
+				331C80DA294CF71000263BE5,
 			);
 			name = RunnerTests;
 			productName = RunnerTests;
@@ -208,14 +222,17 @@
 				33CC10EA2044A3C60003C045 /* Frameworks */,
 				33CC10EB2044A3C60003C045 /* Resources */,
 				33CC110E2044A8840003C045 /* Bundle Framework */,
-				3399D490228B24CF009A79C7 /* ShellScript */,
+				3399D490228B24CF009A79C7,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				33CC11202044C79F0003C045 /* PBXTargetDependency */,
+				33CC11202044C79F0003C045,
 			);
 			name = Runner;
+			packageProductDependencies = (
+				78A3181F2AECB46A00862997,
+			);
 			productName = Runner;
 			productReference = 33CC10ED2044A3C60003C045 /* eland_athletic.app */;
 			productType = "com.apple.product-type.application";
@@ -233,7 +250,7 @@
 				TargetAttributes = {
 					331C80D4294CF70F00263BE5 = {
 						CreatedOnToolsVersion = 14.0;
-						TestTargetID = 33CC10EC2044A3C60003C045;
+						TestTargetID = 33CC10EC2044A3C60003C045 /* Runner */;
 					};
 					33CC10EC2044A3C60003C045 = {
 						CreatedOnToolsVersion = 9.2;
@@ -260,6 +277,9 @@
 				Base,
 			);
 			mainGroup = 33CC10E42044A3C60003C045;
+			packageReferences = (
+				781AD8BC2B33823900A9FFBB,
+			);
 			productRefGroup = 33CC10EE2044A3C60003C045 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -285,13 +305,19 @@
 			files = (
 				33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */,
 				33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */,
+				3426D89E86FF548D3E1BE1B1 /* Runner/Configs/userAppDebug.xcconfig in Resources */,
+				AB3912575CB2A9D26F2D5A44 /* Runner/Configs/userAppProfile.xcconfig in Resources */,
+				486A4AFFE864F6F689CF50D2 /* Runner/Configs/userAppRelease.xcconfig in Resources */,
+				6149D51DBF9FFD995C778B89 /* Runner/Configs/proAppDebug.xcconfig in Resources */,
+				C09B3390A5B08A3D2801EA54 /* Runner/Configs/proAppProfile.xcconfig in Resources */,
+				26ED647E423B84487B678F44 /* Runner/Configs/proAppRelease.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3399D490228B24CF009A79C7 /* ShellScript */ = {
+		3399D490228B24CF009A79C7 = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -309,7 +335,7 @@
 			shellPath = /bin/sh;
 			shellScript = "echo \"$PRODUCT_NAME.app\" > \"$PROJECT_DIR\"/Flutter/ephemeral/.app_filename && \"$FLUTTER_ROOT\"/packages/flutter_tools/bin/macos_assemble.sh embed\n";
 		};
-		33CC111E2044C6BF0003C045 /* ShellScript */ = {
+		33CC111E2044C6BF0003C045 = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -353,15 +379,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		331C80DA294CF71000263BE5 /* PBXTargetDependency */ = {
+		331C80DA294CF71000263BE5 = {
 			isa = PBXTargetDependency;
 			target = 33CC10EC2044A3C60003C045 /* Runner */;
-			targetProxy = 331C80D9294CF71000263BE5 /* PBXContainerItemProxy */;
+			targetProxy = 331C80D9294CF71000263BE5;
 		};
-		33CC11202044C79F0003C045 /* PBXTargetDependency */ = {
+		33CC11202044C79F0003C045 = {
 			isa = PBXTargetDependency;
 			target = 33CC111A2044C6BA0003C045 /* Flutter Assemble */;
-			targetProxy = 33CC111F2044C79F0003C045 /* PBXContainerItemProxy */;
+			targetProxy = 33CC111F2044C79F0003C045;
 		};
 /* End PBXTargetDependency section */
 
@@ -378,6 +404,175 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		03CD917C3EBBC1A4F89A0F94 /* Debug-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 30EAE7E9D1E39A5973166DC1 /* Runner/Configs/userAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-userApp";
+		};
+		0B765BA11ED865C2BF9F1584 /* Debug-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 30EAE7E9D1E39A5973166DC1 /* Runner/Configs/userAppDebug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-$(ASSET_PREFIX)";
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Runner/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eland.athletic.user;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = "Debug-userApp";
+		};
+		148497360F525A6F23FD6CB3 /* Profile-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F850A5317CDEA1D12E4FDEE3 /* Runner/Configs/proAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-proApp";
+		};
+		2020B3884DF1763709FBEB09 /* Profile-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B47985262830E7E4C991FE0E /* Runner/Configs/userAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-userApp";
+		};
+		2E50C3698E946CB281CFAF28 /* Profile-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F850A5317CDEA1D12E4FDEE3 /* Runner/Configs/proAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-proApp";
+		};
+		31A286CB97B1455DABD16CBE /* Profile-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B47985262830E7E4C991FE0E /* Runner/Configs/userAppProfile.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-$(ASSET_PREFIX)";
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Runner/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eland.athletic.user;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = "Profile-userApp";
+		};
 		331C80DB294CF71000263BE5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -385,7 +580,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.elandAthletic.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eland.elandAthletic.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/eland_athletic.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/eland_athletic";
@@ -399,7 +594,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.elandAthletic.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eland.elandAthletic.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/eland_athletic.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/eland_athletic";
@@ -413,7 +608,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.elandAthletic.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eland.elandAthletic.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/eland_athletic.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/eland_athletic";
@@ -656,6 +851,433 @@
 			};
 			name = Release;
 		};
+		3A3E7D97E160FAE5972DFCBD /* Release-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0DFAA5430CCC66559DD60DA0 /* Runner/Configs/proAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-proApp";
+		};
+		43BA7859A76E8F2647C63129 /* Debug-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0AF4A20009ABB0FD894F1F66 /* Runner/Configs/proAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-proApp";
+		};
+		490386EFC977E3B48E1B26E6 /* Release-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0DFAA5430CCC66559DD60DA0 /* Runner/Configs/proAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-proApp";
+		};
+		52F6842C073F099CD155266B /* Profile-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B47985262830E7E4C991FE0E /* Runner/Configs/userAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-userApp";
+		};
+		5A7FC5B260579851EB7D3BE6 /* Profile-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F850A5317CDEA1D12E4FDEE3 /* Runner/Configs/proAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-proApp";
+		};
+		5D20F63702FE732EF2276CAD /* Release-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DC04A6E043F6A0C6F53B27F2 /* Runner/Configs/userAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-userApp";
+		};
+		6A776BC8A7C7A7244D0CF64D /* Debug-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0AF4A20009ABB0FD894F1F66 /* Runner/Configs/proAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-proApp";
+		};
+		6DC2D3D6A26FFA27EA0B21D2 /* Debug-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 30EAE7E9D1E39A5973166DC1 /* Runner/Configs/userAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-userApp";
+		};
+		6FBFEA18372BBE329FD3D157 /* Profile-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F850A5317CDEA1D12E4FDEE3 /* Runner/Configs/proAppProfile.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-$(ASSET_PREFIX)";
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Runner/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eland.athletic.pro;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = "Profile-proApp";
+		};
+		7B0F2E6074934A0C4BD2935A /* Release-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DC04A6E043F6A0C6F53B27F2 /* Runner/Configs/userAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-userApp";
+		};
+		7F3650B1A1BFE7855A299D43 /* Release-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DC04A6E043F6A0C6F53B27F2 /* Runner/Configs/userAppRelease.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-$(ASSET_PREFIX)";
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Runner/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eland.athletic.user;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = "Release-userApp";
+		};
+		9D4C2FAD9E124F1646D73EFD /* Release-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0DFAA5430CCC66559DD60DA0 /* Runner/Configs/proAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-proApp";
+		};
+		A340B1414B743B76F16D562C /* Profile-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B47985262830E7E4C991FE0E /* Runner/Configs/userAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-userApp";
+		};
+		B47E04F049FE3CBE43F2BB1B /* Release-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DC04A6E043F6A0C6F53B27F2 /* Runner/Configs/userAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-userApp";
+		};
+		B6C91C213DDE66050F002D96 /* Release-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0DFAA5430CCC66559DD60DA0 /* Runner/Configs/proAppRelease.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-$(ASSET_PREFIX)";
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Runner/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eland.athletic.pro;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = "Release-proApp";
+		};
+		C7DD7FD220D96408A469C589 /* Debug-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 30EAE7E9D1E39A5973166DC1 /* Runner/Configs/userAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-userApp";
+		};
+		CA311B6F26310964D37F1777 /* Debug-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0AF4A20009ABB0FD894F1F66 /* Runner/Configs/proAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-proApp";
+		};
+		CCFE941AD7AD04E4C60C5E3C /* Profile-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B47985262830E7E4C991FE0E /* Runner/Configs/userAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-userApp";
+		};
+		D51800258FDE5ADC4135C0BF /* Debug-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0AF4A20009ABB0FD894F1F66 /* Runner/Configs/proAppDebug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-$(ASSET_PREFIX)";
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Runner/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Flutter",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eland.athletic.pro;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = "Debug-proApp";
+		};
+		D75B40ED6108D16C54B52094 /* Debug-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 30EAE7E9D1E39A5973166DC1 /* Runner/Configs/userAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-userApp";
+		};
+		D828452C20928391E4A73A5B /* Debug-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0AF4A20009ABB0FD894F1F66 /* Runner/Configs/proAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-proApp";
+		};
+		DA0BA50E14CE0A9E82F80C3F /* Profile-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F850A5317CDEA1D12E4FDEE3 /* Runner/Configs/proAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-proApp";
+		};
+		E90F10A3E87B4276115F9952 /* Release-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DC04A6E043F6A0C6F53B27F2 /* Runner/Configs/userAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-userApp";
+		};
+		F1771806E93D49547AA5F51B /* Release-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0DFAA5430CCC66559DD60DA0 /* Runner/Configs/proAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-proApp";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -675,6 +1297,12 @@
 				33CC10F92044A3C60003C045 /* Debug */,
 				33CC10FA2044A3C60003C045 /* Release */,
 				338D0CE9231458BD00FA5F75 /* Profile */,
+				0B765BA11ED865C2BF9F1584 /* Debug-userApp */,
+				31A286CB97B1455DABD16CBE /* Profile-userApp */,
+				7F3650B1A1BFE7855A299D43 /* Release-userApp */,
+				D51800258FDE5ADC4135C0BF /* Debug-proApp */,
+				6FBFEA18372BBE329FD3D157 /* Profile-proApp */,
+				B6C91C213DDE66050F002D96 /* Release-proApp */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -685,6 +1313,30 @@
 				33CC10FC2044A3C60003C045 /* Debug */,
 				33CC10FD2044A3C60003C045 /* Release */,
 				338D0CEA231458BD00FA5F75 /* Profile */,
+				D75B40ED6108D16C54B52094 /* Debug-userApp */,
+				52F6842C073F099CD155266B /* Profile-userApp */,
+				5D20F63702FE732EF2276CAD /* Release-userApp */,
+				43BA7859A76E8F2647C63129 /* Debug-proApp */,
+				2E50C3698E946CB281CFAF28 /* Profile-proApp */,
+				F1771806E93D49547AA5F51B /* Release-proApp */,
+				C7DD7FD220D96408A469C589 /* Debug-userApp */,
+				2020B3884DF1763709FBEB09 /* Profile-userApp */,
+				7B0F2E6074934A0C4BD2935A /* Release-userApp */,
+				D828452C20928391E4A73A5B /* Debug-proApp */,
+				DA0BA50E14CE0A9E82F80C3F /* Profile-proApp */,
+				9D4C2FAD9E124F1646D73EFD /* Release-proApp */,
+				03CD917C3EBBC1A4F89A0F94 /* Debug-userApp */,
+				CCFE941AD7AD04E4C60C5E3C /* Profile-userApp */,
+				B47E04F049FE3CBE43F2BB1B /* Release-userApp */,
+				6A776BC8A7C7A7244D0CF64D /* Debug-proApp */,
+				5A7FC5B260579851EB7D3BE6 /* Profile-proApp */,
+				3A3E7D97E160FAE5972DFCBD /* Release-proApp */,
+				6DC2D3D6A26FFA27EA0B21D2 /* Debug-userApp */,
+				A340B1414B743B76F16D562C /* Profile-userApp */,
+				E90F10A3E87B4276115F9952 /* Release-userApp */,
+				CA311B6F26310964D37F1777 /* Debug-proApp */,
+				148497360F525A6F23FD6CB3 /* Profile-proApp */,
+				490386EFC977E3B48E1B26E6 /* Release-proApp */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -700,6 +1352,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		781AD8BC2B33823900A9FFBB = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		78A3181F2AECB46A00862997 = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FlutterGeneratedPluginSwiftPackage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 33CC10E52044A3C60003C045 /* Project object */;
 }
