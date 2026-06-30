@@ -500,6 +500,14 @@
 			};
 			name = "Profile-userApp";
 		};
+		2AA08DCA2B29D14FDFAFE23B /* Debug-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 30EAE7E9D1E39A5973166DC1 /* Runner/Configs/userAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-userApp";
+		};
 		2E50C3698E946CB281CFAF28 /* Profile-proApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F850A5317CDEA1D12E4FDEE3 /* Runner/Configs/proAppProfile.xcconfig */;
@@ -851,6 +859,14 @@
 			};
 			name = Release;
 		};
+		34A6E44CAC3A34B694866966 /* Profile-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F850A5317CDEA1D12E4FDEE3 /* Runner/Configs/proAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-proApp";
+		};
 		3A3E7D97E160FAE5972DFCBD /* Release-proApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0DFAA5430CCC66559DD60DA0 /* Runner/Configs/proAppRelease.xcconfig */;
@@ -898,6 +914,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = "Release-userApp";
+		};
+		6463FC342BF4779C5A1371B4 /* Debug-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0AF4A20009ABB0FD894F1F66 /* Runner/Configs/proAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-proApp";
 		};
 		6A776BC8A7C7A7244D0CF64D /* Debug-proApp */ = {
 			isa = XCBuildConfiguration;
@@ -1053,7 +1077,23 @@
 			};
 			name = "Release-userApp";
 		};
+		8141100D3ADC042A839A43E2 /* Release-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DC04A6E043F6A0C6F53B27F2 /* Runner/Configs/userAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-userApp";
+		};
 		9D4C2FAD9E124F1646D73EFD /* Release-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0DFAA5430CCC66559DD60DA0 /* Runner/Configs/proAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-proApp";
+		};
+		9F2EBD3533FC220F4DD9F747 /* Release-proApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0DFAA5430CCC66559DD60DA0 /* Runner/Configs/proAppRelease.xcconfig */;
 			buildSettings = {
@@ -1262,6 +1302,14 @@
 			};
 			name = "Profile-proApp";
 		};
+		E233F78043A175AFE3B35475 /* Profile-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B47985262830E7E4C991FE0E /* Runner/Configs/userAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-userApp";
+		};
 		E90F10A3E87B4276115F9952 /* Release-userApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DC04A6E043F6A0C6F53B27F2 /* Runner/Configs/userAppRelease.xcconfig */;
@@ -1337,6 +1385,12 @@
 				CA311B6F26310964D37F1777 /* Debug-proApp */,
 				148497360F525A6F23FD6CB3 /* Profile-proApp */,
 				490386EFC977E3B48E1B26E6 /* Release-proApp */,
+				2AA08DCA2B29D14FDFAFE23B /* Debug-userApp */,
+				E233F78043A175AFE3B35475 /* Profile-userApp */,
+				8141100D3ADC042A839A43E2 /* Release-userApp */,
+				6463FC342BF4779C5A1371B4 /* Debug-proApp */,
+				34A6E44CAC3A34B694866966 /* Profile-proApp */,
+				9F2EBD3533FC220F4DD9F747 /* Release-proApp */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -13,7 +13,10 @@ class FocusPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.02,
+          vertical: 12,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -40,23 +43,29 @@ class FocusPage extends ConsumerWidget {
             const SizedBox(height: 8),
 
             // Branding
-            Text(
-              'ELAND',
-              style: TextStyle(
-                fontSize: 54,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 8.0,
-                color: Theme.of(context).textTheme.headlineLarge?.color,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'ELAND',
+                style: TextStyle(
+                  fontSize: 54,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 8.0,
+                  color: Theme.of(context).textTheme.headlineLarge?.color,
+                ),
               ),
             ),
 
-            Text(
-              'ATHLETIC',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 5.0,
-                color: Theme.of(context).colorScheme.primary,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'ATHLETIC',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 5.0,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ),
 
@@ -96,17 +105,22 @@ class FocusPage extends ConsumerWidget {
                   ),
 
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "TABATA • EMOM • AMRAP • FOR TIME",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 2.0,
-                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                      Expanded(
+                        child: Text(
+                          "TABATA • EMOM • AMRAP • FOR TIME",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 2.0,
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
+                          ),
                         ),
                       ),
+
+                      const SizedBox(width: 12),
 
                       Icon(
                         Icons.arrow_forward_ios,
@@ -114,7 +128,7 @@ class FocusPage extends ConsumerWidget {
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ],
-                  ),
+                  )
                 ],
               ),
             ),

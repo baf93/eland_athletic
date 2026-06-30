@@ -19,6 +19,7 @@ enum AudioHapticTrigger {
   tenSeconds,
   lastThreeSeconds,
   end,
+  overtime
 }
 
 enum TimerType {

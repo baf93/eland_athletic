@@ -39,35 +39,28 @@ flavorizr:
       buildTargets:
         Runner:
           buildSettings:
-            PRODUCT_BUNDLE_IDENTIFIER: "com.eland.athletic"
-    macos:
-      buildTargets:
-        Runner:
-          buildSettings:
-            PRODUCT_BUNDLE_IDENTIFIER: "com.eland.athletic"
+            PRODUCT_BUNDLE_IDENTIFIER: "com.eland.athletic" # Bundle base
+
+  # Definisci i flavor qui
   flavors:
     userApp:
       app:
         name: "Eland Athletic"
       android:
         applicationId: "com.eland.athletic.user"
+        # Importante: specifica il dimension se necessario
+        flavorDimension: "flavor-type"
       ios:
         bundleId: "com.eland.athletic.user"
-      macos:
-        bundleId: "com.eland.athletic.user"
-      dart:
-        target: "lib/main_user.dart"
+
     proApp:
       app:
         name: "Eland Pro"
       android:
         applicationId: "com.eland.athletic.pro"
+        flavorDimension: "flavor-type"
       ios:
         bundleId: "com.eland.athletic.pro"
-      macos:
-        bundleId: "com.eland.athletic.pro"
-      dart:
-        target: "lib/main_pro.dart"
 
 flutter:
   uses-material-design: true

@@ -347,6 +347,14 @@
 			};
 			name = "Debug-proApp";
 		};
+		07CD2710035B74886EBE28BE /* Release-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EADF531D49C99BE0EBE23201 /* Flutter/proAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-proApp";
+		};
 		082BD392E7475AD3E14AFA0D /* Release-proApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = EADF531D49C99BE0EBE23201 /* Flutter/proAppRelease.xcconfig */;
@@ -354,6 +362,22 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = "Release-proApp";
+		};
+		0B14DA69DBD1B0BA43CF0B58 /* Debug-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 89EEA9C2D6175660B3003BEC /* Flutter/proAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-proApp";
+		};
+		0C4565218921D017B0A4536C /* Profile-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8680D1CAF550B09C26422BF5 /* Flutter/proAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-proApp";
 		};
 		0EF0BBBC78E4D297D6C086BC /* Release-userApp */ = {
 			isa = XCBuildConfiguration;
@@ -651,6 +675,14 @@
 			};
 			name = "Debug-proApp";
 		};
+		5683107970A8853B0454B28F /* Release-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 84A352EAE2277BB570B2E78E /* Flutter/userAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-userApp";
+		};
 		56D201D986405B4CC8548FE7 /* Profile-proApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8680D1CAF550B09C26422BF5 /* Flutter/proAppProfile.xcconfig */;
@@ -658,6 +690,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = "Profile-proApp";
+		};
+		58240C57DF2883E372B59428 /* Debug-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F120D72BA5FC604C9AE98CC4 /* Flutter/userAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-userApp";
 		};
 		5C82B4FB48B65D690A867E11 /* Release-userApp */ = {
 			isa = XCBuildConfiguration;
@@ -731,6 +771,30 @@
 			};
 			name = "Release-userApp";
 		};
+		5E582E08FD58A693E7C1531E /* Debug-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F120D72BA5FC604C9AE98CC4 /* Flutter/userAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-userApp";
+		};
+		63803B1C2EEAE8F1DE4D1DD8 /* Profile-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BB6D0C0D703F12BD7436706A /* Flutter/userAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-userApp";
+		};
+		64734DB016171D05377F9A84 /* Profile-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BB6D0C0D703F12BD7436706A /* Flutter/userAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-userApp";
+		};
 		693FBCE37CA5E7519EBE63CC /* Debug-proApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 89EEA9C2D6175660B3003BEC /* Flutter/proAppDebug.xcconfig */;
@@ -746,6 +810,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = "Release-proApp";
+		};
+		6CE9A481F416B2875C2F4BCF /* Release-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 84A352EAE2277BB570B2E78E /* Flutter/userAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-userApp";
 		};
 		6F2134FD12DB3987E4050639 /* Debug-proApp */ = {
 			isa = XCBuildConfiguration;
@@ -821,6 +893,14 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Debug-proApp";
+		};
+		6FEEB2C09F9EC089CE7F6529 /* Release-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 84A352EAE2277BB570B2E78E /* Flutter/userAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-userApp";
 		};
 		70797B6EE644BC9501C4B9EE /* Debug-proApp */ = {
 			isa = XCBuildConfiguration;
@@ -1019,6 +1099,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = "Release-userApp";
+		};
+		93AE97A5A1DE8C58131CEAA8 /* Profile-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BB6D0C0D703F12BD7436706A /* Flutter/userAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-userApp";
 		};
 		952B71E80D98DBB7C5534339 /* Profile-proApp */ = {
 			isa = XCBuildConfiguration;
@@ -1292,6 +1380,14 @@
 			};
 			name = "Profile-userApp";
 		};
+		A1DC1FE574C29E08821014CE /* Debug-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 89EEA9C2D6175660B3003BEC /* Flutter/proAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-proApp";
+		};
 		A86363080F18C4ED26D2EEAE /* Debug-proApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 89EEA9C2D6175660B3003BEC /* Flutter/proAppDebug.xcconfig */;
@@ -1301,6 +1397,14 @@
 			name = "Debug-proApp";
 		};
 		B0600BAFE7AC280DCC070174 /* Profile-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8680D1CAF550B09C26422BF5 /* Flutter/proAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-proApp";
+		};
+		B2EFA0A444EA04581C525B84 /* Profile-proApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8680D1CAF550B09C26422BF5 /* Flutter/proAppProfile.xcconfig */;
 			buildSettings = {
@@ -1551,6 +1655,14 @@
 			};
 			name = "Release-proApp";
 		};
+		D0D1B4C13B3B4CD49CBCEA06 /* Debug-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 89EEA9C2D6175660B3003BEC /* Flutter/proAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-proApp";
+		};
 		D2404CC0F51654A4C41B6820 /* Release-userApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 84A352EAE2277BB570B2E78E /* Flutter/userAppRelease.xcconfig */;
@@ -1560,6 +1672,14 @@
 			name = "Release-userApp";
 		};
 		D37EED5AE1C0694C21F00423 /* Profile-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8680D1CAF550B09C26422BF5 /* Flutter/proAppProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-proApp";
+		};
+		D4AAE99DF89B10EBFE70A0A8 /* Profile-proApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8680D1CAF550B09C26422BF5 /* Flutter/proAppProfile.xcconfig */;
 			buildSettings = {
@@ -1663,6 +1783,14 @@
 			};
 			name = "Release-proApp";
 		};
+		ECFD6DED316D31C6290B181B /* Release-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EADF531D49C99BE0EBE23201 /* Flutter/proAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-proApp";
+		};
 		ED4E599C52A638FBF46A0880 /* Profile-proApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8680D1CAF550B09C26422BF5 /* Flutter/proAppProfile.xcconfig */;
@@ -1671,6 +1799,14 @@
 			};
 			name = "Profile-proApp";
 		};
+		EF6DF37B7057CE4DA408F32E /* Release-proApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EADF531D49C99BE0EBE23201 /* Flutter/proAppRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-proApp";
+		};
 		F25AB50E2BE507FD2ED83AC9 /* Profile-userApp */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BB6D0C0D703F12BD7436706A /* Flutter/userAppProfile.xcconfig */;
@@ -1678,6 +1814,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = "Profile-userApp";
+		};
+		F593A355477A3A5B67F35C7E /* Debug-userApp */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F120D72BA5FC604C9AE98CC4 /* Flutter/userAppDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-userApp";
 		};
 		F599C23088902AF731988869 /* Release-proApp */ = {
 			isa = XCBuildConfiguration;
@@ -1838,6 +1982,24 @@
 				91370DCD6BB49893B27322A8 /* Debug-proApp */,
 				B9B425AB4FEDEA1E47594244 /* Profile-proApp */,
 				0F961830CB1E8C8A2AE764EF /* Release-proApp */,
+				F593A355477A3A5B67F35C7E /* Debug-userApp */,
+				93AE97A5A1DE8C58131CEAA8 /* Profile-userApp */,
+				6FEEB2C09F9EC089CE7F6529 /* Release-userApp */,
+				D0D1B4C13B3B4CD49CBCEA06 /* Debug-proApp */,
+				0C4565218921D017B0A4536C /* Profile-proApp */,
+				07CD2710035B74886EBE28BE /* Release-proApp */,
+				58240C57DF2883E372B59428 /* Debug-userApp */,
+				64734DB016171D05377F9A84 /* Profile-userApp */,
+				5683107970A8853B0454B28F /* Release-userApp */,
+				0B14DA69DBD1B0BA43CF0B58 /* Debug-proApp */,
+				B2EFA0A444EA04581C525B84 /* Profile-proApp */,
+				EF6DF37B7057CE4DA408F32E /* Release-proApp */,
+				5E582E08FD58A693E7C1531E /* Debug-userApp */,
+				63803B1C2EEAE8F1DE4D1DD8 /* Profile-userApp */,
+				6CE9A481F416B2875C2F4BCF /* Release-userApp */,
+				A1DC1FE574C29E08821014CE /* Debug-proApp */,
+				D4AAE99DF89B10EBFE70A0A8 /* Profile-proApp */,
+				ECFD6DED316D31C6290B181B /* Release-proApp */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

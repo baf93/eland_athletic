@@ -1,0 +1,2 @@
+-keep class com.baseflow.permissionhandler.** { *; }
+-keep interface com.baseflow.permissionhandler.** { *; }

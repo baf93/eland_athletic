@@ -19,7 +19,7 @@ class PhaseBar extends StatelessWidget {
 
     // Get next phase
     final nextPhase = timerState.currentPhaseIndex < timerState.workoutPhaseSummary.length
-        ? timerState.workoutPhaseSummary[timerState.currentPhaseIndex - 1]
+        ? timerState.workoutPhaseSummary[timerState.currentPhaseIndex]
         : null;
 
     return GestureDetector(

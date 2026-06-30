@@ -10,15 +10,18 @@ class SettingsSectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0, top: 8.0),
-      child: Text(
+      child:
+      Text(
         title,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w800,
           color: Theme.of(context).colorScheme.primary,
           letterSpacing: 1.5,
         ),
-      ),
+      )
     );
   }
 }
@@ -46,9 +49,19 @@ class SettingsSwitchTile extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: theme.colorScheme.primary),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+      title: Text(
+        title,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 15,
+        ),
+      ),
       subtitle: Text(
-        subtitle,
+          subtitle,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
         style: TextStyle(fontSize: 12, color: theme.textTheme.bodyMedium?.color),
       ),
       trailing: Switch(
@@ -139,10 +152,23 @@ class SettingsActionTile extends StatelessWidget {
         child: ListTile(
           contentPadding: EdgeInsets.zero,
           leading: Icon(icon, color: theme.colorScheme.primary),
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+          title: Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+            ),
+          ),
           subtitle: subtitle.isEmpty
               ? null
-              : Text(subtitle, style: TextStyle(fontSize: 12, color: theme.textTheme.bodyMedium?.color)),
+              : Text(
+              subtitle,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12, color: theme.textTheme.bodyMedium?.color)
+          ),
           trailing: trailing ?? Icon(Icons.arrow_forward_ios_rounded, size: 14, color: theme.textTheme.bodyMedium?.color),
         ),
       ),

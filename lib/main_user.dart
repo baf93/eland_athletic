@@ -135,31 +135,67 @@ class _UserDashboardState extends State<UserDashboard> with WidgetsBindingObserv
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: elandColors.cardBorder!, width: 1)),
-        ),
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            splashFactory: NoSplash.splashFactory,
-            highlightColor: Colors.transparent,
+          border: Border(
+            top: BorderSide(
+              color: elandColors.cardBorder!,
+              width: 1,
+            ),
           ),
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) {
+        ),
+        child: NavigationBarTheme(
+          data: NavigationBarThemeData(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+
+            indicatorColor: Theme.of(context)
+                .colorScheme
+                .primary
+                .withValues(alpha: 0.15),
+
+            iconTheme: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
+                return IconThemeData(
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 24,
+                );
+              }
+
+              return IconThemeData(
+                color: elandColors.unselectedItems,
+                size: 24,
+              );
+            }),
+
+            labelTextStyle: WidgetStateProperty.resolveWith((states) {
+              return TextStyle(
+                color: states.contains(WidgetState.selected)
+                    ? Theme.of(context).colorScheme.primary
+                    : elandColors.unselectedItems,
+                fontSize: states.contains(WidgetState.selected) ? 12 : 10,
+                fontWeight: states.contains(WidgetState.selected)
+                    ? FontWeight.w600
+                    : FontWeight.normal,
+              );
+            }),
+          ),
+          child: NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) {
               HapticFeedback.lightImpact();
               setState(() => _currentIndex = index);
             },
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            selectedItemColor: Theme.of(context).colorScheme.primary,
-            unselectedItemColor: elandColors.unselectedItems,
-            selectedFontSize: 14,
-            unselectedFontSize: 11,
-            iconSize: 24,
-            elevation: 0,
-            items: [
-              BottomNavigationBarItem(icon: const Padding(padding: EdgeInsets.only(top: 4, bottom: 4), child: Icon(Icons.bolt_rounded)), label: ElandStrings.of('tab_focus')),
-              BottomNavigationBarItem(icon: const Padding(padding: EdgeInsets.only(top: 4, bottom: 4), child: Icon(Icons.set_meal_rounded)), label: ElandStrings.of('tab_nutri')),
-              BottomNavigationBarItem(icon: const Padding(padding: EdgeInsets.only(top: 4, bottom: 4), child: Icon(Icons.fitness_center_rounded)), label: ElandStrings.of('tab_pt')),
+            destinations: [
+              NavigationDestination(
+                icon: Icon(Icons.bolt_rounded),
+                label: ElandStrings.of('tab_focus'),
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.set_meal_rounded),
+                label: ElandStrings.of('tab_nutri'),
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.fitness_center_rounded),
+                label: ElandStrings.of('tab_pt'),
+              ),
             ],
           ),
         ),

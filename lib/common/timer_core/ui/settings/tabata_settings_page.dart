@@ -79,7 +79,7 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
         IntervalHapticConfig(trigger: AudioHapticTrigger.start, pattern: HapticPattern.heavy),
 
         /// -- Half
-        if(isWork) IntervalHapticConfig(trigger: AudioHapticTrigger.start, pattern: HapticPattern.doubleTap),
+        if(isWork) IntervalHapticConfig(trigger: AudioHapticTrigger.half, pattern: HapticPattern.doubleTap),
 
         /// -- Ten Seconds
         if(isWork) IntervalHapticConfig(trigger: AudioHapticTrigger.tenSeconds, pattern: HapticPattern.medium),

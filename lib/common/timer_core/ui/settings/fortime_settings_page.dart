@@ -31,6 +31,7 @@ class _FortimeSettingsPageState extends State<FortimeSettingsPage> {
       IntervalAudioConfig(audioTrigger: AudioHapticTrigger.tenSeconds, fileName: 'ten_seconds.m4a'),
       IntervalAudioConfig(audioTrigger: AudioHapticTrigger.lastThreeSeconds, fileName: 'beep.m4a'),
       IntervalAudioConfig(audioTrigger: AudioHapticTrigger.end, fileName: 'workout_complete.m4a'),
+      IntervalAudioConfig(audioTrigger: AudioHapticTrigger.overtime, fileName: 'overtime.m4a'),
     ]];
 
     final List<List<IntervalHapticConfig>> hapticConfigs =[[
@@ -39,6 +40,7 @@ class _FortimeSettingsPageState extends State<FortimeSettingsPage> {
       IntervalHapticConfig(trigger: AudioHapticTrigger.tenSeconds, pattern: HapticPattern.medium),
       IntervalHapticConfig(trigger: AudioHapticTrigger.lastThreeSeconds, pattern: HapticPattern.light),
       IntervalHapticConfig(trigger: AudioHapticTrigger.end, pattern: HapticPattern.heavy),
+      IntervalHapticConfig(trigger: AudioHapticTrigger.overtime, pattern: HapticPattern.heavy),
     ]];
 
     final List<WorkoutConfig> configs = [

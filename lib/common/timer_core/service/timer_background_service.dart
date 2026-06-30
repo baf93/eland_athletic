@@ -266,6 +266,8 @@ class TimerBackgroundService {
 
         if (elapsedSeconds > intervalDuration) isOvertime = true;
 
+        if(elapsedSeconds == intervalDuration+1) triggerAudioHapticFeedback(AudioHapticTrigger.overtime);
+
         /// Update UI with new values
         service.invoke('uiUpdate', {
           'status': 'running',
@@ -280,6 +282,7 @@ class TimerBackgroundService {
     void runInterval() async {
       // I'm at the end of the workout
       if(currentIntervalIndex >= intervalQueue.length){
+        triggerAudioHapticFeedback(AudioHapticTrigger.end);
         service.invoke('uiUpdate', {'status': 'completed', 'remainingSeconds': 0, 'intervalProgress': 1.0});
         flutterLocalNotificationsPlugin.cancel(id: notificationId);
         ticker?.cancel();
@@ -332,7 +335,6 @@ class TimerBackgroundService {
 
         // End of interval. Next one
         if (remainingSeconds <= 0) {
-          triggerAudioHapticFeedback(AudioHapticTrigger.end);
           ticker?.cancel();
           ticker = null;
           accumulatedMsDuringStop = 0;

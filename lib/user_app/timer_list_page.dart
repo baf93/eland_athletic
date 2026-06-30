@@ -33,12 +33,15 @@ class TimerListPage extends StatelessWidget {
             Navigator.maybePop(context);
           },
         ),
-        title: Text(
-          ElandStrings.of('card_timer_title').toUpperCase(),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.5,
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            ElandStrings.of('card_timer_title').toUpperCase(),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.5,
+            ),
           ),
         ),
         centerTitle: true,
@@ -51,16 +54,22 @@ class TimerListPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text(
-                  ElandStrings.of('timer_list_desc'),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                    color: theme.textTheme.bodyMedium?.color,
+
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                        ElandStrings.of('timer_list_desc'),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          height: 1.4,
+                          color: theme.textTheme.bodyMedium?.color,
+                        ),
+                    ),
                   ),
                 ),
               ),
@@ -72,7 +81,6 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.fitness_center_rounded,
                 title: ElandStrings.of('timer_tabata').toUpperCase(),
                 onTap: () {
-                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => const TabataSettingsPage(),
@@ -85,7 +93,6 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.loop_rounded,
                 title: ElandStrings.of('timer_emom').toUpperCase(),
                 onTap: () {
-                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const EMOMSettingsPage(),
@@ -98,7 +105,6 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.all_inclusive_rounded,
                 title: ElandStrings.of('timer_amrap').toUpperCase(),
                 onTap: () {
-                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const AmrapSettingsPage(),
@@ -111,7 +117,6 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.timer_10_outlined,
                 title: ElandStrings.of('timer_fortime').toUpperCase(),
                 onTap: () {
-                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const FortimeSettingsPage(),
@@ -137,7 +142,6 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.hourglass_bottom_rounded,
                 title: ElandStrings.of('timer_countdown').toUpperCase(),
                 onTap: () {
-                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const CountdownSettingsPage(),
@@ -150,7 +154,6 @@ class TimerListPage extends StatelessWidget {
                 icon: Icons.shutter_speed_rounded,
                 title: ElandStrings.of('timer_stopwatch').toUpperCase(),
                 onTap: () {
-                  HapticFeedback.lightImpact();
                   StopwatchController.instance.launchStopwatch();
                   Navigator.of(context).push(
                     MaterialPageRoute(
