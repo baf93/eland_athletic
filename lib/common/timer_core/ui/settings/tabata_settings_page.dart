@@ -7,6 +7,7 @@ import '../../controllers/workout_controller.dart';
 import '../../models/workout_config.dart';
 import '../workouts/workout_page.dart';
 import '../../models/workout_phase_summary.dart';
+import '../../../eland_responsive.dart';
 import '../../../strings.dart';
 import '../../../widgets/timer_setting_selector.dart';
 import '../../../widgets/pill_badge.dart';
@@ -26,10 +27,10 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
   int _setNumber = 3;
   int _restBetweenSet = 60;
 
-  /// Total workout time in minutes and seconds for pill badge
   String get _totalWorkoutTime {
-    final int totalSeconds = (_workTime + _restTime) * _roundSet * _setNumber +
-        (_restBetweenSet * (_setNumber - 1));
+    final int totalSeconds =
+        (_workTime + _restTime) * _roundSet * _setNumber +
+            (_restBetweenSet * (_setNumber - 1));
 
     final int minutes = totalSeconds ~/ 60;
     final int seconds = totalSeconds % 60;
@@ -37,60 +38,96 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
     return '${minutes}M ${seconds > 0 ? '${seconds}S' : ''}';
   }
 
-  /// Get Configurations
   List<WorkoutConfig> _generateConfigs() {
-    /// 2 round, 3 Sets = Work 1-1, Rest 1-1, Work 2-1, Set-Rest 1-2, Work 1-2, Rest 1-2, Work 2-2, Set-Rest 2-3, Work 1-3, Rest 1-3, Work 2-3 = 11 Intervalli
-    /// 2 round, 2 Sets = Work 1-1, Rest 1-1, Work 2-1, Set-Rest 1-2, Work 1-2, Rest 1-2, Work 2-2 = 7 Intervalli
-    /// round * sets * 2 - 1 = 2*3*2-1 = 11, 2*2*2-1 = 7
     final totalIntervals = (_roundSet * _setNumber * 2) - 1;
 
-    final List<List<IntervalAudioConfig>> audioConfigs = List.generate(totalIntervals, (i) {
-      bool isWork = i.isEven;
-      int currentRound = (i ~/ 2) % _roundSet +1;
+    final List<List<IntervalAudioConfig>> audioConfigs = List.generate(
+      totalIntervals,
+          (i) {
+        final bool isWork = i.isEven;
+        final int currentRound = (i ~/ 2) % _roundSet + 1;
 
-      return [
-        /// -- START Audio Configs
-        if (i==0) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'go.m4a'),
-        if (isWork && i>0 && currentRound != _roundSet) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'round$currentRound.m4a'),
-        if (isWork && currentRound == _roundSet) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'last_round.m4a'),
+        return [
+          if (i == 0)
+            IntervalAudioConfig(
+              audioTrigger: AudioHapticTrigger.start,
+              fileName: 'go.m4a',
+            ),
+          if (isWork && i > 0 && currentRound != _roundSet)
+            IntervalAudioConfig(
+              audioTrigger: AudioHapticTrigger.start,
+              fileName: 'round$currentRound.m4a',
+            ),
+          if (isWork && currentRound == _roundSet)
+            IntervalAudioConfig(
+              audioTrigger: AudioHapticTrigger.start,
+              fileName: 'last_round.m4a',
+            ),
+          if (!isWork && currentRound != _roundSet)
+            IntervalAudioConfig(
+              audioTrigger: AudioHapticTrigger.start,
+              fileName: 'rest.m4a',
+            ),
+          if (!isWork && currentRound == _roundSet)
+            IntervalAudioConfig(
+              audioTrigger: AudioHapticTrigger.start,
+              fileName: 'set_rest.m4a',
+            ),
+          if (isWork)
+            IntervalAudioConfig(
+              audioTrigger: AudioHapticTrigger.half,
+              fileName: 'half.m4a',
+            ),
+          if (isWork)
+            IntervalAudioConfig(
+              audioTrigger: AudioHapticTrigger.tenSeconds,
+              fileName: 'ten_seconds.m4a',
+            ),
+          IntervalAudioConfig(
+            audioTrigger: AudioHapticTrigger.lastThreeSeconds,
+            fileName: 'beep.m4a',
+          ),
+          if (i == totalIntervals - 1)
+            IntervalAudioConfig(
+              audioTrigger: AudioHapticTrigger.end,
+              fileName: 'workout_complete.m4a',
+            ),
+        ];
+      },
+    );
 
-        if(!isWork && currentRound != _roundSet) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'rest.m4a'),
-        if(!isWork && currentRound == _roundSet) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName:  'set_rest.m4a'),
+    final List<List<IntervalHapticConfig>> hapticConfigs = List.generate(
+      totalIntervals,
+          (i) {
+        final bool isWork = i.isEven;
 
-        /// -- Half
-        if(isWork) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.half, fileName: 'half.m4a'),
-
-        /// -- Ten Seconds
-        if(isWork) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.tenSeconds, fileName: 'ten_seconds.m4a'),
-
-        /// -- Last three seconds
-        IntervalAudioConfig(audioTrigger: AudioHapticTrigger.lastThreeSeconds, fileName: 'beep.m4a'),
-
-        /// -- END
-        if(i==totalIntervals-1) IntervalAudioConfig(audioTrigger: AudioHapticTrigger.end, fileName: 'workout_complete.m4a'),
-      ];
-    });
-
-    final List<List<IntervalHapticConfig>> hapticConfigs = List.generate(totalIntervals, (i) {
-      bool isWork = i.isEven;
-
-      return [
-        /// -- START Haptic Configs
-        IntervalHapticConfig(trigger: AudioHapticTrigger.start, pattern: HapticPattern.heavy),
-
-        /// -- Half
-        if(isWork) IntervalHapticConfig(trigger: AudioHapticTrigger.half, pattern: HapticPattern.doubleTap),
-
-        /// -- Ten Seconds
-        if(isWork) IntervalHapticConfig(trigger: AudioHapticTrigger.tenSeconds, pattern: HapticPattern.medium),
-
-        /// -- Last 3 seconds
-        IntervalHapticConfig(trigger: AudioHapticTrigger.lastThreeSeconds, pattern: HapticPattern.light),
-
-        /// -- END
-        if(i==totalIntervals-1) IntervalHapticConfig(trigger: AudioHapticTrigger.end, pattern: HapticPattern.heavy),
-      ];
-    });
+        return [
+          IntervalHapticConfig(
+            trigger: AudioHapticTrigger.start,
+            pattern: HapticPattern.heavy,
+          ),
+          if (isWork)
+            IntervalHapticConfig(
+              trigger: AudioHapticTrigger.half,
+              pattern: HapticPattern.doubleTap,
+            ),
+          if (isWork)
+            IntervalHapticConfig(
+              trigger: AudioHapticTrigger.tenSeconds,
+              pattern: HapticPattern.medium,
+            ),
+          IntervalHapticConfig(
+            trigger: AudioHapticTrigger.lastThreeSeconds,
+            pattern: HapticPattern.light,
+          ),
+          if (i == totalIntervals - 1)
+            IntervalHapticConfig(
+              trigger: AudioHapticTrigger.end,
+              pattern: HapticPattern.heavy,
+            ),
+        ];
+      },
+    );
 
     return [
       TabataConfig(
@@ -110,25 +147,26 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
   }
 
   void _startWorkout() {
-    final List<WorkoutConfig> configs = _generateConfigs();
+    final configs = _generateConfigs();
     final generator = WorkoutGenerator();
 
     final workout = generator.generate(configs);
-    final List<WorkoutPhaseSummary> uiPhaseSummary = generator.generateUIPhaseSummary(configs);
+    final uiPhaseSummary = generator.generateUIPhaseSummary(configs);
 
     WorkoutController.instance.launchWorkout(workout, uiPhaseSummary);
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const WorkoutPage()));
+
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const WorkoutPage()));
   }
 
-  /// UI
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final r = ElandResponsive(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-
-      // --- APP BAR ---
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -142,58 +180,91 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
         ),
         title: Text(
           ElandStrings.of('timer_tabata').toUpperCase(),
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+          style: TextStyle(
+            fontSize: r.font(18),
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+          ),
         ),
         centerTitle: true,
       ),
+      body: SafeArea(
+        child: Padding(
+          padding: r.pagePadding,
+          child: Column(
+            children: [
+              PillBadge(
+                text:
+                '${ElandStrings.of('total_time').toUpperCase()}: $_totalWorkoutTime',
+              ),
 
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Column(
-          children: [
-            PillBadge(
-              text: '${ElandStrings.of('total_time').toUpperCase()}: $_totalWorkoutTime',
-            ),
+              SizedBox(height: r.compactGap),
 
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TimerSettingSelector(label: '${ElandStrings.of('work_time')} (s)', min: 1, value: _workTime, onChanged: (v) => setState(() => _workTime = v)),
-                            const SizedBox(height: 20),
-                            TimerSettingSelector(label: '${ElandStrings.of('rest_time')} (s)', min: 1, value: _restTime, onChanged: (v) => setState(() => _restTime = v)),
-                            const SizedBox(height: 20),
-                            TimerSettingSelector(label: ElandStrings.of('round_set'), min: 1, max: 20, value: _roundSet, onChanged: (v) => setState(() => _roundSet = v)),
-                            const SizedBox(height: 20),
-                            TimerSettingSelector(label: ElandStrings.of('set_number'), min: 1, value: _setNumber, onChanged: (v) => setState(() => _setNumber = v)),
-                            const SizedBox(height: 20),
-                            TimerSettingSelector(label: '${ElandStrings.of('rest_between_set')} (s)', min: 1, value: _restBetweenSet, onChanged: (v) => setState(() => _restBetweenSet = v)),
-                          ],
-                        ),
+              Expanded(
+                child: CustomScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  slivers: [
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TimerSettingSelector(
+                            label: '${ElandStrings.of('work_time')} (s)',
+                            min: 1,
+                            value: _workTime,
+                            onChanged: (v) => setState(() => _workTime = v),
+                          ),
+                          SizedBox(height: r.settingsGap),
+                          TimerSettingSelector(
+                            label: '${ElandStrings.of('rest_time')} (s)',
+                            min: 1,
+                            value: _restTime,
+                            onChanged: (v) => setState(() => _restTime = v),
+                          ),
+                          SizedBox(height: r.settingsGap),
+                          TimerSettingSelector(
+                            label: ElandStrings.of('round_set'),
+                            min: 1,
+                            max: 20,
+                            value: _roundSet,
+                            onChanged: (v) => setState(() => _roundSet = v),
+                          ),
+                          SizedBox(height: r.settingsGap),
+                          TimerSettingSelector(
+                            label: ElandStrings.of('set_number'),
+                            min: 1,
+                            value: _setNumber,
+                            onChanged: (v) => setState(() => _setNumber = v),
+                          ),
+                          SizedBox(height: r.settingsGap),
+                          TimerSettingSelector(
+                            label: '${ElandStrings.of('rest_between_set')} (s)',
+                            min: 1,
+                            value: _restBetweenSet,
+                            onChanged: (v) =>
+                                setState(() => _restBetweenSet = v),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
-            ),
 
-            Padding(
-              padding: const EdgeInsets.only(top: 20, bottom: 20),
-              child: PrimaryActionButton(
-                label: ElandStrings.of('start_btn'),
-                onPressed: () {
-                  HapticFeedback.mediumImpact();
-                  _startWorkout();
-                },
+              Padding(
+                padding: r.bottomButtonPadding,
+                child: PrimaryActionButton(
+                  height: r.primaryButtonHeight,
+                  label: ElandStrings.of('start_btn'),
+                  onPressed: () {
+                    HapticFeedback.mediumImpact();
+                    _startWorkout();
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

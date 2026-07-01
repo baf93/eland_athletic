@@ -1,3 +1,4 @@
+import 'package:eland_athletic/common/eland_responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme.dart';
@@ -15,12 +16,21 @@ class ElandActionButton extends StatelessWidget {
     required this.onPressed,
     this.iconColor,
     this.borderColor,
-    this.size = 65.0,
+    this.size = 65,
   });
 
   @override
   Widget build(BuildContext context) {
-    final elandColors = Theme.of(context).extension<ElandCustomColors>()!;
+    final theme = Theme.of(context);
+    final elandColors = theme.extension<ElandCustomColors>()!;
+    final r = ElandResponsive(context);
+
+    final effectiveSize =
+    size == 65
+        ? r.iconButtonSize
+        : size;
+
+    final iconSize = effectiveSize * 0.43;
 
     return Material(
       color: Colors.transparent,
@@ -31,20 +41,20 @@ class ElandActionButton extends StatelessWidget {
           onPressed();
         },
         child: Container(
-          width: size,
-          height: size,
+          width: effectiveSize,
+          height: effectiveSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-                color: borderColor ?? elandColors.cardBorder!,
-                width: 2
+              color: borderColor ?? elandColors.cardBorder!,
+              width: 2,
             ),
           ),
           child: Center(
             child: Icon(
-                icon,
-                color: iconColor,
-                size: size * 0.43
+              icon,
+              size: iconSize,
+              color: iconColor ?? theme.textTheme.headlineLarge?.color,
             ),
           ),
         ),

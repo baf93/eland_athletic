@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../common/eland_responsive.dart';
 import '../common/strings.dart';
 import '../common/widgets/eland_card.dart';
 import 'timer_list_page.dart';
@@ -11,36 +12,41 @@ class FocusPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final r = ElandResponsive(context);
+
     return SafeArea(
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.02,
-          vertical: 12,
+          horizontal: r.pageHorizontalPadding * 0.5,
+          vertical: r.spacing(12),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.settings, size: 26),
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SettingsPage(),
-                        ),
-                      );
-                    },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.settings,
+                    size: r.icon(26),
                   ),
-                ],
-              ),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: r.compactGap),
 
             // Branding
             FittedBox(
@@ -48,10 +54,10 @@ class FocusPage extends ConsumerWidget {
               child: Text(
                 'ELAND',
                 style: TextStyle(
-                  fontSize: 54,
+                  fontSize: r.font(54, maxScale: 1.08),
                   fontWeight: FontWeight.w900,
                   letterSpacing: 8.0,
-                  color: Theme.of(context).textTheme.headlineLarge?.color,
+                  color: theme.textTheme.headlineLarge?.color,
                 ),
               ),
             ),
@@ -61,29 +67,29 @@ class FocusPage extends ConsumerWidget {
               child: Text(
                 'ATHLETIC',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: r.font(18, maxScale: 1.08),
                   fontWeight: FontWeight.w800,
                   letterSpacing: 5.0,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: r.spacing(12)),
 
             Text(
               ElandStrings.of('app_motto'),
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: r.font(14),
                 fontWeight: FontWeight.w600,
                 fontStyle: FontStyle.italic,
                 letterSpacing: 0.2,
-                color: Theme.of(context).textTheme.bodyMedium?.color,
+                color: theme.textTheme.bodyMedium?.color,
               ),
             ),
 
-            const SizedBox(height: 32),
+            SizedBox(height: r.spacing(32)),
 
             // --- CARD: Quick Timers ---
             ElandCard(
@@ -92,7 +98,9 @@ class FocusPage extends ConsumerWidget {
                 HapticFeedback.lightImpact();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const TimerListPage()),
+                  MaterialPageRoute(
+                    builder: (context) => const TimerListPage(),
+                  ),
                 );
               },
               child: Column(
@@ -100,8 +108,8 @@ class FocusPage extends ConsumerWidget {
                 children: [
                   Container(
                     height: 1,
-                    margin: const EdgeInsets.only(bottom: 16),
-                    color: Theme.of(context).dividerColor,
+                    margin: EdgeInsets.only(bottom: r.spacing(16)),
+                    color: theme.dividerColor,
                   ),
 
                   Row(
@@ -112,29 +120,28 @@ class FocusPage extends ConsumerWidget {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: r.font(12),
                             fontWeight: FontWeight.w800,
                             letterSpacing: 2.0,
-                            color: Theme.of(context).textTheme.bodyMedium?.color,
+                            color: theme.textTheme.bodyMedium?.color,
                           ),
                         ),
                       ),
 
-                      const SizedBox(width: 12),
+                      SizedBox(width: r.spacing(12)),
 
                       Icon(
                         Icons.arrow_forward_ios,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.primary,
+                        size: r.icon(20),
+                        color: theme.colorScheme.primary,
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
 
-
-            const SizedBox(height: 12),
+            SizedBox(height: r.cardGap),
 
             // --- CARD: Focus Workout --- TODO: Implementare la card
             ElandCard(
@@ -146,17 +153,16 @@ class FocusPage extends ConsumerWidget {
                 ElandStrings.of('wip_function'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: r.font(13),
                   fontStyle: FontStyle.italic,
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                  color: theme.textTheme.bodyMedium?.color,
                 ),
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: r.cardGap),
 
             // --- CARD: NUTRITION (Next Meal) --- TODO: Implementare la card
-
             ElandCard(
               title: ElandStrings.of('card_nutrition_title'),
               onTap: () {
@@ -166,13 +172,15 @@ class FocusPage extends ConsumerWidget {
                 ElandStrings.of('wip_function'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: r.font(13),
                   fontStyle: FontStyle.italic,
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                  color: theme.textTheme.bodyMedium?.color,
                 ),
               ),
             ),
-           /* ElandCard(
+
+            /*
+            ElandCard(
               title: ElandStrings.of('card_nutrition_title'),
               subtitle: 'PRANZO - 13:00',
               onTap: () {
@@ -201,8 +209,8 @@ class FocusPage extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),*/
-
+            ),
+            */
           ],
         ),
       ),
@@ -215,12 +223,16 @@ Widget _buildTag(String text) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     decoration: BoxDecoration(
-      border: Border.all(color: Colors.white.withAlpha(50)), // O colore neutro
+      border: Border.all(color: Colors.white.withAlpha(50)),
       borderRadius: BorderRadius.circular(4),
     ),
     child: Text(
       text,
-      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1),
+      style: const TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 1,
+      ),
     ),
   );
 }

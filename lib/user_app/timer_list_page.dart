@@ -1,6 +1,7 @@
 import 'package:eland_athletic/common/timer_core/controllers/stopwatch_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../common/eland_responsive.dart';
 import '../common/strings.dart';
 import '../common/widgets/timer_row_item.dart';
 import '../common/timer_core/ui/settings/emom_settings_page.dart';
@@ -15,13 +16,12 @@ class TimerListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final theme = Theme.of(context);
+    final r = ElandResponsive(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
 
-      // --- APP BAR ---
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -37,8 +37,8 @@ class TimerListPage extends StatelessWidget {
           fit: BoxFit.scaleDown,
           child: Text(
             ElandStrings.of('card_timer_title').toUpperCase(),
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: r.font(18),
               fontWeight: FontWeight.w900,
               letterSpacing: 1.5,
             ),
@@ -47,52 +47,59 @@ class TimerListPage extends StatelessWidget {
         centerTitle: true,
       ),
 
-      // --- BODY ---
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 30.0),
+          padding: EdgeInsets.symmetric(
+            horizontal: r.spacing(16),
+            vertical: r.spacing(30),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-
               Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 500),
+                  constraints: BoxConstraints(
+                    maxWidth: r.adaptive(500, 560, 620),
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: r.spacing(20),
+                    ),
                     child: Text(
-                        ElandStrings.of('timer_list_desc'),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          height: 1.4,
-                          color: theme.textTheme.bodyMedium?.color,
-                        ),
+                      ElandStrings.of('timer_list_desc'),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: r.font(16),
+                        fontWeight: FontWeight.w600,
+                        height: 1.4,
+                        color: theme.textTheme.bodyMedium?.color,
+                      ),
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: r.spacing(32)),
 
-              // Timer List
               TimerRowItem(
                 icon: Icons.fitness_center_rounded,
                 title: ElandStrings.of('timer_tabata').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const TabataSettingsPage(),
-                      ),
+                    MaterialPageRoute(
+                      builder: (context) => const TabataSettingsPage(),
+                    ),
                   );
                 },
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: r.cardGap),
+
               TimerRowItem(
                 icon: Icons.loop_rounded,
                 title: ElandStrings.of('timer_emom').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const EMOMSettingsPage(),
@@ -100,11 +107,13 @@ class TimerListPage extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: r.cardGap),
+
               TimerRowItem(
                 icon: Icons.all_inclusive_rounded,
                 title: ElandStrings.of('timer_amrap').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const AmrapSettingsPage(),
@@ -112,11 +121,13 @@ class TimerListPage extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: r.cardGap),
+
               TimerRowItem(
                 icon: Icons.timer_10_outlined,
                 title: ElandStrings.of('timer_fortime').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const FortimeSettingsPage(),
@@ -125,23 +136,23 @@ class TimerListPage extends StatelessWidget {
                 },
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: r.spacing(28)),
 
-              // --- Spacer
               Divider(
                 height: 1,
                 thickness: 1.2,
-                indent: 40,
-                endIndent: 40,
+                indent: r.spacing(40),
+                endIndent: r.spacing(40),
                 color: theme.dividerColor,
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: r.spacing(28)),
 
               TimerRowItem(
                 icon: Icons.hourglass_bottom_rounded,
                 title: ElandStrings.of('timer_countdown').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const CountdownSettingsPage(),
@@ -149,11 +160,13 @@ class TimerListPage extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: r.cardGap),
+
               TimerRowItem(
                 icon: Icons.shutter_speed_rounded,
                 title: ElandStrings.of('timer_stopwatch').toUpperCase(),
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   StopwatchController.instance.launchStopwatch();
                   Navigator.of(context).push(
                     MaterialPageRoute(

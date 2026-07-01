@@ -1,3 +1,4 @@
+import 'package:eland_athletic/common/eland_responsive.dart';
 import 'package:flutter/material.dart';
 import '../theme.dart';
 
@@ -17,69 +18,76 @@ class ElandCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final elandColors = Theme.of(context).extension<ElandCustomColors>()!;
+    final theme = Theme.of(context);
+    final elandColors = theme.extension<ElandCustomColors>()!;
+    final r = ElandResponsive(context);
+
+    final borderRadius = r.radius(16);
+    final horizontalPadding = r.adaptive(18, 22, 24);
+    final verticalPadding = r.adaptive(14, 16, 18);
 
     Widget cardContent = Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 14.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: verticalPadding,
+      ),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: elandColors.cardBorder!, width: 2),
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(
+          color: elandColors.cardBorder!,
+          width: 2,
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Title
           Text(
             title.toUpperCase(),
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: r.font(18, maxScale: 1.12),
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
+              color: theme.colorScheme.primary,
               letterSpacing: 1.2,
             ),
           ),
 
-          // Optional Subtitle
           if (subtitle != null) ...[
-            const SizedBox(height: 6),
+            SizedBox(height: r.compactGap),
             Text(
               subtitle!.toUpperCase(),
               textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: r.font(11, maxScale: 1.12),
                 fontWeight: FontWeight.w600,
-                color: Theme.of(context).textTheme.bodySmall?.color,
+                color: theme.textTheme.bodySmall?.color,
                 letterSpacing: 1.1,
               ),
             ),
           ],
 
-          // Fixed space between the card header and its descriptive content
-          const SizedBox(height: 16),
+          SizedBox(height: r.sectionGap),
 
-          // CARD CONTENT
           child,
         ],
       ),
     );
 
-    // If the card is clickable, add the InkWell effect while respecting the rounded corners
     if (onTap != null) {
-      return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(16),
-            child: cardContent,
-          ),
+      return Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: cardContent,
         ),
       );
     }

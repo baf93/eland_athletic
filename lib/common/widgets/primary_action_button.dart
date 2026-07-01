@@ -1,3 +1,4 @@
+import 'package:eland_athletic/common/eland_responsive.dart';
 import 'package:flutter/material.dart';
 
 class PrimaryActionButton extends StatelessWidget {
@@ -23,42 +24,51 @@ class PrimaryActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isLandscape = MediaQuery.orientationOf(context) == Orientation.landscape;
+    final r = ElandResponsive(context);
+
+    final effectiveHeight = height == 60 ? r.primaryButtonHeight : height;
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: isLandscape ? 5 : 40),
+      padding: EdgeInsets.symmetric(
+        horizontal: r.isLandscape ? 5 : r.spacing(40),
+      ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? theme.colorScheme.primary,
           foregroundColor: foregroundColor ?? theme.colorScheme.onPrimary,
           fixedSize: width != null
-              ? Size(width!, height)
-              : Size.fromHeight(height),
+              ? Size(width!, effectiveHeight)
+              : Size.fromHeight(effectiveHeight),
           padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(r.radius(12)),
           ),
         ),
         onPressed: onPressed,
         child: Row(
-          mainAxisSize: isLandscape ? MainAxisSize.min : MainAxisSize.max,
+          mainAxisSize: r.isLandscape ? MainAxisSize.min : MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
-              Icon(icon, size: 30),
-              if (!isLandscape && label.isNotEmpty) const SizedBox(width: 12),
+              Icon(
+                icon,
+                size: r.icon(30),
+              ),
+              if (!r.isLandscape && label.isNotEmpty)
+                SizedBox(width: r.spacing(12)),
             ],
-
-            if (!isLandscape && label.isNotEmpty) ...[
-              Text(
-                label.toUpperCase(),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
+            if (!r.isLandscape && label.isNotEmpty)
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: r.font(20),
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ),
-            ],
           ],
         ),
       ),

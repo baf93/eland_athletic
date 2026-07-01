@@ -1,3 +1,4 @@
+import 'package:eland_athletic/common/eland_responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import "../theme.dart";
@@ -17,8 +18,10 @@ class TimerRowItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final elandColors = Theme.of(context).extension<ElandCustomColors>()!;
-    const double borderRadius = 16.0;
+    final elandColors = theme.extension<ElandCustomColors>()!;
+    final r = ElandResponsive(context);
+
+    final borderRadius = r.radius(16);
 
     return Material(
       color: Colors.transparent,
@@ -30,6 +33,10 @@ class TimerRowItem extends StatelessWidget {
           onTap();
         },
         child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: r.isSmallPhone ? 16 : r.spacing(20),
+            vertical: r.isSmallPhone ? 14 : r.spacing(18),
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
@@ -37,11 +44,16 @@ class TimerRowItem extends StatelessWidget {
               width: 1.2,
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 18.0),
           child: Row(
             children: [
-              Icon(icon, size: 24, color: theme.colorScheme.primary),
-              const SizedBox(width: 20),
+              Icon(
+                icon,
+                size: r.icon(24),
+                color: theme.colorScheme.primary,
+              ),
+
+              SizedBox(width: r.spacing(20)),
+
               Expanded(
                 child: Text(
                   title,
@@ -49,14 +61,15 @@ class TimerRowItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w800,
-                    fontSize: 15,
+                    fontSize: r.font(15),
                     letterSpacing: 1.2,
                   ),
                 ),
               ),
+
               Icon(
                 Icons.arrow_forward_ios_rounded,
-                size: 16,
+                size: r.icon(16),
                 color: theme.textTheme.bodyMedium?.color,
               ),
             ],
