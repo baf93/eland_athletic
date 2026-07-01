@@ -18,13 +18,23 @@ class EmomWorkoutWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final r = ElandResponsive(context);
 
-    final double circleSize = r.isLandscape
-        ? r.byUsableHeight(0.72, min: 180, max: 320)
-        : r.byWidth(0.72, min: 180, max: 320);
+    final double maxCircleSize = r.isPhone ? 320 : (r.isTablet ? 520 : 560);
 
-    final double roundFont = (circleSize * 0.28).clamp(40.0, 96.0);
-    final double subFont = (circleSize * 0.08).clamp(10.0, 28.0);
-    final double timeFont = (circleSize * 0.10).clamp(14.0, 34.0);
+    final double circleSize = r.isLandscape
+        ? r.byUsableHeight(
+      0.84,
+      min: 180,
+      max: maxCircleSize,
+    )
+        : r.byWidth(
+      0.74,
+      min: 180,
+      max: r.isPhone ? 320 : 460,
+    );
+
+    final double roundFont = (circleSize * 0.28).clamp(40.0, 130.0);
+    final double subFont = (circleSize * 0.08).clamp(10.0, 34.0);
+    final double timeFont = (circleSize * 0.10).clamp(14.0, 42.0);
 
     final double progress = 1.0 - timerState.intervalProgress;
 
@@ -44,7 +54,6 @@ class EmomWorkoutWidget extends StatelessWidget {
               backgroundColor: theme.colorScheme.onSurface.withAlpha(30),
             ),
           ),
-
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -52,12 +61,11 @@ class EmomWorkoutWidget extends StatelessWidget {
                 ElandStrings.of('round').toUpperCase(),
                 style: TextStyle(
                   color: theme.colorScheme.primary,
-                  fontSize: subFont.clamp(10.0, 16.0),
+                  fontSize: subFont.clamp(10.0, 18.0),
                   letterSpacing: 4,
                   fontWeight: FontWeight.w900,
                 ),
               ),
-
               Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -82,7 +90,7 @@ class EmomWorkoutWidget extends StatelessWidget {
                     child: Text(
                       "/${timerState.totalRound}",
                       style: TextStyle(
-                        fontSize: subFont.clamp(14.0, 28.0),
+                        fontSize: subFont.clamp(14.0, 32.0),
                         fontWeight: FontWeight.w600,
                         color:
                         theme.textTheme.bodyMedium?.color?.withAlpha(150),
@@ -94,9 +102,7 @@ class EmomWorkoutWidget extends StatelessWidget {
                   ),
                 ],
               ),
-
               SizedBox(height: r.compactGap),
-
               Text(
                 _formatTime(timerState.remainingSeconds),
                 style: TextStyle(

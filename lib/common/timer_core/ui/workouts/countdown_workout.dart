@@ -18,12 +18,22 @@ class CountdownWorkoutWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final r = ElandResponsive(context);
 
-    final double circleSize = r.isLandscape
-        ? r.byUsableHeight(0.72, min: 180, max: 320)
-        : r.byWidth(0.72, min: 180, max: 320);
+    final double maxCircleSize = r.isPhone ? 320 : (r.isTablet ? 520 : 560);
 
-    final double titleFont = (circleSize * 0.08).clamp(10.0, 18.0);
-    final double timeFont = (circleSize * 0.22).clamp(40.0, 96.0);
+    final double circleSize = r.isLandscape
+        ? r.byUsableHeight(
+      0.84,
+      min: 180,
+      max: maxCircleSize,
+    )
+        : r.byWidth(
+      0.74,
+      min: 180,
+      max: r.isPhone ? 320 : 460,
+    );
+
+    final double titleFont = (circleSize * 0.08).clamp(10.0, 22.0);
+    final double timeFont = (circleSize * 0.22).clamp(40.0, 120.0);
 
     final double progress = 1.0 - timerState.intervalProgress;
 
@@ -44,7 +54,6 @@ class CountdownWorkoutWidget extends StatelessWidget {
               backgroundColor: theme.colorScheme.primary.withAlpha(30),
             ),
           ),
-
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -57,9 +66,7 @@ class CountdownWorkoutWidget extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                 ),
               ),
-
               SizedBox(height: r.compactGap),
-
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(

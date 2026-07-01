@@ -90,6 +90,7 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
       controller: scrollController,
       padding: landscape
           ? EdgeInsets.only(
+        left: r.spacing(24),
         right: r.spacing(30),
         top: r.spacing(20),
         bottom: r.spacing(20),
@@ -277,7 +278,37 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
                   }
                 },
                 child: SafeArea(
-                  child: _buildPhaseListView(context, timerState, true),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        left: r.spacing(8),
+                        top: 0,
+                        bottom: 0,
+                        child: Center(
+                          child: Container(
+                            width: r.spacing(5),
+                            height: r.byHeight(
+                              0.10,
+                              min: 40,
+                              max: 70,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).dividerColor,
+                              borderRadius: BorderRadius.circular(r.radius(6)),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: r.spacing(14)),
+                        child: _buildPhaseListView(
+                          context,
+                          timerState,
+                          true,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -364,59 +395,62 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
         border: Border(left: BorderSide(color: theme.dividerColor)),
         color: theme.scaffoldBackgroundColor,
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (timerState.status == TimerStatus.completed)
-                  PrimaryActionButton(
-                    height: r.byHeight(0.42, min: 160, max: 220),
-                    width: 10,
-                    icon: Icons.waving_hand_rounded,
-                    label: "",
-                    onPressed: () => _saveAndExit(timerState),
-                  )
-                else ...[
-                  ElandActionButton(
-                    icon: Icons.skip_next_rounded,
-                    onPressed: () => WorkoutController.instance.skipPhase(),
-                    size: buttonSize,
-                  ),
-                  SizedBox(height: r.settingsGap),
-                  ElandActionButton(
-                    icon: timerState.status == TimerStatus.running
-                        ? Icons.pause_rounded
-                        : Icons.play_arrow_rounded,
-                    onPressed: () => timerState.status == TimerStatus.running
-                        ? WorkoutController.instance.pauseWorkout()
-                        : WorkoutController.instance.resumeWorkout(),
-                    iconColor: theme.colorScheme.primary,
-                    size: buttonSize,
-                  ),
-                  SizedBox(height: r.settingsGap),
-                  ElandActionButton(
-                    icon: Icons.close_rounded,
-                    onPressed: () => _stopWorkout(timerState),
-                    iconColor: Colors.redAccent,
-                    size: buttonSize,
-                  ),
+      child: Padding(
+        padding: EdgeInsets.only(left: r.spacing(8)),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (timerState.status == TimerStatus.completed)
+                    PrimaryActionButton(
+                      height: r.byHeight(0.42, min: 160, max: 220),
+                      width: 10,
+                      icon: Icons.waving_hand_rounded,
+                      label: "",
+                      onPressed: () => _saveAndExit(timerState),
+                    )
+                  else ...[
+                    ElandActionButton(
+                      icon: Icons.skip_next_rounded,
+                      onPressed: () => WorkoutController.instance.skipPhase(),
+                      size: buttonSize,
+                    ),
+                    SizedBox(height: r.settingsGap),
+                    ElandActionButton(
+                      icon: timerState.status == TimerStatus.running
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
+                      onPressed: () => timerState.status == TimerStatus.running
+                          ? WorkoutController.instance.pauseWorkout()
+                          : WorkoutController.instance.resumeWorkout(),
+                      iconColor: theme.colorScheme.primary,
+                      size: buttonSize,
+                    ),
+                    SizedBox(height: r.settingsGap),
+                    ElandActionButton(
+                      icon: Icons.close_rounded,
+                      onPressed: () => _stopWorkout(timerState),
+                      iconColor: Colors.redAccent,
+                      size: buttonSize,
+                    ),
+                  ],
                 ],
-              ],
-            ),
-          ),
-          SizedBox(
-            width: phaseBarWidth,
-            child: RotatedBox(
-              quarterTurns: 3,
-              child: PhaseBar(
-                timerState: timerState,
-                onTap: () => _openPhaseSummary(context, timerState),
               ),
             ),
-          ),
-        ],
+            SizedBox(
+              width: phaseBarWidth,
+              child: RotatedBox(
+                quarterTurns: 3,
+                child: PhaseBar(
+                  timerState: timerState,
+                  onTap: () => _openPhaseSummary(context, timerState),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -52,9 +52,16 @@ void main() async {
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   await flutterLocalNotificationsPlugin.initialize(
-    settings: const InitializationSettings(
+
+    settings: InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/launcher_icon'),
+      iOS: DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      ),
     ),
+
     onDidReceiveNotificationResponse: (response) {
       List<String> routesToPush = [];
 

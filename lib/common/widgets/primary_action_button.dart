@@ -28,9 +28,13 @@ class PrimaryActionButton extends StatelessWidget {
 
     final effectiveHeight = height == 60 ? r.primaryButtonHeight : height;
 
+    // Phone landscape keeps the compact icon-only behavior.
+    // Tablet / desktop landscape show both icon and label.
+    final bool showLabel = label.isNotEmpty && (!r.isLandscape || !r.isPhone);
+
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: r.isLandscape ? 5 : r.spacing(40),
+        horizontal: r.isLandscape && r.isPhone ? 5 : r.spacing(40),
       ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -39,7 +43,9 @@ class PrimaryActionButton extends StatelessWidget {
           fixedSize: width != null
               ? Size(width!, effectiveHeight)
               : Size.fromHeight(effectiveHeight),
-          padding: EdgeInsets.zero,
+          padding: EdgeInsets.symmetric(
+            horizontal: r.isLandscape && !r.isPhone ? r.spacing(18) : 0,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(r.radius(12)),
           ),
@@ -54,18 +60,20 @@ class PrimaryActionButton extends StatelessWidget {
                 icon,
                 size: r.icon(30),
               ),
-              if (!r.isLandscape && label.isNotEmpty)
-                SizedBox(width: r.spacing(12)),
+              if (showLabel) SizedBox(width: r.spacing(12)),
             ],
-            if (!r.isLandscape && label.isNotEmpty)
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  label.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: r.font(20),
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
+            if (showLabel)
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label.toUpperCase(),
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: r.font(20),
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
                   ),
                 ),
               ),
