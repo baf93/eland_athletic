@@ -210,6 +210,27 @@ class TimerBackgroundService {
       });
     }
 
+    void sendRuntimeStatus() {
+      if (intervalQueue.isEmpty) return;
+
+      final interval = intervalQueue[currentIntervalIndex] as Map<String, dynamic>;
+
+      service.invoke('runtimeUpdate', {
+        'status': isPaused ? 'paused' : 'running',
+        'workoutId': interval['workoutId'] as String?,
+        'workoutTitle': interval['workoutTitle'] as String?,
+        'remainingSeconds': remainingSeconds,
+        'elapsedSeconds': elapsedSeconds,
+        'phaseTitle': interval['title'],
+        'currentRound': interval['currentRound'] as int,
+        'totalRound': interval['totalRound'] as int,
+        'currentSet': interval['currentSet'] as int,
+        'totalSet': interval['totalSet'] as int,
+        'intervalProgress': intervalProgress,
+        'isOvertime': isOvertime,
+      });
+    }
+
     // --- Runners
     void runForTime() async {
 
@@ -241,6 +262,7 @@ class TimerBackgroundService {
 
       // Update UI with new Interval details
       sendFullTimerStatus();
+      sendRuntimeStatus();
 
       // Every Second update logic
       ticker?.cancel();
@@ -276,6 +298,7 @@ class TimerBackgroundService {
           'intervalProgress': intervalProgress,
           'isOvertime': isOvertime
         });
+        sendRuntimeStatus();
       });
     }
 
@@ -284,6 +307,7 @@ class TimerBackgroundService {
       if(currentIntervalIndex >= intervalQueue.length){
         triggerAudioHapticFeedback(AudioHapticTrigger.end);
         service.invoke('uiUpdate', {'status': 'completed', 'remainingSeconds': 0, 'intervalProgress': 1.0});
+        sendRuntimeStatus();
         flutterLocalNotificationsPlugin.cancel(id: notificationId);
         ticker?.cancel();
         return;
@@ -321,6 +345,7 @@ class TimerBackgroundService {
 
       // Update UI with new Interval details
       sendFullTimerStatus();
+      sendRuntimeStatus();
 
       // Every Second update logic
       ticker?.cancel();
@@ -362,6 +387,7 @@ class TimerBackgroundService {
           'elapsedSeconds': elapsedSeconds,
           'intervalProgress': intervalProgress,
         });
+        sendRuntimeStatus();
       });
     }
 
@@ -447,6 +473,7 @@ class TimerBackgroundService {
       uiPhaseList.addAll(event['uiPhaseList'] as List<dynamic>? ?? []);
       isPaused = false;
       sendFullTimerStatus();
+      sendRuntimeStatus();
       runInterval();
     }));
 
@@ -471,6 +498,7 @@ class TimerBackgroundService {
         countdownPlayer.pause();
       }
       service.invoke('uiUpdate', {'status': 'paused'});
+      sendRuntimeStatus();
     }));
 
     subscriptions.add(service.on('resume').listen((event){
@@ -486,6 +514,7 @@ class TimerBackgroundService {
         countdownPlayer.resume();
       }
       service.invoke('uiUpdate', {'status': 'running'});
+      sendRuntimeStatus();
     }));
 
     subscriptions.add(service.on('reset').listen((event){
@@ -527,6 +556,7 @@ class TimerBackgroundService {
         sendFullStopWatchStatus();
       }else{
         sendFullTimerStatus();
+        sendRuntimeStatus();
       }
     }));
 

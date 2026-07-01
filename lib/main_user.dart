@@ -22,6 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'common/timer_core/runtime/workout_runtime_controller.dart';
 
 import 'common/strings.dart';
 import 'common/theme.dart';
@@ -80,6 +81,7 @@ void main() async {
   );
 
   await TimerBackgroundService.initialize();
+  await WorkoutRuntimeController.instance.initialize();
 
   runApp(
     ProviderScope(
