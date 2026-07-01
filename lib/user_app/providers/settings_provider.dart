@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class SettingsState {
   final String language;
@@ -10,9 +9,9 @@ class SettingsState {
   final bool useMetricUnits;
   final bool soundEnabled;
   final bool hapticFeedback;
-  final bool notifications;
   final bool keepScreenOn;
   final String appVersion;
+  final int primaryColorIndex;
 
   SettingsState({
     required this.language,
@@ -21,9 +20,9 @@ class SettingsState {
     required this.useMetricUnits,
     required this.soundEnabled,
     required this.hapticFeedback,
-    required this.notifications,
     required this.keepScreenOn,
     required this.appVersion,
+    this.primaryColorIndex = 0,
   });
 
   SettingsState copyWith({
@@ -33,9 +32,9 @@ class SettingsState {
     bool? useMetricUnits,
     bool? soundEnabled,
     bool? hapticFeedback,
-    bool? notifications,
     bool? keepScreenOn,
     String? appVersion,
+    int? primaryColorIndex,
   }) {
     return SettingsState(
       language: language ?? this.language,
@@ -44,9 +43,9 @@ class SettingsState {
       useMetricUnits: useMetricUnits ?? this.useMetricUnits,
       soundEnabled: soundEnabled ?? this.soundEnabled,
       hapticFeedback: hapticFeedback ?? this.hapticFeedback,
-      notifications: notifications ?? this.notifications,
       keepScreenOn: keepScreenOn ?? this.keepScreenOn,
       appVersion: appVersion ?? this.appVersion,
+      primaryColorIndex: primaryColorIndex ?? this.primaryColorIndex,
     );
   }
 }
@@ -75,9 +74,9 @@ class SettingsNotifier extends Notifier<SettingsState> {
       useMetricUnits: _prefs.getBool('useMetricUnits') ?? true,
       soundEnabled: _prefs.getBool('soundEnabled') ?? true,
       hapticFeedback: _prefs.getBool('hapticFeedback') ?? true,
-      notifications: _prefs.getBool('notifications') ?? false,
       keepScreenOn: _prefs.getBool('keepScreenOn') ?? true,
-      appVersion: '...'
+      appVersion: 'N/A',
+      primaryColorIndex: _prefs.getInt('primaryColor') ?? 0,
     );
   }
 
@@ -124,37 +123,14 @@ class SettingsNotifier extends Notifier<SettingsState> {
     state = state.copyWith(hapticFeedback: value);
   }
 
-// Just In Time Permissions Handling for Notifications Toggle
-  Future<void> toggleNotifications(bool value) async {
-    if (!value) {
-      await _prefs.setBool('notifications', false);
-      state = state.copyWith(notifications: false);
-      return;
-    }
-
-    final status = await Permission.notification.status;
-
-    if (status.isGranted) {
-      await _prefs.setBool('notifications', true);
-      state = state.copyWith(notifications: true);
-    } else if (status.isPermanentlyDenied) {
-      await openAppSettings();
-    } else {
-      final result = await Permission.notification.request();
-
-      if (result.isGranted) {
-        await _prefs.setBool('notifications', true);
-        state = state.copyWith(notifications: true);
-      } else {
-        await _prefs.setBool('notifications', false);
-        state = state.copyWith(notifications: false);
-      }
-    }
-  }
-
   void toggleKeepScreenOn(bool value) {
     _prefs.setBool('keepScreenOn', value);
     state = state.copyWith(keepScreenOn: value);
+  }
+
+  void updatePrimaryColor(int value){
+    _prefs.setInt('primaryColor', value);
+    state = state.copyWith(primaryColorIndex: value);
   }
 }
 

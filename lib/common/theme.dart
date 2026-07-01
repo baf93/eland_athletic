@@ -37,21 +37,22 @@ class ElandCustomColors extends ThemeExtension<ElandCustomColors> {
 
 class ElandTheme {
   // Brand color for the app, used in both dark and light mode
-  static const Color orangeAccent = Color(0xFFFFB04A);
+  static const Color orangeAccent = Color(0xFFFF9500);
 
   // --- Dark Mode ---
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: const Color(0xFF121212),
-      cardColor: const Color(0xFF121212),
+      scaffoldBackgroundColor: const Color(0xFF000000), //0xFF121212
+      cardColor: const Color(0xFF000000),
       dividerColor: Colors.white24,
 
       colorScheme: const ColorScheme.dark(
         primary: orangeAccent,
         secondary: orangeAccent,
         surface: Color(0xFF1E1E1E),
+        error: Color(0xFFFF0000),
       ),
 
       textTheme: const TextTheme(
@@ -76,14 +77,15 @@ class ElandTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: const Color(0xFFF8F9FA),
-      cardColor: const Color(0xFFF8F9FA),
+      scaffoldBackgroundColor: const Color(0xFFFFFFFF), //0xFFF8F9FA
+      cardColor: const Color(0xFFFFFFFF),
       dividerColor: Colors.black26,
 
       colorScheme: const ColorScheme.light(
         primary: orangeAccent,
         secondary: Color(0xFFE09030),
         surface: Colors.white,
+        error: Color(0xFFFF0000),
       ),
 
       textTheme: const TextTheme(
@@ -102,4 +104,15 @@ class ElandTheme {
       ],
     );
   }
+}
+
+class ElandColors {
+  static const List<Color> customPalette = [
+    Color(0xFFFF9500), // 1. Eland Orange (Base)
+    Color(0xFFE74C3C), // 2. Sunset Red
+    Color(0xFFFFC107), // 3. Lemon Gold
+    Color(0xFF27AE60), // 4. Kelly Green
+    Color(0xFF3498DB), // 5. Sky Blue
+    Color(0xFF9B59B6), // 6. Electric Purple
+  ];
 }

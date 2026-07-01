@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../common/eland_responsive.dart';
 import '../common/strings.dart';
 import '../common/widgets/eland_card.dart';
 import 'timer_list_page.dart';
@@ -10,69 +12,136 @@ class FocusPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final r = ElandResponsive(context);
+
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
+        padding: EdgeInsets.symmetric(
+          horizontal: r.pageHorizontalPadding * 0.5,
+          vertical: r.spacing(12),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.settings, size: 26),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SettingsPage(),
-                        ),
-                      );
-                    },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.settings,
+                    size: r.icon(26),
                   ),
-                ],
-              ),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: r.compactGap),
 
             // Branding
-            Text(
-              'ELAND',
-              style: TextStyle(
-                fontSize: 54,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 8.0,
-                color: Theme.of(context).textTheme.headlineLarge?.color,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'ELAND',
+                style: TextStyle(
+                  fontSize: r.font(54, maxScale: 1.08),
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 8.0,
+                  color: theme.textTheme.headlineLarge?.color,
+                ),
               ),
             ),
 
-            Text(
-              'ATHLETIC',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 5.0,
-                color: Theme.of(context).colorScheme.primary,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'ATHLETIC',
+                style: TextStyle(
+                  fontSize: r.font(18, maxScale: 1.08),
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 5.0,
+                  color: theme.colorScheme.primary,
+                ),
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: r.spacing(12)),
 
             Text(
               ElandStrings.of('app_motto'),
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: r.font(14),
                 fontWeight: FontWeight.w600,
                 fontStyle: FontStyle.italic,
                 letterSpacing: 0.2,
-                color: Theme.of(context).textTheme.bodyMedium?.color,
+                color: theme.textTheme.bodyMedium?.color,
               ),
             ),
 
-            const SizedBox(height: 32),
+            SizedBox(height: r.spacing(32)),
+
+            // --- CARD: Quick Timers ---
+            ElandCard(
+              title: ElandStrings.of('card_timer_title'),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TimerListPage(),
+                  ),
+                );
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 1,
+                    margin: EdgeInsets.only(bottom: r.spacing(16)),
+                    color: theme.dividerColor,
+                  ),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "TABATA • EMOM • AMRAP • FOR TIME",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontSize: r.font(12),
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 2.0,
+                            color: theme.textTheme.bodyMedium?.color,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(width: r.spacing(12)),
+
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: r.icon(20),
+                        color: theme.colorScheme.primary,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: r.cardGap),
 
             // --- CARD: Focus Workout --- TODO: Implementare la card
             ElandCard(
@@ -84,60 +153,33 @@ class FocusPage extends ConsumerWidget {
                 ElandStrings.of('wip_function'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: r.font(13),
                   fontStyle: FontStyle.italic,
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                  color: theme.textTheme.bodyMedium?.color,
                 ),
               ),
             ),
 
+            SizedBox(height: r.cardGap),
 
-            const SizedBox(height: 12),
-
-            // --- CARD: Quick Timers ---
+            // --- CARD: NUTRITION (Next Meal) --- TODO: Implementare la card
             ElandCard(
-              title: ElandStrings.of('card_timer_title'),
+              title: ElandStrings.of('card_nutrition_title'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TimerListPage(),
-                  ),
-                );
+                // TODO: Apri dettaglio allenamento
               },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Tabata, EMOM, AMRAP, ...',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge
-                  ),
-
-                  const SizedBox(width: 16),
-
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withAlpha(65),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.play_arrow_rounded,
-                      size: 26,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ],
+              child: Text(
+                ElandStrings.of('wip_function'),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: r.font(13),
+                  fontStyle: FontStyle.italic,
+                  color: theme.textTheme.bodyMedium?.color,
+                ),
               ),
             ),
 
-            const SizedBox(height: 12),
-
-            // --- CARD: NUTRITION (Next Meal) --- TODO: Implementare la card
+            /*
             ElandCard(
               title: ElandStrings.of('card_nutrition_title'),
               subtitle: 'PRANZO - 13:00',
@@ -168,10 +210,29 @@ class FocusPage extends ConsumerWidget {
                 ],
               ),
             ),
-
+            */
           ],
         ),
       ),
     );
   }
+}
+
+// Helper per i tag (mettilo fuori dal metodo build o come funzione privata)
+Widget _buildTag(String text) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.white.withAlpha(50)),
+      borderRadius: BorderRadius.circular(4),
+    ),
+    child: Text(
+      text,
+      style: const TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 1,
+      ),
+    ),
+  );
 }

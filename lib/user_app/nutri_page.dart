@@ -1,15 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:eland_athletic/common/strings.dart';
 
 class NutriPage extends StatelessWidget {
   const NutriPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          'Nutri Page - Alimentazione',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.construction_rounded,
+                size: 80,
+                color: colorScheme.primary.withAlpha(200),
+              ),
+              const SizedBox(height: 40),
+
+              Text(
+                "STAY TUNED".toUpperCase(),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 3,
+                  color: theme.textTheme.headlineLarge!.color,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                ElandStrings.of('nutri_wip').toUpperCase(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  letterSpacing: 1,
+                  color: theme.textTheme.bodyMedium!.color?.withAlpha(150),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 60),
+            ],
+          ),
         ),
       ),
     );

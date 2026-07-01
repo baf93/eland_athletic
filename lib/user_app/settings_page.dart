@@ -1,53 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../common/eland_responsive.dart';
 import '../common/strings.dart';
 import 'providers/settings_provider.dart';
 import '../common/widgets/settings_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../common/theme.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
-    //Initialize the RiverPod settings provider
     final settings = ref.watch(settingsProvider);
     final settingsNotifier = ref.read(settingsProvider.notifier);
 
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
+    final r = ElandResponsive(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
 
-      //App Bar
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => Navigator.maybePop(context),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            Navigator.maybePop(context);
+          },
         ),
         title: Text(
           ElandStrings.of('setting_title').toUpperCase(),
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+          style: TextStyle(
+            fontSize: r.font(18),
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+          ),
         ),
         centerTitle: true,
       ),
 
-      // Content
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          padding: r.pagePadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              // --- SECTION: INTERFACE AND LANGUAGE
-              SettingsSectionTitle(title: ElandStrings.of('interface_section').toUpperCase()),
+              SettingsSectionTitle(
+                title: ElandStrings.of('interface_section').toUpperCase(),
+              ),
 
               SettingsDropdownTile<String>(
                 icon: Icons.language_rounded,
@@ -55,7 +62,10 @@ class SettingsPage extends ConsumerWidget {
                 subtitle: ElandStrings.of('setting_lang_subtitle'),
                 value: settings.language,
                 items: const ['it', 'en'],
-                onChanged: (val) => settingsNotifier.updateLanguage(val!),
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.updateLanguage(val!);
+                },
               ),
 
               SettingsDropdownTile<int>(
@@ -63,16 +73,11 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('setting_prep_title'),
                 subtitle: ElandStrings.of('setting_prep_subtitle'),
                 value: settings.preparationTime,
-                items: const [5, 10, 15, 20],
-                onChanged: (val) => settingsNotifier.updatePreparationTime(val!),
-              ),
-
-              SettingsSwitchTile(
-                icon: Icons.dark_mode_rounded,
-                title: ElandStrings.of('setting_theme_title'),
-                subtitle: ElandStrings.of('setting_theme_subtitle'),
-                value: settings.isDarkMode,
-                onChanged: settingsNotifier.toggleDarkMode,
+                items: const [0, 5, 10, 15, 30, 45, 60],
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.updatePreparationTime(val!);
+                },
               ),
 
               SettingsSwitchTile(
@@ -80,20 +85,56 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('setting_metric_title'),
                 subtitle: ElandStrings.of('setting_metric_subtitle'),
                 value: settings.useMetricUnits,
-                onChanged: settingsNotifier.toggleMetricUnits,
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.toggleMetricUnits(val);
+                },
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: r.sectionGap),
 
-              // --- SECTION: ALERTS AND NOTIFICATIONS ---
-              SettingsSectionTitle(title: ElandStrings.of('section_alerts_notifications').toUpperCase()),
+              SettingsSectionTitle(
+                title: ElandStrings.of('mood_selection').toUpperCase(),
+              ),
+
+              SettingsSwitchTile(
+                icon: Icons.dark_mode_rounded,
+                title: ElandStrings.of('setting_theme_title'),
+                subtitle: ElandStrings.of('setting_theme_subtitle'),
+                value: settings.isDarkMode,
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.toggleDarkMode(val);
+                },
+              ),
+
+              SettingsColorSelector(
+                icon: Icons.palette_rounded,
+                title: ElandStrings.of('setting_color_title'),
+                colors: ElandColors.customPalette,
+                selectedIndex: settings.primaryColorIndex,
+                onColorSelected: (index) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.updatePrimaryColor(index);
+                },
+              ),
+
+              SizedBox(height: r.sectionGap),
+
+              SettingsSectionTitle(
+                title: ElandStrings.of('section_alerts_notifications')
+                    .toUpperCase(),
+              ),
 
               SettingsSwitchTile(
                 icon: Icons.volume_up_rounded,
                 title: ElandStrings.of('setting_sound_title'),
                 subtitle: ElandStrings.of('setting_sound_subtitle'),
                 value: settings.soundEnabled,
-                onChanged: settingsNotifier.toggleSound,
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.toggleSound(val);
+                },
               ),
 
               SettingsSwitchTile(
@@ -101,17 +142,10 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('setting_haptic_title'),
                 subtitle: ElandStrings.of('setting_haptic_subtitle'),
                 value: settings.hapticFeedback,
-                onChanged: settingsNotifier.toggleHaptic,
-              ),
-
-              SettingsSwitchTile(
-                icon: Icons.notifications_off_rounded,
-                title: ElandStrings.of('setting_notifications_title'),
-                subtitle: ElandStrings.of('setting_notifications_subtitle'),
-                value: settings.notifications,
-                onChanged: (bool value) {
-                  settingsNotifier.toggleNotifications(value);
-                }
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.toggleHaptic(val);
+                },
               ),
 
               SettingsSwitchTile(
@@ -119,64 +153,96 @@ class SettingsPage extends ConsumerWidget {
                 title: ElandStrings.of('setting_screen_title'),
                 subtitle: ElandStrings.of('setting_screen_subtitle'),
                 value: settings.keepScreenOn,
-                onChanged: settingsNotifier.toggleKeepScreenOn,
+                onChanged: (val) {
+                  HapticFeedback.lightImpact();
+                  settingsNotifier.toggleKeepScreenOn(val);
+                },
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: r.compactGap),
 
               SettingsActionTile(
                 icon: Icons.verified_user_rounded,
                 title: ElandStrings.of('action_permissions_title'),
                 subtitle: ElandStrings.of('action_permissions_subtitle'),
-                trailing: const Icon(Icons.open_in_new_rounded, size: 18),
+                trailing: Icon(
+                  Icons.open_in_new_rounded,
+                  size: r.icon(18),
+                ),
                 onTap: () async {
+                  HapticFeedback.lightImpact();
                   await openAppSettings();
                 },
               ),
 
               Divider(
-                height: 48,
+                height: r.spacing(48),
                 thickness: 1,
-                indent: 40,
-                endIndent: 40,
+                indent: r.spacing(40),
+                endIndent: r.spacing(40),
                 color: primaryColor.withAlpha(90),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: r.compactGap),
 
-              // --- BRAND INFO
               Center(
                 child: Column(
                   children: [
-                    Text(
-                      'ELAND',
-                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.w900, letterSpacing: 8.0, color: theme.textTheme.headlineLarge?.color),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'ELAND',
+                        style: TextStyle(
+                          fontSize: r.font(40, maxScale: 1.08),
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 8.0,
+                          color: theme.textTheme.headlineLarge?.color,
+                        ),
+                      ),
                     ),
-                    Text(
-                      'ATHLETIC',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: 4.0, color: primaryColor),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'ATHLETIC',
+                        style: TextStyle(
+                          fontSize: r.font(18, maxScale: 1.08),
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 4.0,
+                          color: primaryColor,
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: r.spacing(4)),
                     Text(
                       settings.appVersion,
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: theme.textTheme.bodyMedium?.color),
+                      style: TextStyle(
+                        fontSize: r.font(12),
+                        fontWeight: FontWeight.w700,
+                        color: theme.textTheme.bodyMedium?.color,
+                      ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: r.spacing(20)),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: r.spacing(2),
+                      ),
                       child: Text(
                         ElandStrings.of('brand_motto'),
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic, color: theme.textTheme.bodyMedium?.color),
+                        style: TextStyle(
+                          fontSize: r.font(15),
+                          fontWeight: FontWeight.w600,
+                          fontStyle: FontStyle.italic,
+                          color: theme.textTheme.bodyMedium?.color,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: r.spacing(32)),
 
-              // --- CARD: PERCHÉ ELAND ---
               SettingsInfoCard(
                 title: ElandStrings.of('info_card_title').toUpperCase(),
                 content: Column(
@@ -185,26 +251,26 @@ class SettingsPage extends ConsumerWidget {
                     Text(
                       ElandStrings.of('info_card_description'),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: r.font(14),
                         height: 1.45,
                         color: theme.textTheme.bodyMedium?.color,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: r.spacing(20)),
                     Text(
                       ElandStrings.of('philosophy_title').toUpperCase(),
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
-                        fontSize: 14,
+                        fontSize: r.font(14),
                         color: theme.colorScheme.primary,
                         letterSpacing: 0.5,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: r.spacing(12)),
                     Text(
                       ElandStrings.of('philosophy_description'),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: r.font(14),
                         height: 1.45,
                         color: theme.textTheme.bodyMedium?.color,
                       ),
@@ -213,39 +279,57 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              SizedBox(height: r.spacing(40)),
 
-              // --- BOTTOM CREDITS ---
               Center(
                 child: Column(
                   children: [
                     Text(
                       ElandStrings.of('credits_developed_by').toUpperCase(),
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, letterSpacing: 1.5, color: theme.textTheme.bodyMedium?.color),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: r.font(16),
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.5,
+                        color: theme.textTheme.bodyMedium?.color,
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    Text('BAF93', style: TextStyle(fontSize: 38, fontWeight: FontWeight.w900, letterSpacing: 2.0, color: theme.textTheme.headlineLarge?.color)),
-
+                    SizedBox(height: r.spacing(8)),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'BAF93',
+                        style: TextStyle(
+                          fontSize: r.font(38, maxScale: 1.08),
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2.0,
+                          color: theme.textTheme.headlineLarge?.color,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
 
               Divider(
-                height: 48,
+                height: r.spacing(48),
                 thickness: 1,
-                indent: 40,
-                endIndent: 40,
+                indent: r.spacing(40),
+                endIndent: r.spacing(40),
                 color: primaryColor.withAlpha(90),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: r.compactGap),
 
               SettingsActionTile(
                 icon: Icons.code_rounded,
                 title: ElandStrings.of('action_source_code'),
                 subtitle: ElandStrings.of('action_source_code_sub'),
                 onTap: () async {
-                  final Uri url = Uri.parse('https://github.com/baf93/eland_athletic');
+                  HapticFeedback.lightImpact();
+                  final Uri url = Uri.parse(
+                    'https://github.com/baf93/eland_athletic',
+                  );
 
                   await launchUrl(
                     url,
@@ -253,12 +337,16 @@ class SettingsPage extends ConsumerWidget {
                   );
                 },
               ),
+
               SettingsActionTile(
                 icon: Icons.gavel_rounded,
                 title: ElandStrings.of('action_license'),
                 subtitle: ElandStrings.of('action_license_sub'),
                 onTap: () async {
-                  final Uri url = Uri.parse('https://creativecommons.org/licenses/by-nc/4.0/');
+                  HapticFeedback.lightImpact();
+                  final Uri url = Uri.parse(
+                    'https://creativecommons.org/licenses/by-nc/4.0/',
+                  );
 
                   await launchUrl(
                     url,
@@ -267,14 +355,19 @@ class SettingsPage extends ConsumerWidget {
                 },
               ),
 
-              const SizedBox(height: 24),
-              SettingsSectionTitle(title: ElandStrings.of('section_assets_resources').toUpperCase()),
+              SizedBox(height: r.sectionGap),
+
+              SettingsSectionTitle(
+                title: ElandStrings.of('section_assets_resources')
+                    .toUpperCase(),
+              ),
 
               SettingsActionTile(
                 icon: Icons.link_rounded,
                 title: ElandStrings.of('action_tts_voice'),
                 subtitle: '',
                 onTap: () async {
+                  HapticFeedback.lightImpact();
                   final Uri url = Uri.parse('https://ttsmp3.com/');
 
                   await launchUrl(
@@ -284,10 +377,12 @@ class SettingsPage extends ConsumerWidget {
                 },
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: r.sectionGap),
+
               Center(
                 child: TextButton(
                   onPressed: () {
+                    HapticFeedback.lightImpact();
                     showLicensePage(
                       context: context,
                       applicationName: ElandStrings.of('app_name_user'),
@@ -296,12 +391,20 @@ class SettingsPage extends ConsumerWidget {
                     );
                   },
                   child: Text(
-                    ElandStrings.of('button_third_party_licenses').toUpperCase(),
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: primaryColor, letterSpacing: 1.0),
+                    ElandStrings.of('button_third_party_licenses')
+                        .toUpperCase(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: r.font(11),
+                      fontWeight: FontWeight.w700,
+                      color: primaryColor,
+                      letterSpacing: 1.0,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+
+              SizedBox(height: r.sectionGap),
             ],
           ),
         ),
