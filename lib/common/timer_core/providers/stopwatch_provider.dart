@@ -21,8 +21,6 @@ class StopwatchNotifier extends Notifier<StopwatchState> {
     _serviceSubscription = _backgroundService.on('uiUpdate').listen((event) {
       if (event == null) return;
 
-      print('EVENT: $event');
-
       final status = event.containsKey('status')
           ? TimerStatus.values.firstWhere((e) => e.name == event['status'], orElse: () => TimerStatus.paused)
           : state.status;

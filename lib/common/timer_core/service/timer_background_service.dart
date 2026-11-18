@@ -1,24 +1,51 @@
 import 'dart:async';
+import 'dart:ui';
+
 import 'package:eland_athletic/common/strings.dart';
+import 'package:eland_athletic/common/theme.dart';
 import 'package:eland_athletic/common/timer_core/models/interval_audio_haptic_config.dart';
 import 'package:eland_athletic/common/timer_core/models/timercore_enums.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:vibration/vibration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Commands that can be sent to the background service from notification
+/// action buttons. The action id is forwarded verbatim to the service.
+const Set<String> kTimerNotificationActions = {
+  'pause',
+  'resume',
+  'skipPhase',
+  'stop',
+};
+
+/// Handles taps on the live-notification buttons when they are dispatched to
+/// a background isolate (Android delivers actions that do not open the UI
+/// there). It just relays the command to the timer service.
+@pragma('vm:entry-point')
+void timerNotificationActionHandler(NotificationResponse response) {
+  DartPluginRegistrant.ensureInitialized();
+  final actionId = response.actionId;
+  if (actionId != null && kTimerNotificationActions.contains(actionId)) {
+    FlutterBackgroundService().invoke(actionId);
+  }
+}
+
 @pragma('vm:entry-point')
 class TimerBackgroundService {
   static const String channelId = 'eland_notification_channel';
   static const int notificationId = 102;
-  static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   static final Map<String, AudioPool> _audioPools = {};
 
   /// Initialization of the notification channel and background service
   static Future<void> initialize() async {
     final service = FlutterBackgroundService();
-    const AndroidNotificationChannel notificationChannel = AndroidNotificationChannel(
+    const AndroidNotificationChannel notificationChannel =
+        AndroidNotificationChannel(
       channelId,
       'ELAND notification channel',
       description: 'This channel is used for ELAND notifications',
@@ -27,59 +54,127 @@ class TimerBackgroundService {
       enableVibration: false,
     );
 
-    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
     await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(notificationChannel);
 
     await service.configure(
       androidConfiguration: AndroidConfiguration(
-          onStart: TimerBackgroundService.onStart,
-          autoStart: false,
-          isForegroundMode: true,
-          notificationChannelId: channelId,
-          foregroundServiceNotificationId: notificationId),
+        onStart: TimerBackgroundService.onStart,
+        autoStart: false,
+        // The service must only run while a workout/stopwatch is active.
+        // The plugin default (true) restarts it at every boot and app update,
+        // leaving a stray "ELAND" notification in the status bar.
+        autoStartOnBoot: false,
+        isForegroundMode: true,
+        notificationChannelId: channelId,
+        initialNotificationTitle: ElandStrings.of('notification_title'),
+        initialNotificationContent: ElandStrings.of('starting_workout'),
+        foregroundServiceNotificationId: notificationId,
+      ),
       iosConfiguration: IosConfiguration(
-          autoStart: false,
-          onForeground: onStart,
-          onBackground: (service) => Future.value(true)),
+        autoStart: false,
+        onForeground: onStart,
+        onBackground: (service) => Future.value(true),
+      ),
     );
   }
 
-  /// Utilities functions
-  static void _updateNotification(FlutterLocalNotificationsPlugin notifications, String title, String content, String payload) async {
+  /// Live notification: the system renders the clock itself (chronometer), so
+  /// it is only re-posted when something changes (new interval, pause...).
+  static Future<void> _showLiveNotification(
+    FlutterLocalNotificationsPlugin notifications, {
+    required String title,
+    required String body,
+    required String payload,
+    required Color color,
+    bool paused = false,
+    bool chronometer = false,
+    bool countDown = false,
+    int? whenMs,
+    int progress = 0,
+    int maxProgress = 0,
+    bool showControls = true,
+    bool canSkip = true,
+  }) async {
+    AndroidNotificationAction action(String id, String labelKey, String icon) {
+      return AndroidNotificationAction(
+        id,
+        ElandStrings.of(labelKey),
+        icon: DrawableResourceAndroidBitmap(icon),
+        showsUserInterface: false,
+        cancelNotification: false,
+      );
+    }
+
+    final actions = showControls
+        ? <AndroidNotificationAction>[
+            paused
+                ? action('resume', 'notif_resume', 'ic_notif_play')
+                : action('pause', 'notif_pause', 'ic_notif_pause'),
+            if (canSkip) action('skipPhase', 'notif_skip', 'ic_notif_skip'),
+            action('stop', 'notif_stop', 'ic_notif_stop'),
+          ]
+        : null;
+
     await notifications.show(
       id: notificationId,
       title: title.toUpperCase(),
-      body: content,
-      notificationDetails: const NotificationDetails(
+      body: body,
+      notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           channelId,
           'ELAND notification channel',
           importance: Importance.defaultImportance,
           priority: Priority.high,
           ongoing: true,
-          showWhen: false,
+          autoCancel: false,
           onlyAlertOnce: true,
-          icon: '@mipmap/launcher_icon'
+          showWhen: chronometer,
+          when: chronometer ? whenMs : null,
+          usesChronometer: chronometer,
+          chronometerCountDown: countDown,
+          showProgress: maxProgress > 0,
+          maxProgress: maxProgress,
+          progress: progress,
+          icon: 'ic_stat_eland',
+          color: color,
+          category: AndroidNotificationCategory.workout,
+          visibility: NotificationVisibility.public,
+          styleInformation: const MediaStyleInformation(),
+          actions: actions,
         ),
-        iOS: DarwinNotificationDetails(presentAlert: true, presentSound: false),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentSound: false,
+        ),
       ),
-      payload: payload
+      payload: payload,
     );
   }
 
-  static String _formatDisplayTime(int totalSeconds){
+  static String _formatDisplayTime(int totalSeconds) {
     final s = totalSeconds.abs();
     return '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';
   }
 
   @pragma('vm:entry-point')
   static void onStart(ServiceInstance service) async {
+    DartPluginRegistrant.ensureInitialized();
+    debugPrint('[ELAND] timer service starting');
 
-    print(' ++++++++++++++++ Service is starting');
+    final startupPrefs = await SharedPreferences.getInstance();
+    ElandStrings.initLocale(startupPrefs.getString('language') ??
+        PlatformDispatcher.instance.locale.languageCode);
+    Color accentColor() {
+      final index = startupPrefs.getInt('primaryColor') ?? 0;
+      final palette = ElandColors.customPalette;
+      return palette[(index >= 0 && index < palette.length) ? index : 0];
+    }
 
-    _updateNotification(flutterLocalNotificationsPlugin, ElandStrings.of('notification_title'), ElandStrings.of('starting_workout'), 'open_workout_page');
     // --- Variables for Internal status
     bool isPaused = true;
     DateTime? timerStartTime;
@@ -101,54 +196,81 @@ class TimerBackgroundService {
     bool isOvertime = false;
     List<StreamSubscription> subscriptions = [];
     final AudioPlayer countdownPlayer = AudioPlayer();
+
+    // Workout-level bookkeeping used for the history log.
+    DateTime? workoutStartedAt; // first non-preparation interval
+    DateTime? pausedAt;
+    int workoutPausedMs = 0;
+    List<Map<String, dynamic>> phaseResults = [];
     // ---
-
-
 
     // Audio Setup
     _audioPools.clear();
 
     final AudioContext audioContext = AudioContext(
-      android: AudioContextAndroid(stayAwake: true, contentType: AndroidContentType.music, usageType: AndroidUsageType.media, audioFocus: AndroidAudioFocus.gainTransientMayDuck),
-      iOS: AudioContextIOS(category: AVAudioSessionCategory.playback, options: {AVAudioSessionOptions.duckOthers, AVAudioSessionOptions.mixWithOthers}),
+      android: AudioContextAndroid(
+        stayAwake: true,
+        contentType: AndroidContentType.music,
+        usageType: AndroidUsageType.media,
+        audioFocus: AndroidAudioFocus.gainTransientMayDuck,
+      ),
+      iOS: AudioContextIOS(
+        category: AVAudioSessionCategory.playback,
+        options: {
+          AVAudioSessionOptions.duckOthers,
+          AVAudioSessionOptions.mixWithOthers,
+        },
+      ),
     );
 
     await AudioPlayer.global.setAudioContext(audioContext);
 
-
-
-
     /// Utilities functions
-    Future<void> preloadAllNeededSounds(List<IntervalAudioConfig> audioConfigs) async {
+    Future<void> preloadAllNeededSounds(
+        List<IntervalAudioConfig> audioConfigs) async {
       final futures = audioConfigs
-          .where((c) => c.fileName.isNotEmpty && !_audioPools.containsKey(c.fileName))
-          .map((c) => AudioPool.create(source: AssetSource('audio/${c.fileName}'), maxPlayers: 2)
-          .then((pool) => _audioPools[c.fileName] = pool));
+          .where((c) =>
+              c.fileName.isNotEmpty && !_audioPools.containsKey(c.fileName))
+          .map((c) => AudioPool.create(
+                source: AssetSource('audio/${c.fileName}'),
+                maxPlayers: 2,
+              ).then((pool) => _audioPools[c.fileName] = pool));
 
       await Future.wait(futures);
     }
 
-    void triggerAudioHapticFeedback(AudioHapticTrigger trigger, {bool audioActive = true}){
-      if (soundEnabled && audioActive){
-
+    void triggerAudioHapticFeedback(AudioHapticTrigger trigger,
+        {bool audioActive = true}) {
+      if (soundEnabled && audioActive) {
         final fileName = audioConfig
             .firstWhere(
-                (c) => c.audioTrigger == trigger,
-            orElse: () => IntervalAudioConfig(fileName: '')
-        ).fileName;
+              (c) => c.audioTrigger == trigger,
+              orElse: () => IntervalAudioConfig(fileName: ''),
+            )
+            .fileName;
 
-        if(trigger == AudioHapticTrigger.lastThreeSeconds){
-          countdownPlayer.play(AssetSource('audio/$fileName'), volume: 1.0);
-        }else {
+        if (trigger == AudioHapticTrigger.lastThreeSeconds) {
+          if (fileName.isNotEmpty) {
+            countdownPlayer.play(AssetSource('audio/$fileName'), volume: 1.0);
+          }
+        } else {
           if (fileName.isNotEmpty && _audioPools.containsKey(fileName)) {
             _audioPools[fileName]!.start(volume: 1.0);
           }
         }
       }
 
-      if (hapticEnabled){
-        final hapticPattern = hapticConfig.firstWhere((config) => config.trigger == trigger, orElse: () => IntervalHapticConfig(trigger: trigger, pattern: HapticPattern.none)).pattern;
-        switch (hapticPattern){
+      if (hapticEnabled) {
+        final hapticPattern = hapticConfig
+            .firstWhere(
+              (config) => config.trigger == trigger,
+              orElse: () => IntervalHapticConfig(
+                trigger: trigger,
+                pattern: HapticPattern.none,
+              ),
+            )
+            .pattern;
+        switch (hapticPattern) {
           case HapticPattern.light:
             Vibration.vibrate(duration: 50);
             break;
@@ -167,9 +289,117 @@ class TimerBackgroundService {
       }
     }
 
-    void sendFullTimerStatus(){
-      if (intervalQueue.isEmpty) return;
-      final interval = intervalQueue[currentIntervalIndex] as Map<String, dynamic>;
+    Map<String, dynamic>? currentInterval() {
+      if (intervalQueue.isEmpty || currentIntervalIndex >= intervalQueue.length) {
+        return null;
+      }
+      return intervalQueue[currentIntervalIndex] as Map<String, dynamic>;
+    }
+
+    int activeWorkoutSeconds() {
+      if (workoutStartedAt == null) return 0;
+      var pausedMs = workoutPausedMs;
+      if (pausedAt != null) {
+        pausedMs += DateTime.now().difference(pausedAt!).inMilliseconds;
+      }
+      final ms =
+          DateTime.now().difference(workoutStartedAt!).inMilliseconds - pausedMs;
+      return ms < 0 ? 0 : ms ~/ 1000;
+    }
+
+    String intervalSubtitle(Map<String, dynamic> interval) {
+      final parts = <String>[interval['title'] as String? ?? ''];
+      final totalRound = interval['totalRound'] as int? ?? 1;
+      final totalSet = interval['totalSet'] as int? ?? 1;
+      if (totalRound > 1) {
+        parts.add(
+            '${ElandStrings.of('round').toUpperCase()} ${interval['currentRound']}/$totalRound');
+      }
+      if (totalSet > 1) {
+        parts.add('SET ${interval['currentSet']}/$totalSet');
+      }
+      parts.add(
+          '${ElandStrings.of('phase').toUpperCase()} ${interval['currentPhase']}/${interval['totalPhases']}');
+      return parts.where((p) => p.isNotEmpty).join(' · ');
+    }
+
+    /// Re-posts the live notification for the current interval.
+    void refreshWorkoutNotification() {
+      final interval = currentInterval();
+      if (interval == null) return;
+
+      final bool isForTime = interval['sourcePhase'] == 'fortime';
+      final String title = (interval['workoutTitle'] as String?)?.isNotEmpty ==
+              true
+          ? interval['workoutTitle'] as String
+          : ElandStrings.of('notification_title');
+      final subtitle = intervalSubtitle(interval);
+      final now = DateTime.now().millisecondsSinceEpoch;
+      // Derive the clock from the interval start, not from the ticker
+      // fields: at interval start they are still 0 and the countdown would
+      // anchor to "now" and run negative.
+      final int durationMs = (interval['duration'] as int) * 1000;
+      final int elapsedMs = timerStartTime == null
+          ? accumulatedMsDuringStop
+          : now - timerStartTime!.millisecondsSinceEpoch +
+              accumulatedMsDuringStop;
+
+      if (isPaused) {
+        final shown = isForTime
+            ? elapsedMs ~/ 1000
+            : ((durationMs - elapsedMs) / 1000).ceil();
+        _showLiveNotification(
+          flutterLocalNotificationsPlugin,
+          title: title,
+          body:
+              '${ElandStrings.of('notif_paused')} · ${_formatDisplayTime(shown)} · $subtitle',
+          payload: 'open_workout_page',
+          color: accentColor(),
+          paused: true,
+          progress: currentIntervalIndex,
+          maxProgress: intervalQueue.length,
+        );
+        return;
+      }
+
+      _showLiveNotification(
+        flutterLocalNotificationsPlugin,
+        title: title,
+        body: subtitle,
+        payload: 'open_workout_page',
+        color: accentColor(),
+        chronometer: true,
+        countDown: !isForTime,
+        whenMs: isForTime ? now - elapsedMs : now + durationMs - elapsedMs,
+        progress: currentIntervalIndex,
+        maxProgress: intervalQueue.length,
+      );
+    }
+
+    void refreshStopwatchNotification() {
+      int elapsedMs = accumulatedMsDuringStop;
+      if (timerStartTime != null) {
+        elapsedMs += DateTime.now().difference(timerStartTime!).inMilliseconds;
+      }
+      final running = !isPaused && timerStartTime != null;
+      _showLiveNotification(
+        flutterLocalNotificationsPlugin,
+        title: ElandStrings.of('timer_stopwatch'),
+        body: running
+            ? ElandStrings.of('stopwatch_running')
+            : '${ElandStrings.of('notif_paused')} · ${_formatDisplayTime(elapsedMs ~/ 1000)}',
+        payload: 'open_stopwatch_page',
+        color: accentColor(),
+        paused: !running,
+        chronometer: running,
+        whenMs: DateTime.now().millisecondsSinceEpoch - elapsedMs,
+        canSkip: false,
+      );
+    }
+
+    void sendFullTimerStatus() {
+      final interval = currentInterval();
+      if (interval == null) return;
 
       service.invoke('uiUpdate', {
         'status': isPaused ? 'paused' : 'running',
@@ -194,11 +424,15 @@ class TimerBackgroundService {
       });
     }
 
-    void sendFullStopWatchStatus(){
-      Duration elapsed = Duration(seconds:0);
+    void sendFullStopWatchStatus() {
+      Duration elapsed = Duration(milliseconds: accumulatedMsDuringStop);
 
-      if (timerStartTime != null) elapsed = Duration(milliseconds: DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop);
-
+      if (timerStartTime != null) {
+        elapsed = Duration(
+            milliseconds:
+                DateTime.now().difference(timerStartTime!).inMilliseconds +
+                    accumulatedMsDuringStop);
+      }
 
       service.invoke('uiUpdate', {
         'status': isPaused ? 'paused' : 'running',
@@ -206,14 +440,13 @@ class TimerBackgroundService {
         'elapsedSeconds': elapsed.inSeconds % 60,
         'elapsedMinutes': elapsed.inMinutes % 60,
         'elapsedHours': elapsed.inHours,
-        'lapTimes': lapTimes
+        'lapTimes': lapTimes,
       });
     }
 
     void sendRuntimeStatus() {
-      if (intervalQueue.isEmpty) return;
-
-      final interval = intervalQueue[currentIntervalIndex] as Map<String, dynamic>;
+      final interval = currentInterval();
+      if (interval == null) return;
 
       service.invoke('runtimeUpdate', {
         'status': isPaused ? 'paused' : 'running',
@@ -231,64 +464,87 @@ class TimerBackgroundService {
       });
     }
 
+    Future<void> loadIntervalFeedback(Map<String, dynamic> interval) async {
+      final List<dynamic> rawAudio =
+          interval['audioConfigs'] as List<dynamic>? ?? [];
+      final List<dynamic> rawHaptic =
+          interval['hapticConfigs'] as List<dynamic>? ?? [];
+
+      audioConfig = rawAudio
+          .map((item) => const IntervalAudioConfig()
+              .fromJson(Map<String, dynamic>.from(item as Map)))
+          .toList();
+
+      hapticConfig = rawHaptic
+          .map((item) => const IntervalHapticConfig()
+              .fromJson(Map<String, dynamic>.from(item as Map)))
+          .toList();
+
+      await preloadAllNeededSounds(audioConfig);
+    }
+
+    void markWorkoutStartedIfNeeded(Map<String, dynamic> interval) {
+      if (workoutStartedAt == null && interval['sourcePhase'] != 'preparation') {
+        workoutStartedAt = DateTime.now();
+        workoutPausedMs = 0;
+        pausedAt = isPaused ? DateTime.now() : null;
+      }
+    }
+
     // --- Runners
     void runForTime() async {
-
       timerStartTime = DateTime.now();
 
-      final interval = intervalQueue[currentIntervalIndex] as Map<String, dynamic>;
+      final interval = currentInterval()!;
       final int intervalDuration = interval['duration'] as int;
       remainingSeconds = 0;
       elapsedSeconds = 0;
       intervalProgress = 0.0;
       isOvertime = false;
-      isLastPhase = interval['currentPhase'] as int == interval['totalPhases'] as int;
+      isLastPhase =
+          interval['currentPhase'] as int == interval['totalPhases'] as int;
+      markWorkoutStartedIfNeeded(interval);
 
-      // Get Audio & Haptic config for current interval
-      final List<dynamic> rawAudio = interval['audioConfigs'] as List<dynamic>;
-      final List<dynamic> rawHaptic = interval['hapticConfigs'] as List<dynamic>;
-
-      audioConfig = rawAudio.map((item) {
-        return IntervalAudioConfig().fromJson(item as Map<String, dynamic>);
-      }).toList();
-
-      hapticConfig = rawHaptic.map((item) {
-        return IntervalHapticConfig().fromJson(item as Map<String, dynamic>);
-      }).toList();
-
-      await preloadAllNeededSounds(audioConfig);
+      await loadIntervalFeedback(interval);
 
       triggerAudioHapticFeedback(AudioHapticTrigger.start);
 
       // Update UI with new Interval details
       sendFullTimerStatus();
       sendRuntimeStatus();
+      refreshWorkoutNotification();
 
       // Every Second update logic
       ticker?.cancel();
-      ticker = Timer.periodic(const Duration(seconds: 1), (t){
-        if (isPaused) return;
+      ticker = Timer.periodic(const Duration(seconds: 1), (t) {
+        if (isPaused || timerStartTime == null) return;
 
-        final Duration elapsed = Duration(milliseconds: DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop);
+        final Duration elapsed = Duration(
+            milliseconds:
+                DateTime.now().difference(timerStartTime!).inMilliseconds +
+                    accumulatedMsDuringStop);
         elapsedSeconds = elapsed.inSeconds;
-        remainingSeconds = Duration(seconds: intervalDuration - elapsed.inSeconds).inSeconds;
-        intervalProgress = (intervalDuration > 0) ? (intervalDuration - remainingSeconds) / intervalDuration : 1.0;
-
-        _updateNotification(flutterLocalNotificationsPlugin, ElandStrings.of('notification_title'), '${_formatDisplayTime(elapsed.inSeconds)} | ${interval['title']} (${interval['currentPhase']}/${interval['totalPhases']})', 'open_workout_page');
+        remainingSeconds = intervalDuration - elapsed.inSeconds;
+        intervalProgress = (intervalDuration > 0)
+            ? (intervalDuration - remainingSeconds) / intervalDuration
+            : 1.0;
 
         if (intervalDuration ~/ 2 == remainingSeconds) {
           triggerAudioHapticFeedback(AudioHapticTrigger.half);
-        }else if (remainingSeconds == 10) {
+        } else if (remainingSeconds == 10) {
           triggerAudioHapticFeedback(AudioHapticTrigger.tenSeconds);
-        }else if (remainingSeconds == 3) {
+        } else if (remainingSeconds == 3) {
           triggerAudioHapticFeedback(AudioHapticTrigger.lastThreeSeconds);
-        }else if (remainingSeconds < 3 && remainingSeconds > 0){
-          triggerAudioHapticFeedback(AudioHapticTrigger.lastThreeSeconds, audioActive: false);
+        } else if (remainingSeconds < 3 && remainingSeconds > 0) {
+          triggerAudioHapticFeedback(AudioHapticTrigger.lastThreeSeconds,
+              audioActive: false);
         }
 
         if (elapsedSeconds > intervalDuration) isOvertime = true;
 
-        if(elapsedSeconds == intervalDuration+1) triggerAudioHapticFeedback(AudioHapticTrigger.overtime);
+        if (elapsedSeconds == intervalDuration + 1) {
+          triggerAudioHapticFeedback(AudioHapticTrigger.overtime);
+        }
 
         /// Update UI with new values
         service.invoke('uiUpdate', {
@@ -296,7 +552,7 @@ class TimerBackgroundService {
           'elapsedSeconds': elapsedSeconds,
           'remainingSeconds': remainingSeconds,
           'intervalProgress': intervalProgress,
-          'isOvertime': isOvertime
+          'isOvertime': isOvertime,
         });
         sendRuntimeStatus();
       });
@@ -304,59 +560,60 @@ class TimerBackgroundService {
 
     void runInterval() async {
       // I'm at the end of the workout
-      if(currentIntervalIndex >= intervalQueue.length){
+      if (currentIntervalIndex >= intervalQueue.length) {
         triggerAudioHapticFeedback(AudioHapticTrigger.end);
-        service.invoke('uiUpdate', {'status': 'completed', 'remainingSeconds': 0, 'intervalProgress': 1.0});
-        sendRuntimeStatus();
-        flutterLocalNotificationsPlugin.cancel(id: notificationId);
         ticker?.cancel();
+        service.invoke('uiUpdate', {
+          'status': 'completed',
+          'remainingSeconds': 0,
+          'intervalProgress': 1.0,
+          'activeSeconds': activeWorkoutSeconds(),
+          'phaseResults': phaseResults,
+        });
+        flutterLocalNotificationsPlugin.cancel(id: notificationId);
         return;
       }
 
-      if (intervalQueue[currentIntervalIndex]['sourcePhase'] == 'fortime') {
+      if (currentInterval()!['sourcePhase'] == 'fortime') {
         runForTime();
         return;
       }
 
       timerStartTime = DateTime.now();
 
-      final interval = intervalQueue[currentIntervalIndex] as Map<String, dynamic>;
+      final interval = currentInterval()!;
       final int intervalDuration = interval['duration'] as int;
       remainingSeconds = intervalDuration;
       elapsedSeconds = 0;
       intervalProgress = 0.0;
-      isLastPhase = interval['currentPhase'] as int == interval['totalPhases'] as int;
+      isOvertime = false;
+      isLastPhase =
+          interval['currentPhase'] as int == interval['totalPhases'] as int;
+      markWorkoutStartedIfNeeded(interval);
 
-      // Get Audio & Haptic config for current interval
-      final List<dynamic> rawAudio = interval['audioConfigs'] as List<dynamic>;
-      final List<dynamic> rawHaptic = interval['hapticConfigs'] as List<dynamic>;
-
-      audioConfig = rawAudio.map((item) {
-        return IntervalAudioConfig().fromJson(item as Map<String, dynamic>);
-      }).toList();
-
-      hapticConfig = rawHaptic.map((item) {
-        return IntervalHapticConfig().fromJson(item as Map<String, dynamic>);
-      }).toList();
-
-      await preloadAllNeededSounds(audioConfig);
+      await loadIntervalFeedback(interval);
 
       triggerAudioHapticFeedback(AudioHapticTrigger.start);
 
       // Update UI with new Interval details
       sendFullTimerStatus();
       sendRuntimeStatus();
+      refreshWorkoutNotification();
 
       // Every Second update logic
       ticker?.cancel();
-      ticker = Timer.periodic(const Duration(seconds: 1), (t){
-        if (isPaused) return;
+      ticker = Timer.periodic(const Duration(seconds: 1), (t) {
+        if (isPaused || timerStartTime == null) return;
 
-        final Duration elapsed = Duration(milliseconds: DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop);
+        final Duration elapsed = Duration(
+            milliseconds:
+                DateTime.now().difference(timerStartTime!).inMilliseconds +
+                    accumulatedMsDuringStop);
         elapsedSeconds = elapsed.inSeconds;
-        remainingSeconds = Duration(seconds: intervalDuration - elapsed.inSeconds).inSeconds;
-        intervalProgress = (intervalDuration > 0) ? (intervalDuration - remainingSeconds) / intervalDuration : 1.0;
-
+        remainingSeconds = intervalDuration - elapsed.inSeconds;
+        intervalProgress = (intervalDuration > 0)
+            ? (intervalDuration - remainingSeconds) / intervalDuration
+            : 1.0;
 
         // End of interval. Next one
         if (remainingSeconds <= 0) {
@@ -368,16 +625,15 @@ class TimerBackgroundService {
           return;
         }
 
-        _updateNotification(flutterLocalNotificationsPlugin, ElandStrings.of('notification_title'), '${_formatDisplayTime(remainingSeconds)} | ${interval['title']} (${interval['currentPhase']}/${interval['totalPhases']})', 'open_workout_page');
-
         if (intervalDuration ~/ 2 == remainingSeconds) {
           triggerAudioHapticFeedback(AudioHapticTrigger.half);
-        }else if (remainingSeconds == 10) {
+        } else if (remainingSeconds == 10) {
           triggerAudioHapticFeedback(AudioHapticTrigger.tenSeconds);
-        }else if (remainingSeconds == 3) {
+        } else if (remainingSeconds == 3) {
           triggerAudioHapticFeedback(AudioHapticTrigger.lastThreeSeconds);
-        }else if (remainingSeconds < 3 && remainingSeconds > 0){
-          triggerAudioHapticFeedback(AudioHapticTrigger.lastThreeSeconds, audioActive: false);
+        } else if (remainingSeconds < 3 && remainingSeconds > 0) {
+          triggerAudioHapticFeedback(AudioHapticTrigger.lastThreeSeconds,
+              audioActive: false);
         }
 
         /// Update UI with new values
@@ -391,42 +647,101 @@ class TimerBackgroundService {
       });
     }
 
-    void runStopWatch(){
+    void runStopWatch() {
       timerStartTime = DateTime.now();
 
       ticker?.cancel();
       ticker = Timer.periodic(const Duration(milliseconds: 20), (t) {
-        final Duration elapsed = Duration(milliseconds: DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop);
-
+        final Duration elapsed = Duration(
+            milliseconds:
+                DateTime.now().difference(timerStartTime!).inMilliseconds +
+                    accumulatedMsDuringStop);
 
         service.invoke('uiUpdate', {
           'elapsedMilliseconds': elapsed.inMilliseconds % 1000,
           'elapsedSeconds': elapsed.inSeconds % 60,
           'elapsedMinutes': elapsed.inMinutes % 60,
-          'elapsedHours': elapsed.inHours
+          'elapsedHours': elapsed.inHours,
         });
       });
+    }
+
+    void pause() {
+      if (isPaused || timerStartTime == null) return;
+
+      final Duration elapsed = DateTime.now().difference(timerStartTime!);
+      accumulatedMsDuringStop += elapsed.inMilliseconds;
+      timerStartTime = null;
+      isPaused = true;
+
+      if (stopWatchMode) {
+        // In stopwatch mode, "pausing" just means to stop the ticker
+        ticker?.cancel();
+        refreshStopwatchNotification();
+      } else {
+        pausedAt = workoutStartedAt != null ? DateTime.now() : null;
+        countdownPlayer.pause();
+        refreshWorkoutNotification();
+      }
+      service.invoke('uiUpdate', {'status': 'paused'});
+      sendRuntimeStatus();
+    }
+
+    void resume() {
+      if (!isPaused) return;
+      timerStartTime = DateTime.now();
+      isPaused = false;
+
+      if (stopWatchMode) {
+        runStopWatch();
+        refreshStopwatchNotification();
+      } else {
+        if (pausedAt != null) {
+          workoutPausedMs +=
+              DateTime.now().difference(pausedAt!).inMilliseconds;
+          pausedAt = null;
+        }
+        countdownPlayer.resume();
+        refreshWorkoutNotification();
+      }
+      service.invoke('uiUpdate', {'status': 'running'});
+      sendRuntimeStatus();
     }
 
     // --- Listeners for actions
     subscriptions.add(service.on('startFullWorkout').listen((event) async {
       if (event == null) return;
 
-      /// --- remove any previous timers
+      final queue = (event['queue'] as List<dynamic>? ?? [])
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList();
+      if (queue.isEmpty) return;
+
+      /// --- reset every piece of state left by a previous run
       ticker?.cancel();
       stopWatchMode = false;
       lapTimes = [];
       timerStartTime = null;
       currentIntervalIndex = 0;
+      accumulatedMsDuringStop = 0;
+      isOvertime = false;
+      intervalQueue = [];
+      uiPhaseList = [];
+      workoutStartedAt = null;
+      pausedAt = null;
+      workoutPausedMs = 0;
+      phaseResults = [];
 
       final prefs = await SharedPreferences.getInstance();
+      await prefs.reload();
       soundEnabled = prefs.getBool('soundEnabled') ?? true;
       hapticEnabled = prefs.getBool('hapticFeedback') ?? true;
       final int prepTime = prefs.getInt('preparationTime') ?? 10;
-
-      var queue = event['queue'] as List<dynamic>? ?? [];
+      ElandStrings.initLocale(prefs.getString('language') ??
+          PlatformDispatcher.instance.locale.languageCode);
 
       if (prepTime > 0) {
+        final first = queue.first;
         intervalQueue = [
           {
             'id': 'prep_phase',
@@ -435,11 +750,11 @@ class TimerBackgroundService {
             'type': 'preparation',
             'sourcePhase': 'preparation',
             'currentPhase': 1,
-            'totalPhases': queue[0]['totalPhases']+1 ?? 0,
+            'totalPhases': (first['totalPhases'] as int? ?? 0) + 1,
             'currentRound': 1,
             'totalRound': 1,
-            'workoutTitle': queue[0]['workoutTitle'] ?? '',
-            'workoutId': queue[0]['workoutId'] ?? '',
+            'workoutTitle': first['workoutTitle'] ?? '',
+            'workoutId': first['workoutId'] ?? '',
             'currentSet': 1,
             'totalSet': 1,
             'audioConfigs': [
@@ -450,26 +765,23 @@ class TimerBackgroundService {
               {'trigger': 'start', 'pattern': 'heavy'},
               {'trigger': 'lastThreeSeconds', 'pattern': 'light'},
             ],
-
           }
         ];
 
         uiPhaseList = [
           {
-           'title': ElandStrings.of('timer_preparation'),
-           'details': '$prepTime s',
+            'title': ElandStrings.of('timer_preparation'),
+            'details': '$prepTime s',
           }
         ];
 
-
-        queue.asMap().forEach((index, item) {
-          item['currentPhase'] = (item['currentPhase'] ?? 0) + 1;
-          item['totalPhases'] = (item['totalPhases'] ?? 0) + 1;
-        });
+        for (final item in queue) {
+          item['currentPhase'] = (item['currentPhase'] as int? ?? 0) + 1;
+          item['totalPhases'] = (item['totalPhases'] as int? ?? 0) + 1;
+        }
       }
 
-
-      intervalQueue.addAll(event['queue'] as List<dynamic>? ?? []);
+      intervalQueue.addAll(queue);
       uiPhaseList.addAll(event['uiPhaseList'] as List<dynamic>? ?? []);
       isPaused = false;
       sendFullTimerStatus();
@@ -477,47 +789,10 @@ class TimerBackgroundService {
       runInterval();
     }));
 
-    subscriptions.add( service.on('pause').listen((event){
+    subscriptions.add(service.on('pause').listen((_) => pause()));
+    subscriptions.add(service.on('resume').listen((_) => resume()));
 
-      if (timerStartTime == null) return;
-
-      if(stopWatchMode == true){
-        // In stopwatch mode, "pausing" just means to stop the ticker and accumulate the elapsed time
-        ticker?.cancel();
-        if (timerStartTime != null) {
-          final Duration elapsed = DateTime.now().difference(timerStartTime!);
-          accumulatedMsDuringStop += elapsed.inMilliseconds;
-          timerStartTime = null;
-        }
-        isPaused = true;
-      }else{
-        final Duration elapsed = DateTime.now().difference(timerStartTime!);
-        accumulatedMsDuringStop += elapsed.inMilliseconds;
-        timerStartTime = null;
-        isPaused = true;
-        countdownPlayer.pause();
-      }
-      service.invoke('uiUpdate', {'status': 'paused'});
-      sendRuntimeStatus();
-    }));
-
-    subscriptions.add(service.on('resume').listen((event){
-      if(stopWatchMode == true){
-        print('+++++++++++++ StopWatch resuming');
-        // In stopwatch mode, "resuming" just means to start the ticker again and continue accumulating the elapsed time
-        timerStartTime = DateTime.now();
-        isPaused = false;
-        runStopWatch();
-      }else {
-        timerStartTime = DateTime.now();
-        isPaused = false;
-        countdownPlayer.resume();
-      }
-      service.invoke('uiUpdate', {'status': 'running'});
-      sendRuntimeStatus();
-    }));
-
-    subscriptions.add(service.on('reset').listen((event){
+    subscriptions.add(service.on('reset').listen((event) {
       if (stopWatchMode == false) return;
 
       ticker?.cancel();
@@ -531,13 +806,17 @@ class TimerBackgroundService {
         'elapsedMilliseconds': 0,
         'elapsedSeconds': 0,
         'elapsedMinutes': 0,
-        'elapsedHours': 0
+        'elapsedHours': 0,
       });
+      refreshStopwatchNotification();
     }));
 
-    subscriptions.add(service.on('stop').listen((event){
-      print(' ++++++++++++++++ Service is stopping');
+    subscriptions.add(service.on('stop').listen((event) {
+      debugPrint('[ELAND] timer service stopping');
       ticker?.cancel();
+      // Lets an open workout/stopwatch page close itself when the stop comes
+      // from the notification.
+      service.invoke('serviceStopped');
       flutterLocalNotificationsPlugin.cancel(id: notificationId);
 
       countdownPlayer.dispose();
@@ -551,16 +830,16 @@ class TimerBackgroundService {
       service.stopSelf();
     }));
 
-    subscriptions.add(service.on('requestStatus').listen((event){
-      if (stopWatchMode){
+    subscriptions.add(service.on('requestStatus').listen((event) {
+      if (stopWatchMode) {
         sendFullStopWatchStatus();
-      }else{
+      } else {
         sendFullTimerStatus();
         sendRuntimeStatus();
       }
     }));
 
-    subscriptions.add(service.on('startStopWatch').listen((event){
+    subscriptions.add(service.on('startStopWatch').listen((event) {
       ticker?.cancel();
       stopWatchMode = true;
       lapTimes = [];
@@ -570,11 +849,10 @@ class TimerBackgroundService {
       accumulatedMsDuringStop = 0;
       isPaused = true;
       sendFullStopWatchStatus();
-      _updateNotification(flutterLocalNotificationsPlugin, ElandStrings.of('notification_title'), ElandStrings.of('stopwatch_running'), 'open_stopwatch_page');
-
+      refreshStopwatchNotification();
     }));
 
-    subscriptions.add(service.on('resetStopWatch').listen((event){
+    subscriptions.add(service.on('resetStopWatch').listen((event) {
       if (stopWatchMode == false) return;
 
       ticker?.cancel();
@@ -582,7 +860,6 @@ class TimerBackgroundService {
       timerStartTime = null;
       lapTimes = [];
       accumulatedMsDuringStop = 0;
-      timerStartTime = null;
 
       service.invoke('uiUpdate', {
         'status': 'paused',
@@ -590,21 +867,40 @@ class TimerBackgroundService {
         'elapsedSeconds': 0,
         'elapsedMinutes': 0,
         'elapsedHours': 0,
-        'lapTimes': null
+        'lapTimes': null,
       });
+      refreshStopwatchNotification();
     }));
 
-    subscriptions.add(service.on('recordLap').listen((event){
+    subscriptions.add(service.on('recordLap').listen((event) {
       if (timerStartTime != null) {
-        final lap = DateTime.now().difference(timerStartTime!).inMilliseconds + accumulatedMsDuringStop;
+        final lap = DateTime.now().difference(timerStartTime!).inMilliseconds +
+            accumulatedMsDuringStop;
         lapTimes.add(lap);
-        
+
         service.invoke('uiUpdate', {'lapTimes': lapTimes});
       }
     }));
 
-    subscriptions.add(service.on('skipPhase').listen((event){
+    subscriptions.add(service.on('skipPhase').listen((event) {
       if (stopWatchMode == true) return;
+      final interval = currentInterval();
+      if (interval == null) return;
+
+      // "Done" on a For Time phase: the elapsed time is the athlete's result.
+      if (interval['sourcePhase'] == 'fortime') {
+        int ms = accumulatedMsDuringStop;
+        if (timerStartTime != null) {
+          ms += DateTime.now().difference(timerStartTime!).inMilliseconds;
+        }
+        phaseResults.add({
+          'phase': interval['currentPhase'],
+          'type': 'fortime',
+          'title': interval['title'],
+          'seconds': ms ~/ 1000,
+          'capSeconds': interval['duration'],
+        });
+      }
 
       ticker?.cancel();
       isOvertime = false;
@@ -615,6 +911,6 @@ class TimerBackgroundService {
     }));
 
     service.invoke('serviceReady');
-    print('**************  service is ready!');
+    debugPrint('[ELAND] timer service ready');
   }
 }

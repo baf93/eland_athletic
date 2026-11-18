@@ -1,3 +1,5 @@
+import 'package:flutter_background_service/flutter_background_service.dart';
+
 import '../models/workout_interval.dart';
 import '../models/workout_phase_summary.dart';
 import '../runtime/workout_runtime_controller.dart';
@@ -30,9 +32,10 @@ class WorkoutController {
     _runtime.stop();
   }
 
+  /// Asks the service to resend the full state (used when a workout page is
+  /// reopened, e.g. from the notification).
   void requestStatus() {
-    // Per ora resta no-op su runtime.
-    // Lo aggiungiamo dopo se serve anche per iOS.
+    FlutterBackgroundService().invoke('requestStatus');
   }
 
   void skipPhase() {

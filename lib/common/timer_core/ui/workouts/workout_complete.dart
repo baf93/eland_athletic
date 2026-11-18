@@ -1,9 +1,27 @@
 import 'package:eland_athletic/common/eland_responsive.dart';
 import 'package:eland_athletic/common/strings.dart';
+import 'package:eland_athletic/common/timer_core/models/timer_block.dart';
+import 'package:eland_athletic/common/workouts/models.dart';
 import 'package:flutter/material.dart';
 
 class WorkoutCompleteWidget extends StatelessWidget {
-  const WorkoutCompleteWidget({super.key});
+  /// Saved history entry, used to show the session results.
+  final WorkoutLog? log;
+
+  const WorkoutCompleteWidget({super.key, this.log});
+
+  List<String> _resultLines() {
+    final log = this.log;
+    if (log == null) return const [];
+    return [
+      if (log.activeSeconds > 0)
+        '${ElandStrings.of('total_time')}: ${TimerBlock.formatDuration(log.activeSeconds)}',
+      if (log.amrapRounds != null)
+        '${log.amrapRounds} ${ElandStrings.of('result_rounds')}',
+      for (final r in log.forTimeResults)
+        '${r.title}: ${TimerBlock.formatDuration(r.seconds)}${r.overCap ? ' (${ElandStrings.of('result_over_cap')})' : ''}',
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +96,20 @@ class WorkoutCompleteWidget extends StatelessWidget {
                 ),
               ),
             ),
+
+            for (final line in _resultLines()) ...[
+              SizedBox(height: r.spacing(10)),
+              Text(
+                line.toUpperCase(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: theme.textTheme.bodyMedium?.color,
+                  fontSize: r.font(14, minScale: 0.9, maxScale: 1.2),
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
           ],
         ),
       ),

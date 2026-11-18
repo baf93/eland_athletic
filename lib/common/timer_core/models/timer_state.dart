@@ -23,6 +23,12 @@ class TimerState {
   final bool isOvertime;
   final bool isLoading;
 
+  /// Set when the workout completes: training time without prep and pauses.
+  final int activeSeconds;
+
+  /// Set when the workout completes: results of For Time phases.
+  final List<Map<String, dynamic>> phaseResults;
+
   const TimerState({
     required this.remainingSeconds,
     required this.elapsedSeconds,
@@ -44,6 +50,8 @@ class TimerState {
     required this.totalSet,
     required this.isOvertime,
     required this.isLoading,
+    this.activeSeconds = 0,
+    this.phaseResults = const [],
   });
 
   factory TimerState.initial() {
@@ -91,14 +99,19 @@ class TimerState {
     int? currentSet,
     int? totalSet,
     bool? isOvertime,
-    bool? isLoading
+    bool? isLoading,
+    int? activeSeconds,
+    List<Map<String, dynamic>>? phaseResults,
+    bool clearIntervalNotes = false,
   }) {
     return TimerState(
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
       elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
       status: status ?? this.status,
       currentIntervalTitle: currentIntervalTitle ?? this.currentIntervalTitle,
-      currentIntervalNotes: currentIntervalNotes ?? this.currentIntervalNotes,
+      currentIntervalNotes: clearIntervalNotes
+          ? null
+          : (currentIntervalNotes ?? this.currentIntervalNotes),
       intervalType: intervalType ?? this.intervalType,
       timerType: timerType ?? this.timerType,
       workoutPhaseSummary: workoutPhaseSummary ?? this.workoutPhaseSummary,
@@ -113,7 +126,9 @@ class TimerState {
       currentSet: currentSet ?? this.currentSet,
       totalSet: totalSet ?? this.totalSet,
       isOvertime: isOvertime ?? this.isOvertime,
-      isLoading: isLoading ?? this.isLoading
+      isLoading: isLoading ?? this.isLoading,
+      activeSeconds: activeSeconds ?? this.activeSeconds,
+      phaseResults: phaseResults ?? this.phaseResults,
     );
   }
 }

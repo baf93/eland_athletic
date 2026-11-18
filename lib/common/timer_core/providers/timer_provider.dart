@@ -43,13 +43,17 @@ class TimerNotifier extends Notifier<TimerState> {
         }
       }
 
-      print('EVENT: ${event}');
+      final notesChanged = event.containsKey('currentIntervalNotes');
+      final rawResults = event['phaseResults'] as List<dynamic>?;
 
       state = state.copyWith(
         remainingSeconds: event['remainingSeconds'] as int? ?? state.remainingSeconds,
         status: status,
         currentIntervalTitle: event['currentIntervalTitle'] as String? ?? state.currentIntervalTitle,
-        currentIntervalNotes: event['currentIntervalNotes'] as String? ?? state.currentIntervalNotes,
+        // A new interval always reports its notes (possibly none): do not
+        // keep showing the notes of the previous phase.
+        currentIntervalNotes: event['currentIntervalNotes'] as String?,
+        clearIntervalNotes: notesChanged && event['currentIntervalNotes'] == null,
         currentPhaseIndex: event['currentPhaseIndex'] as int? ?? state.currentPhaseIndex,
         totalPhases: event['totalPhases'] as int? ?? state.totalPhases,
         workoutTitle: event['workoutTitle'] as String? ?? state.workoutTitle,
@@ -65,7 +69,12 @@ class TimerNotifier extends Notifier<TimerState> {
         totalSet: event['totalSet'] as int? ?? state.totalSet,
         isOvertime: event['isOvertime'] as bool? ?? state.isOvertime,
         elapsedSeconds: event['elapsedSeconds'] as int? ?? state.elapsedSeconds,
-        isLoading: false
+        isLoading: false,
+        activeSeconds: event['activeSeconds'] as int?,
+        phaseResults: rawResults
+            ?.whereType<Map>()
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList(),
       );
     });
   }

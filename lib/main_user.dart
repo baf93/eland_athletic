@@ -23,6 +23,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'common/timer_core/runtime/workout_runtime_controller.dart';
+import 'common/workouts/reminder_service.dart';
+import 'common/workouts/workout_repository.dart';
+import 'user_app/workouts/history_page.dart';
+import 'user_app/workouts/my_workouts_page.dart';
+import 'user_app/workouts/workout_detail_page.dart';
 
 import 'common/strings.dart';
 import 'common/theme.dart';
@@ -63,25 +68,26 @@ void main() async {
       ),
     ),
 
-    onDidReceiveNotificationResponse: (response) {
-      List<String> routesToPush = [];
-
-      if (response.payload == 'open_workout_page') {
-        routesToPush = ['/', '/timer_list', '/workout'];
-      } else {
-        routesToPush = ['/', '/timer_list', '/stopwatch'];
-      }
-
-      navigatorKey.currentState?.popUntil((route) => false);
-
-      for (final routeName in routesToPush) {
-        navigatorKey.currentState?.pushNamed(routeName);
-      }
-    },
+    onDidReceiveNotificationResponse: _handleNotificationResponse,
+    // Live-notification buttons (pause/skip/stop) arrive on a background
+    // isolate and are relayed to the timer service.
+    onDidReceiveBackgroundNotificationResponse: timerNotificationActionHandler,
   );
 
   await TimerBackgroundService.initialize();
   await WorkoutRuntimeController.instance.initialize();
+  _restoreReminders();
+
+  // App opened by tapping a workout reminder while it was closed.
+  final launchDetails =
+      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  final launchResponse = launchDetails?.notificationResponse;
+  if ((launchDetails?.didNotificationLaunchApp ?? false) &&
+      launchResponse != null) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _handleNotificationResponse(launchResponse),
+    );
+  }
 
   runApp(
     ProviderScope(
@@ -91,6 +97,56 @@ void main() async {
       child: const ElandUserApp(),
     ),
   );
+}
+
+/// Re-arms the weekly reminders (time zone change, app update, restore).
+Future<void> _restoreReminders() async {
+  try {
+    await ReminderService.instance.initialize();
+    final workouts = await WorkoutRepository().getWorkouts();
+    await ReminderService.instance.rescheduleAll(workouts);
+  } catch (e) {
+    debugPrint('[ELAND] reminders restore failed: $e');
+  }
+}
+
+void _handleNotificationResponse(NotificationResponse response) {
+  final actionId = response.actionId;
+  if (actionId != null && kTimerNotificationActions.contains(actionId)) {
+    FlutterBackgroundService().invoke(actionId);
+    return;
+  }
+
+  final payload = response.payload ?? '';
+  final navigator = navigatorKey.currentState;
+  if (navigator == null) return;
+
+  if (payload.startsWith(ReminderService.payloadPrefix)) {
+    final workoutId = payload.substring(ReminderService.payloadPrefix.length);
+    navigator.popUntil((route) => route.isFirst);
+    navigator.push(MaterialPageRoute(
+      builder: (_) => WorkoutDetailPage(workoutId: workoutId),
+    ));
+    return;
+  }
+
+  final String? target = switch (payload) {
+    'open_workout_page' => '/workout',
+    'open_stopwatch_page' => '/stopwatch',
+    _ => null,
+  };
+  if (target == null) return;
+
+  // Go back to the running screen if it is already open, else open it.
+  var found = false;
+  navigator.popUntil((route) {
+    if (route.settings.name == target) {
+      found = true;
+      return true;
+    }
+    return route.isFirst;
+  });
+  if (!found) navigator.pushNamed(target);
 }
 
 class ElandUserApp extends ConsumerWidget {
@@ -246,6 +302,44 @@ class _ElandV1HomePageState extends State<ElandV1HomePage>
 
                   SizedBox(height: r.spacing(26)),
 
+                  TimerRowItem(
+                    icon: Icons.playlist_play_rounded,
+                    title: ElandStrings.of('home_my_workouts').toUpperCase(),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const MyWorkoutsPage(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  SizedBox(height: r.cardGap),
+
+                  TimerRowItem(
+                    icon: Icons.history_rounded,
+                    title: ElandStrings.of('home_history').toUpperCase(),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const HistoryPage(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  SizedBox(height: r.spacing(24)),
+
+                  Divider(
+                    height: 1,
+                    thickness: 1.2,
+                    indent: r.spacing(40),
+                    endIndent: r.spacing(40),
+                    color: theme.dividerColor,
+                  ),
+
+                  SizedBox(height: r.spacing(24)),
+
 
                   TimerRowItem(
                     icon: Icons.fitness_center_rounded,
@@ -334,6 +428,7 @@ class _ElandV1HomePageState extends State<ElandV1HomePage>
                       StopwatchController.instance.launchStopwatch();
                       Navigator.of(context).push(
                         MaterialPageRoute(
+                          settings: const RouteSettings(name: '/stopwatch'),
                           builder: (_) => const StopwatchPage(),
                         ),
                       );

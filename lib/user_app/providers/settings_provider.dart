@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -68,7 +70,7 @@ class SettingsNotifier extends Notifier<SettingsState> {
     _loadAppVersion();
 
     return SettingsState(
-      language: _prefs.getString('language') ?? 'en',
+      language: _prefs.getString('language') ?? defaultLanguageCode(),
       preparationTime: _prefs.getInt('preparationTime') ?? 10,
       isDarkMode: _prefs.getBool('isDarkMode') ?? true,
       useMetricUnits: _prefs.getBool('useMetricUnits') ?? true,
@@ -132,6 +134,12 @@ class SettingsNotifier extends Notifier<SettingsState> {
     _prefs.setInt('primaryColor', value);
     state = state.copyWith(primaryColorIndex: value);
   }
+}
+
+/// Device language when supported by the app, English otherwise.
+String defaultLanguageCode() {
+  final code = PlatformDispatcher.instance.locale.languageCode;
+  return code == 'it' ? 'it' : 'en';
 }
 
 // Global settings provider

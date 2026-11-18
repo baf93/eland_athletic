@@ -144,8 +144,6 @@ class AndroidWorkoutRuntime implements ElandWorkoutRuntime {
 
   Future<void> _ensureServiceRunning() async {
     if (!await _service.isRunning()) {
-      await _service.startService();
-
       final readyCompleter = Completer<void>();
 
       final subscription = _service.on('serviceReady').listen((event) {
@@ -154,6 +152,7 @@ class AndroidWorkoutRuntime implements ElandWorkoutRuntime {
         }
       });
 
+      await _service.startService();
       await readyCompleter.future.timeout(
         const Duration(seconds: 10),
         onTimeout: () {},

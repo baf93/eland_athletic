@@ -8,7 +8,7 @@ android.apply {
     productFlavors {
         create("userApp") {
             dimension = "flavor-type"
-            applicationId = "com.eland.athletic.user"
+            applicationId = "com.eland.athletic"
             resValue(type = "string", name = "app_name", value = "Eland Athletic")
         }
         create("proApp") {

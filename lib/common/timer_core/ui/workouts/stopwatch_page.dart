@@ -1,7 +1,8 @@
-import 'dart:ui';
+import 'dart:async';
 
 import 'package:eland_athletic/common/eland_responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/stopwatch_controller.dart';
@@ -21,16 +22,34 @@ class _StopwatchPageState extends ConsumerState<StopwatchPage> {
   final ScrollController _scrollController = ScrollController();
   int _previousLapCount = 0;
 
+  StreamSubscription? _serviceStoppedSub;
+  bool _exiting = false;
+
   @override
   void initState() {
     super.initState();
+    // "Stop" pressed on the live notification: leave the page.
+    _serviceStoppedSub =
+        FlutterBackgroundService().on('serviceStopped').listen((_) {
+      if (!mounted || _exiting) return;
+      _exiting = true;
+      Navigator.of(context).pop();
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      StopwatchController.instance.launchStopwatch();
+      // The stopwatch is started by whoever opens this page; here we only
+      // sync with it, so reopening from the notification does not reset it.
       StopwatchController.instance.requestStatus();
 
       final state = ref.read(stopwatchProvider);
       _previousLapCount = state.laps.length;
     });
+  }
+
+  @override
+  void dispose() {
+    _serviceStoppedSub?.cancel();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _handleExit() {
@@ -43,6 +62,7 @@ class _StopwatchPageState extends ConsumerState<StopwatchPage> {
       confirmText: ElandStrings.of('ok_btn').toUpperCase(),
       onResult: (confirmed) {
         if (confirmed) {
+          _exiting = true;
           StopwatchController.instance.stopStopWatch();
           Navigator.pop(context);
         }

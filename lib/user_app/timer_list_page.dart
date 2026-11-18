@@ -170,6 +170,7 @@ class TimerListPage extends StatelessWidget {
                   StopwatchController.instance.launchStopwatch();
                   Navigator.of(context).push(
                     MaterialPageRoute(
+                      settings: const RouteSettings(name: '/stopwatch'),
                       builder: (context) => const StopwatchPage(),
                     ),
                   );
