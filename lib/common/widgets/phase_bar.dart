@@ -107,7 +107,7 @@ class PhaseBar extends StatelessWidget {
                   ),
                   SizedBox(height: r.spacing(2)),
                   Text(
-                    '[ ${timerState.currentPhaseIndex}/${timerState.totalPhases} ]',
+                    _phaseCounter(timerState),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                     style: TextStyle(
@@ -124,4 +124,16 @@ class PhaseBar extends StatelessWidget {
       ),
     );
   }
+}
+
+/// "[ 1/2 ]" without counting the preparation countdown as a phase.
+String _phaseCounter(TimerState state) {
+  final hasPrep = state.workoutPhaseSummary.isNotEmpty &&
+      state.workoutPhaseSummary.first.title ==
+          ElandStrings.of('timer_preparation');
+  final offset = hasPrep ? 1 : 0;
+  final total = state.totalPhases - offset;
+  final current = (state.currentPhaseIndex - offset).clamp(0, total);
+  if (total <= 0) return '';
+  return hasPrep && current == 0 ? '[ -/$total ]' : '[ $current/$total ]';
 }

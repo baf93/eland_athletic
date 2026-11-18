@@ -14,7 +14,10 @@ import 'workout_detail_page.dart';
 import 'workout_editor_page.dart';
 
 class MyWorkoutsPage extends ConsumerWidget {
-  const MyWorkoutsPage({super.key});
+  /// true when shown as a tab of the home (no back button).
+  final bool embedded;
+
+  const MyWorkoutsPage({super.key, this.embedded = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,7 +27,8 @@ class MyWorkoutsPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: elandAppBar(context, ElandStrings.of('my_workouts_title')),
+      appBar: elandAppBar(context, ElandStrings.of('my_workouts_title'),
+          showBack: !embedded),
       floatingActionButton: FloatingActionButton(
         tooltip: ElandStrings.of('new_workout'),
         backgroundColor: theme.colorScheme.primary,

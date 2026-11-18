@@ -10,13 +10,15 @@ PreferredSizeWidget elandAppBar(
   String title, {
   List<Widget>? actions,
   VoidCallback? onBack,
+  bool showBack = true,
 }) {
   final r = ElandResponsive(context);
   return AppBar(
     backgroundColor: Colors.transparent,
     elevation: 0,
     scrolledUnderElevation: 0,
-    leading: IconButton(
+    automaticallyImplyLeading: false,
+    leading: !showBack ? null : IconButton(
       icon: const Icon(Icons.arrow_back_ios_new),
       onPressed: () {
         HapticFeedback.lightImpact();

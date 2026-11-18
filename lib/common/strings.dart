@@ -122,6 +122,11 @@ class ElandStrings {
       'wip_function': 'Coming soon!',
       'starting_workout': 'Starting workout...',
       'stopwatch_running': 'Stopwatch running...',
+      'nav_timers': 'Timers',
+      'nav_workouts': 'Workouts',
+      'nav_history': 'History',
+      'nav_settings': 'Settings',
+      'quick_timers': 'Quick timers',
 
       // Custom workouts, history, reminders, backup
       'notif_pause': 'Pause',
@@ -332,6 +337,11 @@ class ElandStrings {
       'wip_function': 'Funzionalità in arrivo!',
       'starting_workout': 'Avvio allenamento...',
       'stopwatch_running': 'Cronometro avviato...',
+      'nav_timers': 'Timer',
+      'nav_workouts': 'Allenamenti',
+      'nav_history': 'Storico',
+      'nav_settings': 'Impostazioni',
+      'quick_timers': 'Timer rapidi',
 
       // Allenamenti personalizzati, storico, promemoria, backup
       'notif_pause': 'Pausa',

@@ -12,7 +12,10 @@ import '../../common/workouts/ui/eland_ui.dart';
 import 'workout_detail_page.dart';
 
 class HistoryPage extends ConsumerWidget {
-  const HistoryPage({super.key});
+  /// true when shown as a tab of the home (no back button).
+  final bool embedded;
+
+  const HistoryPage({super.key, this.embedded = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +25,8 @@ class HistoryPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: elandAppBar(context, ElandStrings.of('history_title')),
+      appBar: elandAppBar(context, ElandStrings.of('history_title'),
+          showBack: !embedded),
       body: SafeArea(
         child: history.when(
           loading: () => const Center(child: CircularProgressIndicator()),

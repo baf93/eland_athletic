@@ -11,7 +11,10 @@ import 'package:permission_handler/permission_handler.dart';
 import '../common/theme.dart';
 
 class SettingsPage extends ConsumerWidget {
-  const SettingsPage({super.key});
+  /// true when shown as a tab of the home (no back button).
+  final bool embedded;
+
+  const SettingsPage({super.key, this.embedded = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,13 +32,16 @@ class SettingsPage extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            Navigator.maybePop(context);
-          },
-        ),
+        automaticallyImplyLeading: false,
+        leading: embedded
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new),
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.maybePop(context);
+                },
+              ),
         title: Text(
           ElandStrings.of('setting_title').toUpperCase(),
           style: TextStyle(
