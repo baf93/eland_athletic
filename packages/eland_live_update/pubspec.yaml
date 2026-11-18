@@ -1,0 +1,19 @@
+name: eland_live_update
+description: Android 16 Live Updates (promoted ongoing notifications) for the Eland timer.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+  flutter: ">=3.32.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.eland.live_update
+        pluginClass: ElandLiveUpdatePlugin

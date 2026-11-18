@@ -5,6 +5,7 @@ import 'package:eland_athletic/common/strings.dart';
 import 'package:eland_athletic/common/theme.dart';
 import 'package:eland_athletic/common/timer_core/models/interval_audio_haptic_config.dart';
 import 'package:eland_athletic/common/timer_core/models/timercore_enums.dart';
+import 'package:eland_live_update/eland_live_update.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -40,6 +41,10 @@ class TimerBackgroundService {
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   static final Map<String, AudioPool> _audioPools = {};
+
+  /// Android 16+: the notification is posted as a Live Update (status bar
+  /// chip, lock screen) instead of a media-style notification.
+  static bool _liveUpdates = false;
 
   /// Initialization of the notification channel and background service
   static Future<void> initialize() async {
@@ -99,6 +104,8 @@ class TimerBackgroundService {
     int maxProgress = 0,
     bool showControls = true,
     bool canSkip = true,
+    List<LiveUpdateSegment> segments = const [],
+    int segmentProgress = 0,
   }) async {
     AndroidNotificationAction action(String id, String labelKey, String icon) {
       return AndroidNotificationAction(
@@ -108,6 +115,46 @@ class TimerBackgroundService {
         showsUserInterface: false,
         cancelNotification: false,
       );
+    }
+
+    if (_liveUpdates) {
+      final liveActions = showControls
+          ? <LiveUpdateAction>[
+              paused
+                  ? LiveUpdateAction('resume', ElandStrings.of('notif_resume'),
+                      'ic_notif_play')
+                  : LiveUpdateAction('pause', ElandStrings.of('notif_pause'),
+                      'ic_notif_pause'),
+              if (canSkip)
+                LiveUpdateAction(
+                    'skipPhase', ElandStrings.of('notif_skip'), 'ic_notif_skip'),
+              LiveUpdateAction(
+                  'stop', ElandStrings.of('notif_stop'), 'ic_notif_stop'),
+            ]
+          : const <LiveUpdateAction>[];
+      try {
+        await ElandLiveUpdate.show(
+          id: notificationId,
+          channelId: channelId,
+          title: title.toUpperCase(),
+          body: body,
+          smallIcon: 'ic_stat_eland',
+          color: color.toARGB32(),
+          payload: payload,
+          chronometer: chronometer,
+          countDown: countDown,
+          whenMs: whenMs,
+          // Shown in the status bar chip instead of the clock while paused.
+          shortText: paused ? ElandStrings.of('notif_paused') : null,
+          segments: segments,
+          progress: segmentProgress,
+          actions: liveActions,
+        );
+        return;
+      } catch (e) {
+        debugPrint('[ELAND] live update failed, falling back: $e');
+        _liveUpdates = false;
+      }
     }
 
     final actions = showControls
@@ -169,6 +216,7 @@ class TimerBackgroundService {
     final startupPrefs = await SharedPreferences.getInstance();
     ElandStrings.initLocale(startupPrefs.getString('language') ??
         PlatformDispatcher.instance.locale.languageCode);
+    _liveUpdates = await ElandLiveUpdate.isSupported();
     Color accentColor() {
       final index = startupPrefs.getInt('primaryColor') ?? 0;
       final palette = ElandColors.customPalette;
@@ -344,6 +392,26 @@ class TimerBackgroundService {
           : now - timerStartTime!.millisecondsSinceEpoch +
               accumulatedMsDuringStop;
 
+      // Progress bar: one segment per interval, coloured by type.
+      const restColor = Color(0xFF03DAC6);
+      const idleColor = Color(0xFF757575);
+      final segments = <LiveUpdateSegment>[];
+      int doneSeconds = 0;
+      for (var i = 0; i < intervalQueue.length; i++) {
+        final item = intervalQueue[i] as Map<String, dynamic>;
+        final int duration = (item['duration'] as int? ?? 0).clamp(1, 1 << 30);
+        if (i < currentIntervalIndex) doneSeconds += duration;
+        final Color c = switch (item['type']) {
+          'work' => accentColor(),
+          'rest' => restColor,
+          _ => idleColor,
+        };
+        segments.add(LiveUpdateSegment(duration, c.toARGB32()));
+      }
+      final int currentDuration = (durationMs ~/ 1000).clamp(1, 1 << 30);
+      final int segmentProgress =
+          doneSeconds + (elapsedMs ~/ 1000).clamp(0, currentDuration);
+
       if (isPaused) {
         final shown = isForTime
             ? elapsedMs ~/ 1000
@@ -358,6 +426,8 @@ class TimerBackgroundService {
           paused: true,
           progress: currentIntervalIndex,
           maxProgress: intervalQueue.length,
+          segments: segments,
+          segmentProgress: segmentProgress,
         );
         return;
       }
@@ -373,6 +443,8 @@ class TimerBackgroundService {
         whenMs: isForTime ? now - elapsedMs : now + durationMs - elapsedMs,
         progress: currentIntervalIndex,
         maxProgress: intervalQueue.length,
+        segments: segments,
+        segmentProgress: segmentProgress,
       );
     }
 
@@ -541,6 +613,12 @@ class TimerBackgroundService {
         }
 
         if (elapsedSeconds > intervalDuration) isOvertime = true;
+
+        // The chip/clock is rendered by the system; only the Live Update
+        // progress bar needs a periodic nudge during long intervals.
+        if (_liveUpdates && elapsedSeconds > 0 && elapsedSeconds % 10 == 0) {
+          refreshWorkoutNotification();
+        }
 
         if (elapsedSeconds == intervalDuration + 1) {
           triggerAudioHapticFeedback(AudioHapticTrigger.overtime);
@@ -811,7 +889,7 @@ class TimerBackgroundService {
       refreshStopwatchNotification();
     }));
 
-    subscriptions.add(service.on('stop').listen((event) {
+    void stopService() {
       debugPrint('[ELAND] timer service stopping');
       ticker?.cancel();
       // Lets an open workout/stopwatch page close itself when the stop comes
@@ -828,7 +906,9 @@ class TimerBackgroundService {
       }
       subscriptions.clear();
       service.stopSelf();
-    }));
+    }
+
+    subscriptions.add(service.on('stop').listen((_) => stopService()));
 
     subscriptions.add(service.on('requestStatus').listen((event) {
       if (stopWatchMode) {
@@ -882,7 +962,7 @@ class TimerBackgroundService {
       }
     }));
 
-    subscriptions.add(service.on('skipPhase').listen((event) {
+    void skipPhase() {
       if (stopWatchMode == true) return;
       final interval = currentInterval();
       if (interval == null) return;
@@ -908,7 +988,25 @@ class TimerBackgroundService {
       timerStartTime = null;
       currentIntervalIndex++;
       runInterval();
-    }));
+    }
+
+    subscriptions.add(service.on('skipPhase').listen((_) => skipPhase()));
+
+    // Live Update buttons are delivered straight to this engine.
+    if (_liveUpdates) {
+      ElandLiveUpdate.setActionHandler((actionId) {
+        switch (actionId) {
+          case 'pause':
+            pause();
+          case 'resume':
+            resume();
+          case 'skipPhase':
+            skipPhase();
+          case 'stop':
+            stopService();
+        }
+      });
+    }
 
     service.invoke('serviceReady');
     debugPrint('[ELAND] timer service ready');
