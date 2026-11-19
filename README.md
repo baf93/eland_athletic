@@ -48,11 +48,6 @@ Big numbers, one tap to start, clear cues when the work changes. Eland Athletic 
 - Backup and restore of workouts and history
 - Smoother timers and a cleaner look everywhere
 
-## Roadmap
-
-- Professional platform for coaches and boxes
-- Nutrition
-
 ## Development
 
 Flutter app for Android. The user app is the `userApp` flavor:
@@ -63,15 +58,6 @@ flutter test
 ```
 
 Play Store listing, screenshots and the renderer that makes them live in [`store/`](store/README.md).
-
-## Release
-
-The Play upload key is never stored: `signing/release.sh` derives it from a password (PBKDF2-HMAC-SHA256, 2²¹ rounds, then a deterministic RSA-3072 key), checks its fingerprint against `signing/upload-cert.sha256` and builds the signed bundle and APK. Google Play App Signing holds the app key.
-
-```bash
-signing/release.sh   # → build/app/outputs/bundle/userAppRelease/app-userApp-release.aab
-signing/export-cert.sh   # → signing/upload-cert.pem, for an upload key reset in Play Console
-```
 
 ## License
 
