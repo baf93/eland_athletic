@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'dart:async';
 
@@ -10,8 +11,7 @@ class StopwatchController {
 
   Future<void> launchStopwatch() async {
     if (!await _service.isRunning()) {
-      print(" [+] Starting new service");
-      await _service.startService();
+      debugPrint("[ELAND] starting timer service");
       // Wait for the service to be running before sending data
       final Completer<void> readyCompleter = Completer<void>();
 
@@ -20,10 +20,11 @@ class StopwatchController {
           readyCompleter.complete();
         }
       });
+      await _service.startService();
 
       await readyCompleter.future.timeout(
         const Duration(seconds: 3),
-        onTimeout: () => print(" [!] Service Start: Timeout waiting for service to be ready."),
+        onTimeout: () => debugPrint("[ELAND] timeout waiting for the timer service"),
       );
       await subscription.cancel();
     }

@@ -1,11 +1,12 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:eland_athletic/common/eland_responsive.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../strings.dart';
+import 'eland_bottom_sheet.dart';
+import 'primary_action_button.dart';
 
 class TimerSettingSelector extends StatelessWidget {
   final String label;
@@ -30,97 +31,56 @@ class TimerSettingSelector extends StatelessWidget {
     final theme = Theme.of(context);
     final r = ElandResponsive(context);
 
-    showModalBottomSheet(
+    showElandSheet<void>(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) {
-        return Container(
-          height: r.byUsableHeight(
-            0.38,
-            min: 260,
-            max: 360,
-          ),
-          decoration: BoxDecoration(
-            color: theme.scaffoldBackgroundColor,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(r.radius(16)),
-            ),
-            border: Border.all(color: theme.dividerColor),
-          ),
-          child: Column(
-            children: [
-              Container(
-                margin: EdgeInsets.only(
-                  top: r.spacing(12),
-                  bottom: r.compactGap,
-                ),
-                width: r.spacing(40),
-                height: r.spacing(4),
+      title: label,
+      builder: (sheetContext) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: r.byUsableHeight(0.24, min: 160, max: 220),
+            child: CupertinoPicker(
+              scrollController: FixedExtentScrollController(
+                initialItem: value - min,
+              ),
+              itemExtent: r.spacing(46),
+              selectionOverlay: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: theme.dividerColor,
-                  borderRadius: BorderRadius.circular(r.radius(2)),
+                  border: Border.symmetric(
+                    horizontal: BorderSide(color: theme.dividerColor),
+                  ),
                 ),
               ),
-
-              Expanded(
-                child: CupertinoPicker(
-                  scrollController: FixedExtentScrollController(
-                    initialItem: value - min,
-                  ),
-                  itemExtent: r.spacing(46),
-                  onSelectedItemChanged: (index) {
-                    tempValue = index + min;
-                    HapticFeedback.selectionClick();
-                  },
-                  children: List.generate(
-                    max - min + 1,
-                        (index) => Center(
-                      child: Text(
-                        "${index + min}",
-                        style: TextStyle(
-                          color: theme.textTheme.headlineLarge?.color,
-                          fontSize: r.font(24),
-                        ),
-                      ),
+              onSelectedItemChanged: (index) {
+                tempValue = index + min;
+                HapticFeedback.selectionClick();
+              },
+              children: List.generate(
+                max - min + 1,
+                (index) => Center(
+                  child: Text(
+                    "${index + min}",
+                    style: TextStyle(
+                      color: theme.textTheme.headlineLarge?.color,
+                      fontSize: r.font(26),
+                      fontWeight: FontWeight.w800,
+                      fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
                 ),
               ),
-
-              Padding(
-                padding: EdgeInsets.all(r.spacing(16)),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      minimumSize: Size.fromHeight(
-                        r.primaryButtonHeight.clamp(48.0, 60.0),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(r.radius(12)),
-                      ),
-                    ),
-                    onPressed: () {
-                      onChanged(tempValue);
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      ElandStrings.of('ok_btn'),
-                      style: TextStyle(
-                        color: theme.colorScheme.onPrimary,
-                        fontSize: r.font(16),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        );
-      },
+          SizedBox(height: r.spacing(12)),
+          PrimaryActionButton(
+            label: ElandStrings.of('ok_btn').toUpperCase(),
+            onPressed: () {
+              onChanged(tempValue);
+              Navigator.pop(sheetContext);
+            },
+          ),
+        ],
+      ),
     );
   }
 

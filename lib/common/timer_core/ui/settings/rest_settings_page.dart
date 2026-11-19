@@ -1,12 +1,8 @@
-import 'package:eland_athletic/common/timer_core/models/interval_audio_haptic_config.dart';
+import 'package:eland_athletic/common/timer_core/models/timer_block.dart';
+import 'package:eland_athletic/common/workouts/workout_launcher.dart';
 import 'package:eland_athletic/common/timer_core/models/timercore_enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../generators/workout_generator.dart';
-import '../../controllers/workout_controller.dart';
-import '../../models/workout_config.dart';
-import '../workouts/workout_page.dart';
-import '../../models/workout_phase_summary.dart';
 import '../../../eland_responsive.dart';
 import '../../../strings.dart';
 import '../../../widgets/timer_setting_selector.dart';
@@ -24,58 +20,15 @@ class _RestSettingsPageState extends State<RestSettingsPage> {
   int _totalMinutes = 10;
   int _totalSeconds = 0;
 
-  List<WorkoutConfig> _generateConfigs() {
-    final List<List<IntervalAudioConfig>> audioConfigs = [
-      [
-        IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'set_rest.m4a'),
-        IntervalAudioConfig(audioTrigger: AudioHapticTrigger.half, fileName: 'half.m4a'),
-        IntervalAudioConfig(audioTrigger: AudioHapticTrigger.tenSeconds, fileName: 'ten_seconds.m4a'),
-        IntervalAudioConfig(audioTrigger: AudioHapticTrigger.lastThreeSeconds, fileName: 'beep.m4a'),
-        IntervalAudioConfig(audioTrigger: AudioHapticTrigger.end, fileName: 'workout_complete.m4a'),
-      ],
-    ];
+  TimerBlock get _block => TimerBlock(
+        type: TimerType.rest,
+        params: {'minutes': _totalMinutes, 'seconds': _totalSeconds},
+      );
 
-    final List<List<IntervalHapticConfig>> hapticConfigs = [
-      [
-        IntervalHapticConfig(trigger: AudioHapticTrigger.start, pattern: HapticPattern.heavy),
-        IntervalHapticConfig(trigger: AudioHapticTrigger.half, pattern: HapticPattern.doubleTap),
-        IntervalHapticConfig(trigger: AudioHapticTrigger.tenSeconds, pattern: HapticPattern.medium),
-        IntervalHapticConfig(trigger: AudioHapticTrigger.lastThreeSeconds, pattern: HapticPattern.light),
-        IntervalHapticConfig(trigger: AudioHapticTrigger.end, pattern: HapticPattern.heavy),
-      ],
-    ];
+  void _startWorkout() => WorkoutLauncher.launchQuickTimer(context, _block);
 
-    return [
-      RestConfig(
-        totalMinutes: _totalMinutes,
-        totalSeconds: _totalSeconds,
-        workoutTitle: ElandStrings.of('timer_rest').toUpperCase(),
-        workoutId: 'rest_qt',
-        phaseTitle: ElandStrings.of('timer_rest').toUpperCase(),
-        phaseSetting: '$_totalMinutes min $_totalSeconds sec',
-        audioConfigs: audioConfigs,
-        hapticConfigs: hapticConfigs,
-      ),
-    ];
-  }
-
-  void _startWorkout() {
-    final configs = _generateConfigs();
-    final generator = WorkoutGenerator();
-
-    final workout = generator.generate(configs);
-    final uiPhaseSummary = generator.generateUIPhaseSummary(configs);
-
-    WorkoutController.instance.launchWorkout(workout, uiPhaseSummary);
-
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const WorkoutPage()),
-    );
-  }
-
-  String get _totalWorkoutTime {
-    return '${_totalMinutes}M ${_totalSeconds}S';
-  }
+  String get _totalWorkoutTime =>
+      TimerBlock.formatDuration(_block.totalSeconds);
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +57,13 @@ class _RestSettingsPageState extends State<RestSettingsPage> {
             letterSpacing: 1.5,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bookmark_add_outlined),
+            tooltip: ElandStrings.of('save_as_workout'),
+            onPressed: () => WorkoutLauncher.saveQuickTimer(context, _block),
+          ),
+        ],
         centerTitle: true,
       ),
 

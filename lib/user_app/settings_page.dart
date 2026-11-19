@@ -4,13 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../common/eland_responsive.dart';
 import '../common/strings.dart';
 import 'providers/settings_provider.dart';
+import 'workouts/backup_actions.dart';
 import '../common/widgets/settings_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../common/theme.dart';
 
 class SettingsPage extends ConsumerWidget {
-  const SettingsPage({super.key});
+  /// true when shown as a tab of the home (no back button).
+  final bool embedded;
+
+  const SettingsPage({super.key, this.embedded = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,13 +32,16 @@ class SettingsPage extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            Navigator.maybePop(context);
-          },
-        ),
+        automaticallyImplyLeading: false,
+        leading: embedded
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new),
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.maybePop(context);
+                },
+              ),
         title: Text(
           ElandStrings.of('setting_title').toUpperCase(),
           style: TextStyle(
@@ -173,6 +180,40 @@ class SettingsPage extends ConsumerWidget {
                   HapticFeedback.lightImpact();
                   await openAppSettings();
                 },
+              ),
+
+              SizedBox(height: r.sectionGap),
+
+              SettingsSectionTitle(
+                title: ElandStrings.of('backup_section').toUpperCase(),
+              ),
+
+              SettingsActionTile(
+                icon: Icons.upload_file_rounded,
+                title: ElandStrings.of('export_data'),
+                subtitle: ElandStrings.of('export_data_sub'),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  BackupActions.export(context, ref);
+                },
+              ),
+
+              SettingsActionTile(
+                icon: Icons.download_rounded,
+                title: ElandStrings.of('import_data'),
+                subtitle: ElandStrings.of('import_data_sub'),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  BackupActions.import(context, ref);
+                },
+              ),
+
+              SettingsActionTile(
+                icon: Icons.cloud_done_rounded,
+                title: ElandStrings.of('auto_backup_title'),
+                subtitle: ElandStrings.of('auto_backup_sub'),
+                trailing: const SizedBox.shrink(),
+                onTap: () {},
               ),
 
               Divider(

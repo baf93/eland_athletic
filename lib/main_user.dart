@@ -1,18 +1,9 @@
 import 'dart:ui';
 
-import 'package:eland_athletic/common/eland_responsive.dart';
-import 'package:eland_athletic/common/timer_core/controllers/stopwatch_controller.dart';
 import 'package:eland_athletic/common/timer_core/service/timer_background_service.dart';
-import 'package:eland_athletic/common/timer_core/ui/settings/amrap_settings_page.dart';
-import 'package:eland_athletic/common/timer_core/ui/settings/countdown_settings_page.dart';
-import 'package:eland_athletic/common/timer_core/ui/settings/emom_settings_page.dart';
-import 'package:eland_athletic/common/timer_core/ui/settings/fortime_settings_page.dart';
-import 'package:eland_athletic/common/timer_core/ui/settings/tabata_settings_page.dart';
 import 'package:eland_athletic/common/timer_core/ui/workouts/stopwatch_page.dart';
 import 'package:eland_athletic/common/timer_core/ui/workouts/workout_page.dart';
-import 'package:eland_athletic/common/widgets/timer_row_item.dart';
 import 'package:eland_athletic/user_app/providers/settings_provider.dart';
-import 'package:eland_athletic/user_app/settings_page.dart';
 import 'package:eland_athletic/user_app/timer_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +13,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'common/timer_core/runtime/workout_runtime_controller.dart';
+import 'common/workouts/reminder_service.dart';
+import 'common/workouts/workout_repository.dart';
+import 'user_app/home_shell.dart';
+import 'user_app/workouts/workout_detail_page.dart';
 
 import 'common/strings.dart';
 import 'common/theme.dart';
@@ -62,24 +58,26 @@ void main() async {
       ),
     ),
 
-    onDidReceiveNotificationResponse: (response) {
-      List<String> routesToPush = [];
-
-      if (response.payload == 'open_workout_page') {
-        routesToPush = ['/', '/timer_list', '/workout'];
-      } else {
-        routesToPush = ['/', '/timer_list', '/stopwatch'];
-      }
-
-      navigatorKey.currentState?.popUntil((route) => false);
-
-      for (final routeName in routesToPush) {
-        navigatorKey.currentState?.pushNamed(routeName);
-      }
-    },
+    onDidReceiveNotificationResponse: _handleNotificationResponse,
+    // Live-notification buttons (pause/skip/stop) arrive on a background
+    // isolate and are relayed to the timer service.
+    onDidReceiveBackgroundNotificationResponse: timerNotificationActionHandler,
   );
 
   await TimerBackgroundService.initialize();
+  await WorkoutRuntimeController.instance.initialize();
+  _restoreReminders();
+
+  // App opened by tapping a workout reminder while it was closed.
+  final launchDetails =
+      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  final launchResponse = launchDetails?.notificationResponse;
+  if ((launchDetails?.didNotificationLaunchApp ?? false) &&
+      launchResponse != null) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _handleNotificationResponse(launchResponse),
+    );
+  }
 
   runApp(
     ProviderScope(
@@ -89,6 +87,56 @@ void main() async {
       child: const ElandUserApp(),
     ),
   );
+}
+
+/// Re-arms the weekly reminders (time zone change, app update, restore).
+Future<void> _restoreReminders() async {
+  try {
+    await ReminderService.instance.initialize();
+    final workouts = await WorkoutRepository().getWorkouts();
+    await ReminderService.instance.rescheduleAll(workouts);
+  } catch (e) {
+    debugPrint('[ELAND] reminders restore failed: $e');
+  }
+}
+
+void _handleNotificationResponse(NotificationResponse response) {
+  final actionId = response.actionId;
+  if (actionId != null && kTimerNotificationActions.contains(actionId)) {
+    FlutterBackgroundService().invoke(actionId);
+    return;
+  }
+
+  final payload = response.payload ?? '';
+  final navigator = navigatorKey.currentState;
+  if (navigator == null) return;
+
+  if (payload.startsWith(ReminderService.payloadPrefix)) {
+    final workoutId = payload.substring(ReminderService.payloadPrefix.length);
+    navigator.popUntil((route) => route.isFirst);
+    navigator.push(MaterialPageRoute(
+      builder: (_) => WorkoutDetailPage(workoutId: workoutId),
+    ));
+    return;
+  }
+
+  final String? target = switch (payload) {
+    'open_workout_page' => '/workout',
+    'open_stopwatch_page' => '/stopwatch',
+    _ => null,
+  };
+  if (target == null) return;
+
+  // Go back to the running screen if it is already open, else open it.
+  var found = false;
+  navigator.popUntil((route) {
+    if (route.settings.name == target) {
+      found = true;
+      return true;
+    }
+    return route.isFirst;
+  });
+  if (!found) navigator.pushNamed(target);
 }
 
 class ElandUserApp extends ConsumerWidget {
@@ -126,224 +174,8 @@ class ElandUserApp extends ConsumerWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: ElandV1HomePage(
+      home: ElandHomeShell(
         key: ValueKey(settings.language),
-      ),
-    );
-  }
-}
-
-class ElandV1HomePage extends StatefulWidget {
-  const ElandV1HomePage({super.key});
-
-  @override
-  State<ElandV1HomePage> createState() => _ElandV1HomePageState();
-}
-
-class _ElandV1HomePageState extends State<ElandV1HomePage>
-    with WidgetsBindingObserver {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.detached) {
-      FlutterBackgroundService().invoke('stop');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final r = ElandResponsive(context);
-
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: r.pageHorizontalPadding,
-            vertical: r.spacing(12),
-          ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 620),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.settings,
-                          size: r.icon(26),
-                        ),
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const SettingsPage(),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: r.compactGap),
-
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      'ELAND',
-                      style: TextStyle(
-                        fontSize: r.font(54, maxScale: 1.08),
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 8,
-                        color: theme.textTheme.headlineLarge?.color,
-                      ),
-                    ),
-                  ),
-
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      'ATHLETIC',
-                      style: TextStyle(
-                        fontSize: r.font(18),
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 5,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: r.spacing(12)),
-
-                  Text(
-                    ElandStrings.of('app_motto'),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: r.font(14),
-                      fontWeight: FontWeight.w600,
-                      fontStyle: FontStyle.italic,
-                      letterSpacing: 0.2,
-                      color: theme.textTheme.bodyMedium?.color,
-                    ),
-                  ),
-
-                  SizedBox(height: r.spacing(26)),
-
-
-                  TimerRowItem(
-                    icon: Icons.fitness_center_rounded,
-                    title: ElandStrings.of('timer_tabata').toUpperCase(),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const TabataSettingsPage(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  SizedBox(height: r.cardGap),
-
-                  TimerRowItem(
-                    icon: Icons.loop_rounded,
-                    title: ElandStrings.of('timer_emom').toUpperCase(),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const EMOMSettingsPage(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  SizedBox(height: r.cardGap),
-
-                  TimerRowItem(
-                    icon: Icons.all_inclusive_rounded,
-                    title: ElandStrings.of('timer_amrap').toUpperCase(),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const AmrapSettingsPage(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  SizedBox(height: r.cardGap),
-
-                  TimerRowItem(
-                    icon: Icons.timer_10_outlined,
-                    title: ElandStrings.of('timer_fortime').toUpperCase(),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const FortimeSettingsPage(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  SizedBox(height: r.spacing(24)),
-
-                  Divider(
-                    height: 1,
-                    thickness: 1.2,
-                    indent: r.spacing(40),
-                    endIndent: r.spacing(40),
-                    color: theme.dividerColor,
-                  ),
-
-                  SizedBox(height: r.spacing(24)),
-
-                  TimerRowItem(
-                    icon: Icons.hourglass_bottom_rounded,
-                    title: ElandStrings.of('timer_countdown').toUpperCase(),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const CountdownSettingsPage(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  SizedBox(height: r.cardGap),
-
-                  TimerRowItem(
-                    icon: Icons.shutter_speed_rounded,
-                    title: ElandStrings.of('timer_stopwatch').toUpperCase(),
-                    onTap: () {
-                      StopwatchController.instance.launchStopwatch();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const StopwatchPage(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  SizedBox(height: r.spacing(24)),
-                ],
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

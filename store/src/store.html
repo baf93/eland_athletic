@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- All Play Store graphics from one page; the fragment picks what to draw.
+     #icon (512x512) · #feature-<lang> (1024x500) · #shot-<lang>-1 … 8 (1080x1920), lang = en | it
+     Screenshots are real captures from a phone (store/shots/<lang>) with demo data from store/demo. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,600&display=block" rel="stylesheet">
+<style>
+  :root { --bg: #000; --ink: #fff; --soft: #9a9a9a; --line: #2a2a2a; --accent: #FF9500; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); overflow: hidden; }
+  body { font-family: Roboto, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+  /* ── Screenshots ── */
+  .shot { width: 1080px; height: 1920px; position: relative; overflow: hidden; background: var(--bg); }
+  .glow { position: absolute; width: 1400px; height: 1400px; left: -160px; top: 520px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(255,149,0,0.20) 0%, rgba(255,149,0,0.06) 38%, rgba(0,0,0,0) 66%); }
+  .cap { position: absolute; left: 60px; right: 60px; top: 96px; text-align: center; }
+  .kick { font-size: 30px; font-weight: 900; letter-spacing: 7px; color: var(--accent); text-transform: uppercase; }
+  .cap h1 { margin: 18px 0 0; font-size: 70px; line-height: 1.04; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; }
+  .cap h1 em { font-style: normal; color: var(--accent); }
+
+  /* Phone screen: the real capture without status and navigation bars (y 100–2250 of 2400). */
+  .screen { position: absolute; left: 160px; top: 420px; width: 760px; height: 1513px; border-radius: 48px;
+            border: 3px solid var(--line); background-color: #000; background-repeat: no-repeat;
+            background-size: 760px auto; background-position: 0 -70px; overflow: hidden;
+            box-shadow: 0 40px 120px rgba(0,0,0,0.9), 0 0 0 10px #0b0b0b; }
+
+  /* The live notification card, cut from the shade capture (x 30–1050, y 312–740). */
+  .notif { position: absolute; left: 50px; width: 980px; height: 412px; top: 700px; border-radius: 40px;
+           background-repeat: no-repeat; background-size: 1038px auto; background-position: -29px -300px;
+           box-shadow: 0 30px 90px rgba(0,0,0,0.95), 0 0 0 3px rgba(255,149,0,0.55); }
+
+  /* Privacy slide */
+  .mark { position: absolute; left: 50%; top: 470px; width: 420px; height: 420px; margin-left: -210px; border-radius: 60px; }
+  .promise { position: absolute; left: 150px; right: 150px; top: 1010px; }
+  .promise div { display: flex; align-items: center; gap: 34px; padding: 34px 0; border-bottom: 2px solid var(--line);
+                 font-size: 44px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; }
+  .promise div:last-child { border-bottom: 0; }
+  .promise svg { flex: none; width: 56px; height: 56px; fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── Feature graphic ── */
+  .feature { width: 1024px; height: 500px; position: relative; overflow: hidden; background: #000; }
+  .feature .dial { position: absolute; left: 40px; top: 30px; width: 440px; height: 440px; }
+  .feature .disc { position: absolute; left: 96px; top: 86px; width: 328px; height: 328px; border-radius: 50%;
+                   background: #1a1a1a url(logo.png) center / 352px 352px no-repeat; }
+  .feature .glow { left: -300px; top: -450px; width: 1100px; height: 1100px; }
+  .feature .words { position: absolute; left: 530px; top: 130px; }
+  .feature .eland { font-size: 112px; font-weight: 900; letter-spacing: 16px; line-height: 1; }
+  .feature .ath { font-size: 37px; font-weight: 900; letter-spacing: 13px; color: var(--accent); margin-top: 8px; }
+  .feature .tag { font-size: 21px; font-weight: 700; letter-spacing: 3px; color: var(--soft); margin-top: 44px; text-transform: uppercase; white-space: nowrap; }
+
+  .icon { width: 512px; height: 512px; background: #1a1a1a url(logo.png) center / 512px 512px no-repeat; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const T = {
+  en: {
+    caps: [
+      ['Interval timer', 'The timer that<br><em>gets out of your way</em>'],
+      ['Custom workouts', 'Build your <em>own WOD</em>'],
+      ['History', 'Every session <em>counts</em>'],
+      ['Live notification', 'Pause and skip<br><em>without unlocking</em>'],
+      ['Tabata · EMOM · AMRAP · For Time', 'Every timer <em>you need</em>'],
+      ['Reminders', 'Your workouts<br><em>one tap away</em>'],
+      ['Phases', 'Always know<br><em>what\'s next</em>'],
+      ['Eland Athletic', 'Just you and <em>the clock</em>'],
+    ],
+    promise: [['user', 'No account'], ['ban', 'No ads'], ['phone', 'Data stays on your phone'], ['offline', 'Works offline']],
+    fTag: 'HIIT timer · Workout log',
+  },
+  it: {
+    caps: [
+      ['Timer a intervalli', 'Il timer che<br><em>non ti distrae</em>'],
+      ['Allenamenti personalizzati', 'Crea il <em>tuo WOD</em>'],
+      ['Storico', 'Ogni sessione <em>conta</em>'],
+      ['Notifica live', 'Pausa e salta<br><em>senza sbloccare</em>'],
+      ['Tabata · EMOM · AMRAP · For Time', 'Tutti i timer<br><em>che ti servono</em>'],
+      ['Promemoria', 'I tuoi allenamenti<br><em>a un tocco</em>'],
+      ['Fasi', 'Sai sempre<br><em>cosa viene dopo</em>'],
+      ['Eland Athletic', 'Solo tu e<br><em>il cronometro</em>'],
+    ],
+    promise: [['user', 'Nessun account'], ['ban', 'Nessuna pubblicità'], ['phone', 'Dati solo sul telefono'], ['offline', 'Funziona offline']],
+    fTag: 'Timer HIIT · Diario allenamenti',
+  },
+};
+
+// Screen per slide (file in store/shots/<lang>).
+const SCREEN = { 1: 'run', 2: 'detail', 3: 'history', 4: 'run', 5: 'home', 6: 'list', 7: 'phases' };
+
+const ICONS = {
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/><path d="M3 3l18 18"/>',
+  ban: '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
+  phone: '<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/><path d="M9.5 10.5l2 2 3.5-4"/>',
+  offline: '<path d="M2 9a15 15 0 0 1 20 0"/><path d="M5.5 12.5a10 10 0 0 1 13 0"/><path d="M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r="0.8"/><path d="M3 3l18 18"/>',
+};
+const svg = (k) => `<svg viewBox="0 0 24 24">${ICONS[k]}</svg>`;
+
+function caption(t, i) {
+  const [kick, head] = t.caps[i];
+  return `<div class="cap"><div class="kick">${kick}</div><h1>${head}</h1></div>`;
+}
+
+function shot(lang, n) {
+  const t = T[lang];
+  if (n === 8) {
+    return `<div class="shot"><div class="glow" style="top:-200px"></div>${caption(t, 7)}
+      <img class="mark" src="logo.png">
+      <div class="promise">${t.promise.map(([ic, s]) => `<div>${svg(ic)}${s}</div>`).join('')}</div></div>`;
+  }
+  const scr = `<div class="screen" style="background-image:url(../shots/${lang}/${SCREEN[n]}.png)"></div>`;
+  const notif = n === 4 ? `<div class="notif" style="background-image:url(../shots/${lang}/notif.png)"></div>` : '';
+  const dim = n === 4 ? '<div class="screen" style="background:rgba(0,0,0,0.55);border-color:transparent;box-shadow:none"></div>' : '';
+  return `<div class="shot"><div class="glow"></div>${caption(t, n - 1)}${scr}${dim}${notif}</div>`;
+}
+
+function feature(lang) {
+  const t = T[lang];
+  // Logo inside a timer ring, as in the run screen: grey track, orange progress.
+  const r = 200, c = 2 * Math.PI * r;
+  const dial = `<svg class="dial" viewBox="0 0 440 440"><circle cx="220" cy="220" r="${r}" fill="none" stroke="#1e1e1e" stroke-width="18"/>
+    <circle cx="220" cy="220" r="${r}" fill="none" stroke="#FF9500" stroke-width="18" stroke-linecap="round"
+      stroke-dasharray="${c * 0.72} ${c}" transform="rotate(-90 220 220)"/></svg>`;
+  return `<div class="feature"><div class="glow"></div>${dial}<div class="disc"></div>
+    <div class="words"><div class="eland">ELAND</div><div class="ath">ATHLETIC</div><div class="tag">${t.fTag}</div></div></div>`;
+}
+
+const h = location.hash.slice(1);
+let html = '';
+if (h === 'icon') html = '<div class="icon"></div>';
+else if (h.startsWith('feature-')) html = feature(h.split('-')[1]);
+else if (h.startsWith('shot-')) { const [, lang, n] = h.split('-'); html = shot(lang, +n); }
+else html = shot('en', 1);
+document.getElementById('root').innerHTML = html;
+</script>
+</body>
+</html>

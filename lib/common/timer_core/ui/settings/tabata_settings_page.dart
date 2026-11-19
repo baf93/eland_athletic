@@ -1,12 +1,8 @@
-import 'package:eland_athletic/common/timer_core/models/interval_audio_haptic_config.dart';
+import 'package:eland_athletic/common/timer_core/models/timer_block.dart';
+import 'package:eland_athletic/common/workouts/workout_launcher.dart';
 import 'package:eland_athletic/common/timer_core/models/timercore_enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../generators/workout_generator.dart';
-import '../../controllers/workout_controller.dart';
-import '../../models/workout_config.dart';
-import '../workouts/workout_page.dart';
-import '../../models/workout_phase_summary.dart';
 import '../../../eland_responsive.dart';
 import '../../../strings.dart';
 import '../../../widgets/timer_setting_selector.dart';
@@ -27,138 +23,15 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
   int _setNumber = 3;
   int _restBetweenSet = 60;
 
-  String get _totalWorkoutTime {
-    final int totalSeconds =
-        (_workTime + _restTime) * _roundSet * _setNumber +
-            (_restBetweenSet * (_setNumber - 1));
+  String get _totalWorkoutTime =>
+      TimerBlock.formatDuration(_block.totalSeconds);
 
-    final int minutes = totalSeconds ~/ 60;
-    final int seconds = totalSeconds % 60;
+  TimerBlock get _block => TimerBlock(
+        type: TimerType.tabata,
+        params: {'work': _workTime, 'rest': _restTime, 'rounds': _roundSet, 'sets': _setNumber, 'setRest': _restBetweenSet},
+      );
 
-    return '${minutes}M ${seconds > 0 ? '${seconds}S' : ''}';
-  }
-
-  List<WorkoutConfig> _generateConfigs() {
-    final totalIntervals = (_roundSet * _setNumber * 2) - 1;
-
-    final List<List<IntervalAudioConfig>> audioConfigs = List.generate(
-      totalIntervals,
-          (i) {
-        final bool isWork = i.isEven;
-        final int currentRound = (i ~/ 2) % _roundSet + 1;
-
-        return [
-          if (i == 0)
-            IntervalAudioConfig(
-              audioTrigger: AudioHapticTrigger.start,
-              fileName: 'go.m4a',
-            ),
-          if (isWork && i > 0 && currentRound != _roundSet)
-            IntervalAudioConfig(
-              audioTrigger: AudioHapticTrigger.start,
-              fileName: 'round$currentRound.m4a',
-            ),
-          if (isWork && currentRound == _roundSet)
-            IntervalAudioConfig(
-              audioTrigger: AudioHapticTrigger.start,
-              fileName: 'last_round.m4a',
-            ),
-          if (!isWork && currentRound != _roundSet)
-            IntervalAudioConfig(
-              audioTrigger: AudioHapticTrigger.start,
-              fileName: 'rest.m4a',
-            ),
-          if (!isWork && currentRound == _roundSet)
-            IntervalAudioConfig(
-              audioTrigger: AudioHapticTrigger.start,
-              fileName: 'set_rest.m4a',
-            ),
-          if (isWork)
-            IntervalAudioConfig(
-              audioTrigger: AudioHapticTrigger.half,
-              fileName: 'half.m4a',
-            ),
-          if (isWork)
-            IntervalAudioConfig(
-              audioTrigger: AudioHapticTrigger.tenSeconds,
-              fileName: 'ten_seconds.m4a',
-            ),
-          IntervalAudioConfig(
-            audioTrigger: AudioHapticTrigger.lastThreeSeconds,
-            fileName: 'beep.m4a',
-          ),
-          if (i == totalIntervals - 1)
-            IntervalAudioConfig(
-              audioTrigger: AudioHapticTrigger.end,
-              fileName: 'workout_complete.m4a',
-            ),
-        ];
-      },
-    );
-
-    final List<List<IntervalHapticConfig>> hapticConfigs = List.generate(
-      totalIntervals,
-          (i) {
-        final bool isWork = i.isEven;
-
-        return [
-          IntervalHapticConfig(
-            trigger: AudioHapticTrigger.start,
-            pattern: HapticPattern.heavy,
-          ),
-          if (isWork)
-            IntervalHapticConfig(
-              trigger: AudioHapticTrigger.half,
-              pattern: HapticPattern.doubleTap,
-            ),
-          if (isWork)
-            IntervalHapticConfig(
-              trigger: AudioHapticTrigger.tenSeconds,
-              pattern: HapticPattern.medium,
-            ),
-          IntervalHapticConfig(
-            trigger: AudioHapticTrigger.lastThreeSeconds,
-            pattern: HapticPattern.light,
-          ),
-          if (i == totalIntervals - 1)
-            IntervalHapticConfig(
-              trigger: AudioHapticTrigger.end,
-              pattern: HapticPattern.heavy,
-            ),
-        ];
-      },
-    );
-
-    return [
-      TabataConfig(
-        workSeconds: _workTime,
-        restSeconds: _restTime,
-        roundsPerSet: _roundSet,
-        totalSets: _setNumber,
-        restBetweenSets: _restBetweenSet,
-        phaseTitle: ElandStrings.of('timer_tabata').toUpperCase(),
-        phaseSetting: '$_roundSet R x $_setNumber S',
-        workoutTitle: ElandStrings.of('timer_tabata').toUpperCase(),
-        workoutId: 'tabata_qt',
-        audioConfigs: audioConfigs,
-        hapticConfigs: hapticConfigs,
-      ),
-    ];
-  }
-
-  void _startWorkout() {
-    final configs = _generateConfigs();
-    final generator = WorkoutGenerator();
-
-    final workout = generator.generate(configs);
-    final uiPhaseSummary = generator.generateUIPhaseSummary(configs);
-
-    WorkoutController.instance.launchWorkout(workout, uiPhaseSummary);
-
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const WorkoutPage()));
-  }
+  void _startWorkout() => WorkoutLauncher.launchQuickTimer(context, _block);
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +59,13 @@ class _TabataSettingsPageState extends State<TabataSettingsPage> {
             letterSpacing: 1.5,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bookmark_add_outlined),
+            tooltip: ElandStrings.of('save_as_workout'),
+            onPressed: () => WorkoutLauncher.saveQuickTimer(context, _block),
+          ),
+        ],
         centerTitle: true,
       ),
       body: SafeArea(

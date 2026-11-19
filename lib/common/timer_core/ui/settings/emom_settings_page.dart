@@ -1,12 +1,8 @@
-import 'package:eland_athletic/common/timer_core/models/interval_audio_haptic_config.dart';
+import 'package:eland_athletic/common/timer_core/models/timer_block.dart';
+import 'package:eland_athletic/common/workouts/workout_launcher.dart';
 import 'package:eland_athletic/common/timer_core/models/timercore_enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../generators/workout_generator.dart';
-import '../../controllers/workout_controller.dart';
-import '../../models/workout_config.dart';
-import '../workouts/workout_page.dart';
-import '../../models/workout_phase_summary.dart';
 import '../../../eland_responsive.dart';
 import '../../../strings.dart';
 import '../../../widgets/timer_setting_selector.dart';
@@ -24,66 +20,15 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
   int _totalMinutes = 10;
   int _roundDuration = 60;
 
-  List<WorkoutConfig> _generateConfigs() {
-    final List<List<IntervalAudioConfig>> audioConfigs = List.generate(
-      _totalMinutes,
-          (i) => [
-        IntervalAudioConfig(audioTrigger: AudioHapticTrigger.start, fileName: 'go.m4a'),
-        IntervalAudioConfig(audioTrigger: AudioHapticTrigger.half, fileName: 'half.m4a'),
-        IntervalAudioConfig(audioTrigger: AudioHapticTrigger.tenSeconds, fileName: 'ten_seconds.m4a'),
-        IntervalAudioConfig(audioTrigger: AudioHapticTrigger.lastThreeSeconds, fileName: 'beep.m4a'),
-        if (i + 1 == _totalMinutes)
-          IntervalAudioConfig(audioTrigger: AudioHapticTrigger.end, fileName: 'workout_complete.m4a'),
-      ],
-    );
+  TimerBlock get _block => TimerBlock(
+        type: TimerType.emom,
+        params: {'roundSeconds': _roundDuration, 'rounds': _totalMinutes},
+      );
 
-    final List<List<IntervalHapticConfig>> hapticConfigs = List.generate(
-      _totalMinutes,
-          (i) => [
-        IntervalHapticConfig(trigger: AudioHapticTrigger.start, pattern: HapticPattern.heavy),
-        IntervalHapticConfig(trigger: AudioHapticTrigger.half, pattern: HapticPattern.doubleTap),
-        IntervalHapticConfig(trigger: AudioHapticTrigger.tenSeconds, pattern: HapticPattern.medium),
-        IntervalHapticConfig(trigger: AudioHapticTrigger.lastThreeSeconds, pattern: HapticPattern.light),
-        if (i + 1 == _totalMinutes)
-          IntervalHapticConfig(trigger: AudioHapticTrigger.end, pattern: HapticPattern.heavy),
-      ],
-    );
+  void _startWorkout() => WorkoutLauncher.launchQuickTimer(context, _block);
 
-    return [
-      EMOMConfig(
-        roundDuration: _roundDuration,
-        workoutTitle: ElandStrings.of('timer_emom').toUpperCase(),
-        workoutId: 'emom_qt',
-        totalMinutes: _totalMinutes,
-        phaseTitle: ElandStrings.of('timer_emom').toUpperCase(),
-        phaseSetting: '$_totalMinutes min',
-        audioConfigs: audioConfigs,
-        hapticConfigs: hapticConfigs,
-      ),
-    ];
-  }
-
-  void _startWorkout() {
-    final configs = _generateConfigs();
-    final generator = WorkoutGenerator();
-
-    final workout = generator.generate(configs);
-    final uiPhaseSummary = generator.generateUIPhaseSummary(configs);
-
-    WorkoutController.instance.launchWorkout(workout, uiPhaseSummary);
-
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const WorkoutPage()),
-    );
-  }
-
-  String get _totalWorkoutTime {
-    final int totalSeconds = _totalMinutes * _roundDuration;
-    final int minutes = totalSeconds ~/ 60;
-    final int seconds = totalSeconds % 60;
-
-    return '${minutes}M ${seconds > 0 ? '${seconds}S' : ''}';
-  }
+  String get _totalWorkoutTime =>
+      TimerBlock.formatDuration(_block.totalSeconds);
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +57,13 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
             letterSpacing: 1.5,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bookmark_add_outlined),
+            tooltip: ElandStrings.of('save_as_workout'),
+            onPressed: () => WorkoutLauncher.saveQuickTimer(context, _block),
+          ),
+        ],
         centerTitle: true,
       ),
 
@@ -143,7 +95,7 @@ class _EMOMSettingsPageState extends State<EMOMSettingsPage> {
                           ),
                           SizedBox(height: r.settingsGap),
                           TimerSettingSelector(
-                            label: ElandStrings.of('total_min'),
+                            label: ElandStrings.of('rounds_label'),
                             value: _totalMinutes,
                             min: 1,
                             max: 60,

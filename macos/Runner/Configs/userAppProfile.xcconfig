@@ -1,0 +1,6 @@
+#include "../../Flutter/userAppProfile.xcconfig"
+#include "Warnings.xcconfig"
+
+ASSET_PREFIX=userApp
+BUNDLE_NAME=Eland Athletic
+BUNDLE_DISPLAY_NAME=Eland Athletic

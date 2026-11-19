@@ -1,9 +1,21 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     //id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
+val uploadKey = System.getenv("ELAND_KEYSTORE")?.let { File(it) }
 
 android {
     namespace = "com.eland.athletic"
@@ -31,11 +43,40 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        // Play upload key derived from a password by signing/release.sh: it is
+        // never stored, the script passes a temporary keystore through the env.
+        if (uploadKey != null) {
+            create("upload") {
+                storeFile = uploadKey
+                storePassword = System.getenv("ELAND_STORE_PASSWORD")
+                keyAlias = "upload"
+                keyPassword = System.getenv("ELAND_STORE_PASSWORD")
+                storeType = "PKCS12"
+            }
+        }
+        // Legacy keystore from key.properties, until Play accepts the new
+        // upload key. Without either (fresh clone, CI) the build falls back
+        // to debug signing instead of crashing.
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         getByName("release") {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = when {
+                uploadKey != null -> signingConfigs.getByName("upload")
+                keystorePropertiesFile.exists() -> signingConfigs.getByName("release")
+                else -> signingConfigs.getByName("debug")
+            }
             isMinifyEnabled = true
-            isShrinkResources = true // Consigliato se usi minifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

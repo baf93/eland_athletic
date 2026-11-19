@@ -1,0 +1,413 @@
+{
+ "format": "eland.backup",
+ "version": 1,
+ "exportedAt": "2026-11-19T16:23:00",
+ "settings": {},
+ "workouts": [
+  {
+   "id": "demo_engine",
+   "name": "Engine Builder",
+   "notes": "Ritmo costante, niente sprint.",
+   "blocks": [
+    {
+     "type": "emom",
+     "params": {
+      "roundSeconds": 60,
+      "rounds": 12
+     },
+     "name": "Row + Burpees",
+     "notes": "12 cal row \u00b7 8 burpees"
+    },
+    {
+     "type": "rest",
+     "params": {
+      "minutes": 2,
+      "seconds": 0
+     }
+    },
+    {
+     "type": "amrap",
+     "params": {
+      "minutes": 12,
+      "seconds": 0
+     },
+     "name": "Chipper",
+     "notes": "10 wall balls \u00b7 10 box jumps \u00b7 10 KB swings"
+    }
+   ],
+   "reminder": {
+    "enabled": true,
+    "weekdays": [
+     1,
+     3,
+     5
+    ],
+    "hour": 7,
+    "minute": 0
+   },
+   "createdAt": "2026-10-10T16:23:00",
+   "updatedAt": "2026-11-17T16:23:00"
+  },
+  {
+   "id": "demo_tabata",
+   "name": "Tabata Core",
+   "blocks": [
+    {
+     "type": "tabata",
+     "params": {
+      "work": 20,
+      "rest": 10,
+      "rounds": 8,
+      "sets": 2,
+      "setRest": 60
+     },
+     "name": "Hollow + V-ups"
+    },
+    {
+     "type": "rest",
+     "params": {
+      "minutes": 1,
+      "seconds": 0
+     }
+    },
+    {
+     "type": "tabata",
+     "params": {
+      "work": 20,
+      "rest": 10,
+      "rounds": 8,
+      "sets": 1,
+      "setRest": 60
+     },
+     "name": "Plank"
+    }
+   ],
+   "createdAt": "2026-10-10T16:23:00",
+   "updatedAt": "2026-11-17T16:23:00"
+  },
+  {
+   "id": "demo_legs",
+   "name": "Leg Day Finisher",
+   "blocks": [
+    {
+     "type": "emom",
+     "params": {
+      "roundSeconds": 60,
+      "rounds": 10
+     },
+     "name": "Front squats",
+     "notes": "5 ripetizioni al 70%"
+    },
+    {
+     "type": "rest",
+     "params": {
+      "minutes": 3,
+      "seconds": 0
+     }
+    },
+    {
+     "type": "fortime",
+     "params": {
+      "minutes": 10,
+      "seconds": 0
+     },
+     "name": "50 lunges \u00b7 50 air squats"
+    }
+   ],
+   "createdAt": "2026-10-10T16:23:00",
+   "updatedAt": "2026-11-17T16:23:00"
+  },
+  {
+   "id": "demo_hero",
+   "name": "Hero Prep",
+   "blocks": [
+    {
+     "type": "fortime",
+     "params": {
+      "minutes": 35,
+      "seconds": 0
+     },
+     "name": "Run \u00b7 pull-ups \u00b7 push-ups",
+     "notes": "1 mile run \u00b7 50 pull-ups \u00b7 100 push-ups \u00b7 1 mile run"
+    }
+   ],
+   "createdAt": "2026-10-10T16:23:00",
+   "updatedAt": "2026-11-17T16:23:00"
+  }
+ ],
+ "history": [
+  {
+   "id": "demo_log_0",
+   "workoutId": "demo_engine",
+   "title": "ENGINE BUILDER",
+   "completedAt": "2026-11-19T07:12:00",
+   "activeSeconds": 1440,
+   "phases": [
+    "ROW + BURPEES \u00b7 12 x 60s",
+    "CHIPPER \u00b7 12:00"
+   ],
+   "amrapRounds": 9
+  },
+  {
+   "id": "demo_log_1",
+   "workoutId": "demo_tabata",
+   "title": "TABATA CORE",
+   "completedAt": "2026-11-17T18:05:00",
+   "activeSeconds": 720,
+   "phases": [
+    "HOLLOW + V-UPS \u00b7 20s/10s \u00b7 8 R x 2",
+    "PLANK \u00b7 20s/10s \u00b7 8 R"
+   ]
+  },
+  {
+   "id": "demo_log_2",
+   "workoutId": "demo_legs",
+   "title": "LEG DAY FINISHER",
+   "completedAt": "2026-11-15T06:05:00",
+   "activeSeconds": 1052,
+   "phases": [
+    "FRONT SQUATS \u00b7 10 x 60s",
+    "50 LUNGES \u00b7 50 AIR SQUATS"
+   ],
+   "forTimeResults": [
+    {
+     "title": "50 LUNGES \u00b7 50 AIR SQUATS",
+     "seconds": 452,
+     "capSeconds": 600
+    }
+   ]
+  },
+  {
+   "id": "demo_log_3",
+   "workoutId": "demo_engine",
+   "title": "ENGINE BUILDER",
+   "completedAt": "2026-11-13T07:05:00",
+   "activeSeconds": 1440,
+   "phases": [
+    "ROW + BURPEES \u00b7 12 x 60s",
+    "CHIPPER \u00b7 12:00"
+   ],
+   "amrapRounds": 8
+  },
+  {
+   "id": "demo_log_4",
+   "workoutId": "demo_hero",
+   "title": "HERO PREP",
+   "completedAt": "2026-11-11T19:12:00",
+   "activeSeconds": 1985,
+   "phases": [
+    "RUN \u00b7 PULL-UPS \u00b7 PUSH-UPS"
+   ],
+   "forTimeResults": [
+    {
+     "title": "RUN \u00b7 PULL-UPS \u00b7 PUSH-UPS",
+     "seconds": 1985,
+     "capSeconds": 2100
+    }
+   ]
+  },
+  {
+   "id": "demo_log_5",
+   "workoutId": "demo_tabata",
+   "title": "TABATA CORE",
+   "completedAt": "2026-11-10T06:05:00",
+   "activeSeconds": 720,
+   "phases": [
+    "HOLLOW + V-UPS \u00b7 20s/10s \u00b7 8 R x 2",
+    "PLANK \u00b7 20s/10s \u00b7 8 R"
+   ]
+  },
+  {
+   "id": "demo_log_6",
+   "workoutId": "demo_engine",
+   "title": "ENGINE BUILDER",
+   "completedAt": "2026-11-08T18:35:00",
+   "activeSeconds": 1440,
+   "phases": [
+    "ROW + BURPEES \u00b7 12 x 60s",
+    "CHIPPER \u00b7 12:00"
+   ],
+   "amrapRounds": 8
+  },
+  {
+   "id": "demo_log_7",
+   "workoutId": "demo_legs",
+   "title": "LEG DAY FINISHER",
+   "completedAt": "2026-11-06T06:12:00",
+   "activeSeconds": 1098,
+   "phases": [
+    "FRONT SQUATS \u00b7 10 x 60s",
+    "50 LUNGES \u00b7 50 AIR SQUATS"
+   ],
+   "forTimeResults": [
+    {
+     "title": "50 LUNGES \u00b7 50 AIR SQUATS",
+     "seconds": 498,
+     "capSeconds": 600
+    }
+   ]
+  },
+  {
+   "id": "demo_log_8",
+   "workoutId": "demo_tabata",
+   "title": "TABATA CORE",
+   "completedAt": "2026-11-04T06:35:00",
+   "activeSeconds": 720,
+   "phases": [
+    "HOLLOW + V-UPS \u00b7 20s/10s \u00b7 8 R x 2",
+    "PLANK \u00b7 20s/10s \u00b7 8 R"
+   ]
+  },
+  {
+   "id": "demo_log_9",
+   "workoutId": "demo_engine",
+   "title": "ENGINE BUILDER",
+   "completedAt": "2026-11-03T06:05:00",
+   "activeSeconds": 1440,
+   "phases": [
+    "ROW + BURPEES \u00b7 12 x 60s",
+    "CHIPPER \u00b7 12:00"
+   ],
+   "amrapRounds": 7
+  },
+  {
+   "id": "demo_log_10",
+   "workoutId": "demo_hero",
+   "title": "HERO PREP",
+   "completedAt": "2026-11-01T07:05:00",
+   "activeSeconds": 2110,
+   "phases": [
+    "RUN \u00b7 PULL-UPS \u00b7 PUSH-UPS"
+   ],
+   "forTimeResults": [
+    {
+     "title": "RUN \u00b7 PULL-UPS \u00b7 PUSH-UPS",
+     "seconds": 2110,
+     "capSeconds": 2100
+    }
+   ]
+  },
+  {
+   "id": "demo_log_11",
+   "workoutId": "demo_tabata",
+   "title": "TABATA CORE",
+   "completedAt": "2026-10-30T19:35:00",
+   "activeSeconds": 720,
+   "phases": [
+    "HOLLOW + V-UPS \u00b7 20s/10s \u00b7 8 R x 2",
+    "PLANK \u00b7 20s/10s \u00b7 8 R"
+   ]
+  },
+  {
+   "id": "demo_log_12",
+   "workoutId": "demo_engine",
+   "title": "ENGINE BUILDER",
+   "completedAt": "2026-10-27T06:12:00",
+   "activeSeconds": 1440,
+   "phases": [
+    "ROW + BURPEES \u00b7 12 x 60s",
+    "CHIPPER \u00b7 12:00"
+   ],
+   "amrapRounds": 7
+  },
+  {
+   "id": "demo_log_13",
+   "workoutId": "demo_legs",
+   "title": "LEG DAY FINISHER",
+   "completedAt": "2026-10-25T06:12:00",
+   "activeSeconds": 1130,
+   "phases": [
+    "FRONT SQUATS \u00b7 10 x 60s",
+    "50 LUNGES \u00b7 50 AIR SQUATS"
+   ],
+   "forTimeResults": [
+    {
+     "title": "50 LUNGES \u00b7 50 AIR SQUATS",
+     "seconds": 530,
+     "capSeconds": 600
+    }
+   ]
+  },
+  {
+   "id": "demo_log_14",
+   "workoutId": "demo_tabata",
+   "title": "TABATA CORE",
+   "completedAt": "2026-10-23T07:35:00",
+   "activeSeconds": 720,
+   "phases": [
+    "HOLLOW + V-UPS \u00b7 20s/10s \u00b7 8 R x 2",
+    "PLANK \u00b7 20s/10s \u00b7 8 R"
+   ]
+  },
+  {
+   "id": "demo_log_15",
+   "workoutId": "demo_engine",
+   "title": "ENGINE BUILDER",
+   "completedAt": "2026-10-20T07:05:00",
+   "activeSeconds": 1440,
+   "phases": [
+    "ROW + BURPEES \u00b7 12 x 60s",
+    "CHIPPER \u00b7 12:00"
+   ],
+   "amrapRounds": 6
+  },
+  {
+   "id": "demo_log_16",
+   "workoutId": "demo_hero",
+   "title": "HERO PREP",
+   "completedAt": "2026-10-18T19:20:00",
+   "activeSeconds": 2240,
+   "phases": [
+    "RUN \u00b7 PULL-UPS \u00b7 PUSH-UPS"
+   ],
+   "forTimeResults": [
+    {
+     "title": "RUN \u00b7 PULL-UPS \u00b7 PUSH-UPS",
+     "seconds": 2240,
+     "capSeconds": 2100
+    }
+   ]
+  },
+  {
+   "id": "demo_log_17",
+   "workoutId": "demo_tabata",
+   "title": "TABATA CORE",
+   "completedAt": "2026-10-15T19:12:00",
+   "activeSeconds": 720,
+   "phases": [
+    "HOLLOW + V-UPS \u00b7 20s/10s \u00b7 8 R x 2",
+    "PLANK \u00b7 20s/10s \u00b7 8 R"
+   ]
+  },
+  {
+   "id": "demo_log_18",
+   "workoutId": "demo_engine",
+   "title": "ENGINE BUILDER",
+   "completedAt": "2026-10-13T06:12:00",
+   "activeSeconds": 1440,
+   "phases": [
+    "ROW + BURPEES \u00b7 12 x 60s",
+    "CHIPPER \u00b7 12:00"
+   ],
+   "amrapRounds": 6
+  },
+  {
+   "id": "demo_log_19",
+   "workoutId": "demo_legs",
+   "title": "LEG DAY FINISHER",
+   "completedAt": "2026-10-11T07:05:00",
+   "activeSeconds": 1175,
+   "phases": [
+    "FRONT SQUATS \u00b7 10 x 60s",
+    "50 LUNGES \u00b7 50 AIR SQUATS"
+   ],
+   "forTimeResults": [
+    {
+     "title": "50 LUNGES \u00b7 50 AIR SQUATS",
+     "seconds": 575,
+     "capSeconds": 600
+    }
+   ]
+  }
+ ]
+}

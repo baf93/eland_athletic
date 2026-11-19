@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:eland_athletic/common/widgets/primary_action_button.dart';
+import 'package:eland_athletic/common/workouts/models.dart';
+import 'package:eland_athletic/common/workouts/providers.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,16 +38,30 @@ class WorkoutPage extends ConsumerStatefulWidget {
 
 class _WorkoutPageState extends ConsumerState<WorkoutPage> {
   late ValueNotifier<int> _roundNotifier;
+  StreamSubscription? _serviceStoppedSub;
+  bool _exiting = false;
+  WorkoutLog? _completedLog;
 
   @override
   void initState() {
     super.initState();
     _roundNotifier = ValueNotifier<int>(0);
+    // "Stop" pressed on the live notification: leave the workout screen.
+    _serviceStoppedSub =
+        FlutterBackgroundService().on('serviceStopped').listen((_) {
+      if (!mounted || _exiting) return;
+      _exiting = true;
+      Navigator.of(context).pop();
+    });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => WorkoutController.instance.requestStatus(),
+    );
     _setOrientations();
   }
 
   @override
   void dispose() {
+    _serviceStoppedSub?.cancel();
     _roundNotifier.dispose();
     TimerState.initial();
     SystemChrome.setPreferredOrientations([
@@ -53,7 +72,7 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
 
   Widget _buildWorkoutSpecificBody(TimerState timerState) {
     if (timerState.status == TimerStatus.completed) {
-      return WorkoutCompleteWidget();
+      return WorkoutCompleteWidget(log: _completedLog);
     }
 
     switch (timerState.timerType) {
@@ -339,6 +358,38 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
     }
   }
 
+  /// Saves a completed workout in the history (once).
+  void _logCompletedWorkout(TimerState state) {
+    if (_completedLog != null) return;
+    final prepTitle = ElandStrings.of('timer_preparation');
+    final phases = state.workoutPhaseSummary
+        .where((p) => p.title != prepTitle)
+        .map((p) => p.details.isEmpty ? p.title : '${p.title} · ${p.details}')
+        .toList();
+    final forTime = state.phaseResults
+        .where((r) => r['type'] == 'fortime')
+        .map((r) => ForTimeResult(
+              title: r['title']?.toString() ?? '',
+              seconds: (r['seconds'] as num?)?.toInt() ?? 0,
+              capSeconds: (r['capSeconds'] as num?)?.toInt() ?? 0,
+            ))
+        .toList();
+
+    final log = WorkoutLog(
+      id: generateId(),
+      workoutId: state.workoutId,
+      title: state.workoutTitle,
+      completedAt: DateTime.now(),
+      activeSeconds: state.activeSeconds,
+      phases: phases,
+      // The round counter only exists on AMRAP screens.
+      amrapRounds: _roundNotifier.value > 0 ? _roundNotifier.value : null,
+      forTimeResults: forTime,
+    );
+    setState(() => _completedLog = log);
+    ref.read(historyProvider.notifier).add(log);
+  }
+
   void _stopWorkout(TimerState timerState) {
     HapticFeedback.heavyImpact();
 
@@ -355,6 +406,7 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
       confirmText: ElandStrings.of('ok_btn').toUpperCase(),
       onResult: (confirmed) {
         if (confirmed) {
+          _exiting = true;
           WorkoutController.instance.stopWorkout();
           Navigator.pop(context);
         }
@@ -364,6 +416,7 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
 
   void _saveAndExit(TimerState timerState) {
     HapticFeedback.heavyImpact();
+    _exiting = true;
     WorkoutController.instance.stopWorkout();
     Navigator.pop(context);
   }
@@ -580,6 +633,13 @@ class _WorkoutPageState extends ConsumerState<WorkoutPage> {
     final timerState = ref.watch(timerProvider);
     final theme = Theme.of(context);
     final r = ElandResponsive(context);
+
+    ref.listen<TimerState>(timerProvider, (previous, next) {
+      if (previous?.status != TimerStatus.completed &&
+          next.status == TimerStatus.completed) {
+        _logCompletedWorkout(next);
+      }
+    });
 
     if (timerState.isLoading) {
       return const WorkoutLoadingPage();

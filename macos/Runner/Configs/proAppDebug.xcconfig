@@ -1,0 +1,6 @@
+#include "../../Flutter/proAppDebug.xcconfig"
+#include "Warnings.xcconfig"
+
+ASSET_PREFIX=proApp
+BUNDLE_NAME=Eland Pro
+BUNDLE_DISPLAY_NAME=Eland Pro

@@ -12,6 +12,8 @@ abstract class WorkoutConfig {
   final String phaseSetting;
   final String workoutTitle;
   final String workoutId;
+  /// Free text shown on the workout screen while this phase runs.
+  final String? notes;
   final List<List<IntervalAudioConfig>> audioConfigs;
   final List<List<IntervalHapticConfig>> hapticConfigs;
   const WorkoutConfig({
@@ -20,6 +22,7 @@ abstract class WorkoutConfig {
     required this.phaseSetting,
     required this.workoutTitle,
     required this.workoutId,
+    this.notes,
     required this.audioConfigs,
     required this.hapticConfigs
   });
@@ -39,6 +42,7 @@ class EMOMConfig extends WorkoutConfig {
     required super.phaseSetting,
     required super.workoutTitle,
     required super.workoutId,
+    super.notes,
     required super.audioConfigs,
     required super.hapticConfigs,
   }) : super(phaseType: TimerType.emom);
@@ -46,6 +50,7 @@ class EMOMConfig extends WorkoutConfig {
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
     return List.generate(totalMinutes, (i) => WorkoutInterval(
+      notes: notes,
       id: "emom_${DateTime.now().microsecondsSinceEpoch}_$i",
       title: ElandStrings.of('timer_emom').toUpperCase(),
       durationSeconds: roundDuration,
@@ -80,6 +85,7 @@ class TabataConfig extends WorkoutConfig {
     required super.phaseSetting,
     required super.workoutTitle,
     required super.workoutId,
+    super.notes,
     required super.audioConfigs,
     required super.hapticConfigs,
   }) : super(phaseType: TimerType.tabata);
@@ -96,6 +102,7 @@ class TabataConfig extends WorkoutConfig {
 
       if(isWork){
         return WorkoutInterval(
+          notes: notes,
           id: "tabata_work_$i",
           title: ElandStrings.of('timer_tabata').toUpperCase(),
           durationSeconds: workSeconds,
@@ -114,6 +121,7 @@ class TabataConfig extends WorkoutConfig {
         );
       }else{
         return WorkoutInterval(
+          notes: notes,
           id: "tabata_rest_$i",
           title: ElandStrings.of('timer_tabata').toUpperCase(),
           durationSeconds: currentRound == roundsPerSet ? restBetweenSets : restSeconds,
@@ -148,6 +156,7 @@ class AMRAPConfig extends WorkoutConfig {
     required super.phaseSetting,
     required super.workoutTitle,
     required super.workoutId,
+    super.notes,
     required super.audioConfigs,
     required super.hapticConfigs
   }) : super(
@@ -157,6 +166,7 @@ class AMRAPConfig extends WorkoutConfig {
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
     return [WorkoutInterval(
+      notes: notes,
       id: "amrap_${DateTime.now().microsecondsSinceEpoch}",
       title: ElandStrings.of('timer_amrap').toUpperCase(),
       durationSeconds: totalMinutes * 60 + totalSeconds,
@@ -187,6 +197,7 @@ class FortimeConfig extends WorkoutConfig {
     required super.phaseSetting,
     required super.workoutTitle,
     required super.workoutId,
+    super.notes,
     required super.audioConfigs,
     required super.hapticConfigs
   }) : super(
@@ -196,6 +207,7 @@ class FortimeConfig extends WorkoutConfig {
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
     return [WorkoutInterval(
+      notes: notes,
       id: "fortime_${DateTime.now().microsecondsSinceEpoch}",
       title: ElandStrings.of('timer_fortime').toUpperCase(),
       durationSeconds: totalMinutes * 60 + totalSeconds,
@@ -226,6 +238,7 @@ class CountdownConfig extends WorkoutConfig {
     required super.phaseSetting,
     required super.workoutTitle,
     required super.workoutId,
+    super.notes,
     required super.audioConfigs,
     required super.hapticConfigs
   }) : super(
@@ -235,6 +248,7 @@ class CountdownConfig extends WorkoutConfig {
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
     return [WorkoutInterval(
+      notes: notes,
       id: "countdown_${DateTime.now().microsecondsSinceEpoch}",
       title: ElandStrings.of('timer_countdown').toUpperCase(),
       durationSeconds: totalMinutes * 60 + totalSeconds,
@@ -265,6 +279,7 @@ class RestConfig extends WorkoutConfig {
     required super.phaseSetting,
     required super.workoutTitle,
     required super.workoutId,
+    super.notes,
     required super.audioConfigs,
     required super.hapticConfigs
   }) : super(
@@ -274,6 +289,7 @@ class RestConfig extends WorkoutConfig {
   @override
   List<WorkoutInterval> toIntervals(int currentPhase, int totalPhases) {
     return [WorkoutInterval(
+      notes: notes,
       id: "rest_${DateTime.now().microsecondsSinceEpoch}",
       title: ElandStrings.of('timer_rest').toUpperCase(),
       durationSeconds: totalMinutes * 60 + totalSeconds,
