@@ -63,7 +63,7 @@ final historyProvider =
     AsyncNotifierProvider<HistoryNotifier, List<WorkoutLog>>(
         HistoryNotifier.new);
 
-/// Weekly summary shown at the top of the history page.
+/// Summary shown at the top of the history page.
 class HistoryStats {
   final int workoutsThisWeek;
   final int secondsThisWeek;
@@ -72,26 +72,31 @@ class HistoryStats {
   /// Consecutive days (ending today or yesterday) with at least one workout.
   final int dayStreak;
 
+  /// Consecutive ISO weeks (ending this week or the previous one) with at
+  /// least one workout.
+  final int weekStreak;
+
   const HistoryStats({
     required this.workoutsThisWeek,
     required this.secondsThisWeek,
     required this.totalWorkouts,
     required this.dayStreak,
+    required this.weekStreak,
   });
 
   factory HistoryStats.from(List<WorkoutLog> logs, {DateTime? now}) {
-    final today = _day(now ?? DateTime.now());
-    // Calendar arithmetic (not Duration) so DST changes do not shift days.
-    final weekStart =
-        DateTime(today.year, today.month, today.day - (today.weekday - 1));
+    final today = day(now ?? DateTime.now());
+    final thisWeek = weekStart(today);
 
     var count = 0;
     var seconds = 0;
     final days = <DateTime>{};
+    final weeks = <DateTime>{};
     for (final log in logs) {
-      final day = _day(log.completedAt);
-      days.add(day);
-      if (!day.isBefore(weekStart)) {
+      final d = day(log.completedAt);
+      days.add(d);
+      weeks.add(weekStart(d));
+      if (!d.isBefore(thisWeek)) {
         count++;
         seconds += log.activeSeconds;
       }
@@ -106,13 +111,91 @@ class HistoryStats {
       cursor = DateTime(cursor.year, cursor.month, cursor.day - 1);
     }
 
+    var weekStreak = 0;
+    var week = weeks.contains(thisWeek)
+        ? thisWeek
+        : DateTime(thisWeek.year, thisWeek.month, thisWeek.day - 7);
+    while (weeks.contains(week)) {
+      weekStreak++;
+      week = DateTime(week.year, week.month, week.day - 7);
+    }
+
     return HistoryStats(
       workoutsThisWeek: count,
       secondsThisWeek: seconds,
       totalWorkouts: logs.length,
       dayStreak: streak,
+      weekStreak: weekStreak,
     );
   }
 
-  static DateTime _day(DateTime d) => DateTime(d.year, d.month, d.day);
+  // Calendar arithmetic (not Duration) so DST changes do not shift days.
+  static DateTime day(DateTime d) => DateTime(d.year, d.month, d.day);
+
+  static DateTime weekStart(DateTime d) =>
+      DateTime(d.year, d.month, d.day - (d.weekday - 1));
+}
+
+/// Totals for one calendar month.
+class MonthStats {
+  final int sessions;
+  final int seconds;
+
+  /// Days of the month (1-31) with at least one workout.
+  final Set<int> activeDays;
+
+  const MonthStats(this.sessions, this.seconds, this.activeDays);
+
+  factory MonthStats.from(List<WorkoutLog> logs, int year, int month) {
+    var sessions = 0;
+    var seconds = 0;
+    final days = <int>{};
+    for (final log in logs) {
+      final d = log.completedAt;
+      if (d.year != year || d.month != month) continue;
+      sessions++;
+      seconds += log.activeSeconds;
+      days.add(d.day);
+    }
+    return MonthStats(sessions, seconds, days);
+  }
+}
+
+/// Ids of the logs holding a personal best of a saved workout: most AMRAP
+/// rounds, fastest For Time within the cap. Only workouts done at least twice
+/// count, otherwise every first session would be a "record".
+Set<String> personalBestIds(List<WorkoutLog> logs) {
+  final byWorkout = <String, List<WorkoutLog>>{};
+  for (final log in logs) {
+    // Quick timers change settings every time: results are not comparable.
+    if (log.workoutId.isEmpty || log.workoutId.endsWith('_qt')) continue;
+    byWorkout.putIfAbsent(log.workoutId, () => []).add(log);
+  }
+
+  final ids = <String>{};
+  for (final group in byWorkout.values) {
+    if (group.length < 2) continue;
+
+    WorkoutLog? bestAmrap;
+    for (final log in group) {
+      final rounds = log.amrapRounds;
+      if (rounds == null) continue;
+      if (bestAmrap == null || rounds > bestAmrap.amrapRounds!) bestAmrap = log;
+    }
+    if (bestAmrap != null) ids.add(bestAmrap.id);
+
+    WorkoutLog? bestTime;
+    int? bestSeconds;
+    for (final log in group) {
+      final valid = log.forTimeResults.where((r) => !r.overCap).toList();
+      if (valid.isEmpty || valid.length != log.forTimeResults.length) continue;
+      final total = valid.fold<int>(0, (s, r) => s + r.seconds);
+      if (bestSeconds == null || total < bestSeconds) {
+        bestSeconds = total;
+        bestTime = log;
+      }
+    }
+    if (bestTime != null) ids.add(bestTime.id);
+  }
+  return ids;
 }

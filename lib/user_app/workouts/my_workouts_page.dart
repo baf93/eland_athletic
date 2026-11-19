@@ -8,8 +8,7 @@ import '../../common/timer_core/models/timer_block.dart';
 import '../../common/workouts/models.dart';
 import '../../common/workouts/providers.dart';
 import '../../common/workouts/ui/eland_ui.dart';
-import '../../common/workouts/workout_launcher.dart';
-import 'block_editor_sheet.dart';
+import 'phase_widgets.dart';
 import 'workout_detail_page.dart';
 import 'workout_editor_page.dart';
 
@@ -27,19 +26,23 @@ class MyWorkoutsPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: elandAppBar(context, ElandStrings.of('my_workouts_title'),
-          showBack: !embedded),
-      floatingActionButton: FloatingActionButton(
-        tooltip: ElandStrings.of('new_workout'),
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: Colors.black,
-        onPressed: () {
-          HapticFeedback.mediumImpact();
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => const WorkoutEditorPage(),
-          ));
-        },
-        child: const Icon(Icons.add_rounded, size: 30),
+      appBar: elandAppBar(
+        context,
+        ElandStrings.of('my_workouts_title'),
+        showBack: !embedded,
+        actions: [
+          IconButton(
+            tooltip: ElandStrings.of('new_workout'),
+            icon: Icon(Icons.add_rounded, size: r.icon(28)),
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const WorkoutEditorPage()),
+              );
+            },
+          ),
+          SizedBox(width: r.spacing(4)),
+        ],
       ),
       body: SafeArea(
         child: workouts.when(
@@ -60,7 +63,7 @@ class MyWorkoutsPage extends ConsumerWidget {
                     r.pageHorizontalPadding,
                     r.spacing(8),
                     r.pageHorizontalPadding,
-                    r.spacing(96),
+                    r.spacing(24),
                   ),
                   itemCount: items.length,
                   separatorBuilder: (_, _) => SizedBox(height: r.cardGap),
@@ -85,87 +88,71 @@ class _WorkoutCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final r = ElandResponsive(context);
-    final icons = workout.blocks.map((b) => b.type).toSet().take(4);
+    final muted = theme.textTheme.bodyMedium?.color;
 
     return ElandOutlinedCard(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => WorkoutDetailPage(workoutId: workout.id),
-      )),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => WorkoutDetailPage(workoutId: workout.id),
+        ),
+      ),
       padding: EdgeInsets.fromLTRB(
-          r.spacing(18), r.spacing(14), r.spacing(8), r.spacing(14)),
-      child: Row(
+        r.spacing(18),
+        r.spacing(16),
+        r.spacing(18),
+        r.spacing(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  workout.name.toUpperCase(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: r.font(16),
-                    letterSpacing: 1.2,
-                  ),
-                ),
-                SizedBox(height: r.spacing(6)),
-                Row(
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (final type in icons) ...[
-                      Icon(timerTypeIcon(type),
-                          size: r.icon(16), color: theme.colorScheme.primary),
-                      SizedBox(width: r.spacing(6)),
-                    ],
-                    SizedBox(width: r.spacing(4)),
-                    Flexible(
-                      child: Text(
-                        '${workout.blocks.length} ${ElandStrings.of('phases_count')} · ${TimerBlock.formatDuration(workout.totalSeconds)}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: r.font(12),
-                          color: theme.textTheme.bodyMedium?.color,
-                        ),
+                    Text(
+                      workout.name.toUpperCase(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: r.font(16),
+                        letterSpacing: 1.2,
                       ),
+                    ),
+                    SizedBox(height: r.spacing(3)),
+                    Row(
+                      children: [
+                        Text(
+                          '${workout.blocks.length} ${ElandStrings.of(workout.blocks.length == 1 ? 'phase_count_one' : 'phases_count')}',
+                          style: TextStyle(fontSize: r.font(12), color: muted),
+                        ),
+                        if (workout.reminder?.isActive ?? false) ...[
+                          SizedBox(width: r.spacing(8)),
+                          Icon(
+                            Icons.notifications_none_rounded,
+                            size: r.icon(14),
+                            color: muted,
+                          ),
+                        ],
+                      ],
                     ),
                   ],
                 ),
-                if (workout.reminder?.isActive ?? false) ...[
-                  SizedBox(height: r.spacing(4)),
-                  Row(
-                    children: [
-                      Icon(Icons.notifications_active_rounded,
-                          size: r.icon(14),
-                          color: theme.textTheme.bodyMedium?.color),
-                      SizedBox(width: r.spacing(6)),
-                      Flexible(
-                        child: Text(
-                          reminderLabel(workout.reminder),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: r.font(12),
-                            color: theme.textTheme.bodyMedium?.color,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ],
-            ),
+              ),
+              Text(
+                TimerBlock.formatDuration(workout.totalSeconds),
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: r.font(20),
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
           ),
-          IconButton(
-            tooltip: ElandStrings.of('start_btn'),
-            iconSize: r.icon(36),
-            color: theme.colorScheme.primary,
-            icon: const Icon(Icons.play_circle_fill_rounded),
-            onPressed: () {
-              HapticFeedback.mediumImpact();
-              WorkoutLauncher.launchWorkout(context, workout);
-            },
-          ),
+          SizedBox(height: r.spacing(12)),
+          PhaseStrip(blocks: workout.blocks),
         ],
       ),
     );

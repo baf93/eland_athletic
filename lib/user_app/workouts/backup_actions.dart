@@ -29,14 +29,17 @@ class BackupActions {
   static Future<void> export(BuildContext context, WidgetRef ref) async {
     try {
       final prefs = ref.read(sharedPreferencesProvider);
-      final data = await ref.read(workoutRepositoryProvider).exportData(
-        settings: {
-          for (final key in settingsKeys)
-            if (prefs.containsKey(key)) key: prefs.get(key),
-        },
+      final data = await ref
+          .read(workoutRepositoryProvider)
+          .exportData(
+            settings: {
+              for (final key in settingsKeys)
+                if (prefs.containsKey(key)) key: prefs.get(key),
+            },
+          );
+      final bytes = Uint8List.fromList(
+        utf8.encode(const JsonEncoder.withIndent('  ').convert(data)),
       );
-      final bytes =
-          Uint8List.fromList(utf8.encode(const JsonEncoder.withIndent('  ').convert(data)));
       final now = DateTime.now();
       final stamp =
           '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
@@ -70,8 +73,9 @@ class BackupActions {
         throw const FormatException('Invalid backup');
       }
 
-      final result =
-          await ref.read(workoutRepositoryProvider).importData(decoded);
+      final result = await ref
+          .read(workoutRepositoryProvider)
+          .importData(decoded);
       await _applySettings(ref, result.settings);
 
       await ref.read(customWorkoutsProvider.notifier).reload();
@@ -98,7 +102,9 @@ class BackupActions {
   }
 
   static Future<void> _applySettings(
-      WidgetRef ref, Map<String, Object?> settings) async {
+    WidgetRef ref,
+    Map<String, Object?> settings,
+  ) async {
     if (settings.isEmpty) return;
     final prefs = ref.read(sharedPreferencesProvider);
     for (final key in settingsKeys) {

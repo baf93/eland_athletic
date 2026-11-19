@@ -8,6 +8,7 @@ import 'package:eland_athletic/common/workouts/reminder_service.dart';
 import 'package:eland_athletic/common/workouts/workout_repository.dart';
 import 'package:eland_athletic/user_app/workouts/history_page.dart';
 import 'package:eland_athletic/user_app/workouts/my_workouts_page.dart';
+import 'package:eland_athletic/user_app/workouts/phase_widgets.dart';
 import 'package:eland_athletic/user_app/workouts/workout_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -83,7 +84,7 @@ void main() {
     expect(find.textContaining('No saved workouts yet'), findsOneWidget);
 
     // New workout
-    await tester.tap(find.byType(FloatingActionButton));
+    await tester.tap(find.byTooltip('New workout'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).first, 'Leg day');
 
@@ -104,7 +105,7 @@ void main() {
     await tester.tap(find.text('SAVE'));
     await tester.pumpAndSettle();
 
-    expect(find.text('PHASES (2)'), findsOneWidget);
+    expect(find.byType(PhaseLine), findsNWidgets(2));
 
     // Save the workout
     await tester.tap(find.text('SAVE'));
@@ -128,7 +129,7 @@ void main() {
 
     await tester.pumpWidget(_app(const MyWorkoutsPage(), repo, reminders));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(FloatingActionButton));
+    await tester.tap(find.byTooltip('New workout'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('SAVE'));
@@ -164,7 +165,8 @@ void main() {
     expect(find.text('START'), findsOneWidget);
   });
 
-  testWidgets('history shows weekly stats and results', (tester) async {
+  testWidgets('history shows month totals, calendar and results',
+      (tester) async {
     await tester.binding.setSurfaceSize(const Size(430, 932));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -182,9 +184,15 @@ void main() {
     await tester.pumpWidget(_app(const HistoryPage(), repo, reminders));
     await tester.pumpAndSettle();
 
-    expect(find.text('THIS WEEK'), findsOneWidget);
-    expect(find.text('12'), findsOneWidget); // minutes
+    expect(find.text(ElandStrings.of('month_${now.month}').toUpperCase()),
+        findsOneWidget);
+    expect(find.text('12m'), findsOneWidget); // time this month
     expect(find.text('6 ROUNDS'), findsOneWidget);
     expect(find.text('TODAY'), findsOneWidget);
+
+    // Tapping the training day filters the list to that day.
+    await tester.tap(find.text('${now.day}'));
+    await tester.pumpAndSettle();
+    expect(find.text('6 ROUNDS'), findsOneWidget);
   });
 }

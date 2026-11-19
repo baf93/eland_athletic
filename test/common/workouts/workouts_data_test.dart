@@ -101,6 +101,51 @@ void main() {
       expect(stats.totalWorkouts, 4);
     });
 
+    test('week streak counts consecutive weeks', () {
+      final stats = HistoryStats.from([
+        _log('a', DateTime(2026, 11, 17, 8)), // this week
+        _log('b', DateTime(2026, 11, 10, 8)), // last week
+        _log('c', DateTime(2026, 11, 3, 8)), // two weeks ago
+        _log('d', DateTime(2026, 10, 20, 8)), // gap before
+      ], now: DateTime(2026, 11, 18, 9));
+      expect(stats.weekStreak, 3);
+    });
+
+    test('month stats and personal bests', () {
+      final logs = [
+        _log('a', DateTime(2026, 11, 18, 8), seconds: 600),
+        _log('b', DateTime(2026, 11, 2, 8), seconds: 900),
+        _log('c', DateTime(2026, 10, 30, 8), seconds: 300),
+      ];
+      final month = MonthStats.from(logs, 2026, 11);
+      expect(month.sessions, 2);
+      expect(month.seconds, 1500);
+      expect(month.activeDays, {18, 2});
+
+      WorkoutLog amrap(String id, int rounds, {String workout = 'w1'}) =>
+          WorkoutLog(
+            id: id,
+            workoutId: workout,
+            title: 'A',
+            completedAt: DateTime(2026, 11, 1),
+            activeSeconds: 600,
+            amrapRounds: rounds,
+          );
+      expect(
+        personalBestIds([amrap('x', 5), amrap('y', 7), amrap('z', 6)]),
+        {'y'},
+      );
+      // A single session is not a record, quick timers never are.
+      expect(personalBestIds([amrap('x', 5)]), isEmpty);
+      expect(
+        personalBestIds([
+          amrap('x', 5, workout: 'amrap_qt'),
+          amrap('y', 7, workout: 'amrap_qt'),
+        ]),
+        isEmpty,
+      );
+    });
+
     test('streak still counts when today is not done yet', () {
       final stats = HistoryStats.from([
         _log('a', DateTime(2026, 11, 17, 8)),

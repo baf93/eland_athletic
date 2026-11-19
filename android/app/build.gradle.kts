@@ -15,6 +15,8 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+val uploadKey = System.getenv("ELAND_KEYSTORE")?.let { File(it) }
+
 android {
     namespace = "com.eland.athletic"
     compileSdk = flutter.compileSdkVersion
@@ -42,8 +44,20 @@ android {
     }
 
     signingConfigs {
-        // Only when key.properties is present: without it (fresh clone, CI)
-        // the build falls back to debug signing instead of crashing.
+        // Play upload key derived from a password by signing/release.sh: it is
+        // never stored, the script passes a temporary keystore through the env.
+        if (uploadKey != null) {
+            create("upload") {
+                storeFile = uploadKey
+                storePassword = System.getenv("ELAND_STORE_PASSWORD")
+                keyAlias = "upload"
+                keyPassword = System.getenv("ELAND_STORE_PASSWORD")
+                storeType = "PKCS12"
+            }
+        }
+        // Legacy keystore from key.properties, until Play accepts the new
+        // upload key. Without either (fresh clone, CI) the build falls back
+        // to debug signing instead of crashing.
         if (keystorePropertiesFile.exists()) {
             create("release") {
                 keyAlias = keystoreProperties["keyAlias"] as String
@@ -56,10 +70,10 @@ android {
 
     buildTypes {
         getByName("release") {
-            signingConfig = if (keystorePropertiesFile.exists()) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
+            signingConfig = when {
+                uploadKey != null -> signingConfigs.getByName("upload")
+                keystorePropertiesFile.exists() -> signingConfigs.getByName("release")
+                else -> signingConfigs.getByName("debug")
             }
             isMinifyEnabled = true
             isShrinkResources = true

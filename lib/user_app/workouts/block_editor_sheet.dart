@@ -5,6 +5,7 @@ import '../../common/eland_responsive.dart';
 import '../../common/strings.dart';
 import '../../common/timer_core/models/timer_block.dart';
 import '../../common/timer_core/models/timercore_enums.dart';
+import '../../common/widgets/eland_bottom_sheet.dart';
 import '../../common/widgets/pill_badge.dart';
 import '../../common/widgets/primary_action_button.dart';
 import '../../common/widgets/timer_setting_selector.dart';
@@ -19,7 +20,7 @@ IconData timerTypeIcon(TimerType type) {
     case TimerType.amrap:
       return Icons.all_inclusive_rounded;
     case TimerType.fortime:
-      return Icons.timer_10_outlined;
+      return Icons.flag_rounded;
     case TimerType.countdown:
       return Icons.hourglass_bottom_rounded;
     case TimerType.rest:
@@ -31,57 +32,22 @@ IconData timerTypeIcon(TimerType type) {
 
 /// Bottom sheet listing the timer types; returns the chosen one.
 Future<TimerType?> showTimerTypePicker(BuildContext context) {
-  final theme = Theme.of(context);
-  return showModalBottomSheet<TimerType>(
+  final types = TimerBlock.editableTypes.toList();
+  return showElandSheet<TimerType>(
     context: context,
-    backgroundColor: theme.scaffoldBackgroundColor,
-    shape: RoundedRectangleBorder(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-      side: BorderSide(color: theme.dividerColor),
+    title: ElandStrings.of('choose_phase'),
+    builder: (sheetContext) => Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < types.length; i++)
+          ElandSheetLine(
+            icon: timerTypeIcon(types[i]),
+            label: ElandStrings.of(TimerBlock.typeLabelKey(types[i])),
+            last: i == types.length - 1,
+            onTap: () => Navigator.pop(sheetContext, types[i]),
+          ),
+      ],
     ),
-    builder: (sheetContext) {
-      final r = ElandResponsive(sheetContext);
-      return SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-            r.pageHorizontalPadding,
-            r.spacing(8),
-            r.pageHorizontalPadding,
-            r.spacing(16),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElandSectionLabel(ElandStrings.of('choose_phase')),
-              for (final type in TimerBlock.editableTypes) ...[
-                ElandOutlinedCard(
-                  onTap: () => Navigator.pop(sheetContext, type),
-                  child: Row(
-                    children: [
-                      Icon(timerTypeIcon(type),
-                          color: theme.colorScheme.primary, size: r.icon(24)),
-                      SizedBox(width: r.spacing(18)),
-                      Expanded(
-                        child: Text(
-                          ElandStrings.of(TimerBlock.typeLabelKey(type))
-                              .toUpperCase(),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: r.font(15),
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: r.spacing(10)),
-              ],
-            ],
-          ),
-        ),
-      );
-    },
   );
 }
 
@@ -180,8 +146,9 @@ class _BlockEditorPageState extends State<BlockEditorPage> {
                       value: _block.param(field.key),
                       min: field.min,
                       max: field.max,
-                      onChanged: (v) =>
-                          setState(() => _block = _block.withParam(field.key, v)),
+                      onChanged: (v) => setState(
+                        () => _block = _block.withParam(field.key, v),
+                      ),
                     ),
                     SizedBox(height: r.settingsGap),
                   ],
